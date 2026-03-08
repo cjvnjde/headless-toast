@@ -27,7 +27,7 @@ jobs:
           cache: pnpm
 
       - name: Install commitlint
-        run: pnpm add -D @commitlint/cli @commitlint/config-conventional
+        run: pnpm add -D @commitlint/cli @commitlint/config-conventional --workspace-root
 
       - name: Validate current commit (last commit) with commitlint
         if: github.event_name == 'push'
