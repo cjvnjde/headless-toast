@@ -126,8 +126,6 @@ jobs:
       - name: Publish to npm
         working-directory: ${{ steps.parse.outputs.package_dir }}
         run: pnpm publish --no-git-checks --provenance --access public --tag ${{ steps.parse.outputs.dist_tag }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
