@@ -1,6 +1,6 @@
 {
   "name": "@headless-toast/core",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-alpha.2",
   "description": "Headless toast state machine with no DOM dependencies",
   "type": "module",
   "scripts": {
