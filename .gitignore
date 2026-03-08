@@ -1,0 +1,12 @@
+# Dependency directories
+node_modules
+
+# Build output directories
+storybook-static
+dist
+
+# Editor configuration files
+.idea
+
+# Husky generated files
+.husky/_

@@ -1,0 +1,115 @@
+import { Meta, Canvas } from "@storybook/addon-docs/blocks";
+import * as FramerStories from "../advanced/FramerMotionIntegrations.stories";
+import * as SwipeStories from "../advanced/SwipeInteractions.stories";
+import * as FloatingStories from "../advanced/FloatingAnchored.stories";
+
+<Meta title="Docs/Advanced Recipes" />
+
+# Advanced recipes
+
+The toast core stays headless, so advanced UI behavior can be layered on top with other libraries.
+
+## What these examples demonstrate
+
+- Replacing CSS animations with Framer Motion.
+- Adding gesture-driven swipe interactions.
+- Anchoring floating toast stacks to a trigger element.
+
+## Integration notes
+
+These patterns all rely on the same primitives:
+
+- `useToast()` for state and actions.
+- `useStore()` for rendering custom stacks.
+- `store.markEntered()` and `store.markExited()` when custom animation systems own lifecycle timing.
+
+## How to wire a custom animation library
+
+```tsx
+function MotionToast() {
+  const { toast, store, dismiss } = useToast();
+
+  useEffect(() => {
+    if (toast.status !== "entering") return;
+
+    const timer = setTimeout(() => store.markEntered(toast.id), 300);
+    return () => clearTimeout(timer);
+  }, [toast.id, toast.status, store]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -16 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -16 }}
+      onAnimationComplete={(definition) => {
+        if (definition === "exit") store.markExited(toast.id);
+      }}
+    >
+      <strong>{String(toast.data.title)}</strong>
+      <button onClick={() => dismiss("user")}>Close</button>
+    </motion.div>
+  );
+}
+```
+
+## How to add swipe-to-dismiss
+
+```tsx
+function DraggableToast() {
+  const { toast, dismiss } = useToast();
+  const drag = useToastDrag();
+  const { ref, className, handlers, attributes } = useToastAnimation({
+    className: "demo-toast",
+    swipeDismissed: drag.swipeDismissed,
+  });
+
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={drag.style}
+      {...handlers}
+      {...drag.handlers}
+      {...attributes}
+    >
+      <strong>{String(toast.data.title)}</strong>
+      <button onClick={() => dismiss("user")}>Close</button>
+    </div>
+  );
+}
+```
+
+## How to anchor toasts to a button or badge
+
+```tsx
+const { refs, floatingStyles } = useFloating({
+  elements: { reference: buttonRef.current },
+  placement: "bottom-end",
+  middleware: [offset(8), flip(), shift({ padding: 16 })],
+  whileElementsMounted: autoUpdate,
+});
+
+return (
+  <div ref={refs.setFloating} style={floatingStyles}>
+    {toasts.map((toast) => (
+      <CustomToast key={toast.id} toast={toast} />
+    ))}
+  </div>
+);
+```
+
+## How to move a toast across placements
+
+```tsx
+function onDropToast(id: string, placement: ToastPlacement) {
+  store.update(id, { placement });
+}
+```
+
+## Live examples
+
+<Canvas of={FramerStories.FramerMotionAnimations} />
+
+<Canvas of={SwipeStories.SwipeRightToDismiss} />
+
+<Canvas of={FloatingStories.FloatingUIAnchored} />

@@ -1,0 +1,150 @@
+name: Publish Package
+
+on:
+  push:
+    tags:
+      - "@headless-toast/*@*"
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Parse tag
+        id: parse
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          PACKAGE_NAME="${TAG%@*}"
+          VERSION="${TAG##*@}"
+          PACKAGE_SCOPE="${PACKAGE_NAME#@headless-toast/}"
+
+          if [ "$PACKAGE_SCOPE" = "core" ]; then
+            PACKAGE_DIR="core"
+          else
+            PACKAGE_DIR="adapters/$PACKAGE_SCOPE"
+          fi
+
+          # Detect prerelease (alpha, beta, rc)
+          IS_PRERELEASE="false"
+          DIST_TAG="latest"
+          if echo "$VERSION" | grep -qE '\-(alpha|beta|rc)'; then
+            IS_PRERELEASE="true"
+            DIST_TAG=$(echo "$VERSION" | sed -n 's/.*-\([a-z]*\).*/\1/p')
+          fi
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "package_name=$PACKAGE_NAME" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "package_scope=$PACKAGE_SCOPE" >> "$GITHUB_OUTPUT"
+          echo "package_dir=$PACKAGE_DIR" >> "$GITHUB_OUTPUT"
+          echo "is_prerelease=$IS_PRERELEASE" >> "$GITHUB_OUTPUT"
+          echo "dist_tag=$DIST_TAG" >> "$GITHUB_OUTPUT"
+
+          echo "--- Parsed tag ---"
+          echo "Tag:           $TAG"
+          echo "Package name:  $PACKAGE_NAME"
+          echo "Version:       $VERSION"
+          echo "Package scope: $PACKAGE_SCOPE"
+          echo "Package dir:   $PACKAGE_DIR"
+          echo "Prerelease:    $IS_PRERELEASE"
+          echo "Dist tag:      $DIST_TAG"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate package directory
+        run: |
+          if [ ! -d "${{ steps.parse.outputs.package_dir }}" ]; then
+            echo "::error::Package directory '${{ steps.parse.outputs.package_dir }}' does not exist"
+            exit 1
+          fi
+
+      - name: Validate version matches package.json
+        working-directory: ${{ steps.parse.outputs.package_dir }}
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          TAG_VERSION="${{ steps.parse.outputs.version }}"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Tag version ($TAG_VERSION) does not match package.json version ($PKG_VERSION)"
+            echo "::error::Bump the version in package.json before tagging."
+            exit 1
+          fi
+
+      - name: Validate CHANGELOG.md entry
+        if: steps.parse.outputs.is_prerelease == 'false'
+        working-directory: ${{ steps.parse.outputs.package_dir }}
+        run: |
+          VERSION="${{ steps.parse.outputs.version }}"
+          if [ ! -f "CHANGELOG.md" ]; then
+            echo "::error::CHANGELOG.md not found in ${{ steps.parse.outputs.package_dir }}/"
+            echo "::error::Generate the changelog before tagging a stable release."
+            exit 1
+          fi
+          if ! grep -q "$VERSION" "CHANGELOG.md"; then
+            echo "::error::CHANGELOG.md does not contain an entry for version $VERSION"
+            echo "::error::Update the changelog before tagging a stable release."
+            exit 1
+          fi
+
+      - name: Extract release notes from CHANGELOG.md
+        if: steps.parse.outputs.is_prerelease == 'false'
+        id: release_notes
+        working-directory: ${{ steps.parse.outputs.package_dir }}
+        run: |
+          VERSION="${{ steps.parse.outputs.version }}"
+          # Extract the section between this version's heading and the next heading.
+          # Matches "## <version>" or "## <scope>@<version>" patterns.
+          NOTES=$(awk -v ver="$VERSION" '
+            /^## / {
+              if (found) exit
+              if (index($0, ver)) { found=1; next }
+            }
+            found { print }
+          ' CHANGELOG.md)
+
+          # Write multiline output using delimiter
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "content<<$EOF" >> "$GITHUB_OUTPUT"
+          echo "$NOTES" >> "$GITHUB_OUTPUT"
+          echo "$EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm --filter "${{ steps.parse.outputs.package_name }}" lint
+
+      - name: Test
+        run: pnpm --filter "${{ steps.parse.outputs.package_name }}" test
+
+      # Build the target package and its workspace dependencies (topological order).
+      # The "..." suffix tells pnpm to include transitive workspace deps.
+      - name: Build
+        run: pnpm --filter "${{ steps.parse.outputs.package_name }}..." build
+
+      - name: Publish to npm
+        working-directory: ${{ steps.parse.outputs.package_dir }}
+        run: pnpm publish --no-git-checks --provenance --access public --tag ${{ steps.parse.outputs.dist_tag }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.parse.outputs.tag }}
+          name: "${{ steps.parse.outputs.package_name }}@${{ steps.parse.outputs.version }}"
+          body: ${{ steps.release_notes.outputs.content || '' }}
+          prerelease: ${{ steps.parse.outputs.is_prerelease == 'true' }}

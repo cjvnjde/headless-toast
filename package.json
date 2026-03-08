@@ -1,0 +1,26 @@
+{
+  "name": "headless-toast",
+  "private": true,
+  "description": "Framework-agnostic headless toast notifications monorepo",
+  "scripts": {
+    "build": "pnpm --filter '@headless-toast/core' build && pnpm --filter '@headless-toast/react' build",
+    "lint": "pnpm --filter '@headless-toast/core' lint && pnpm --filter '@headless-toast/react' lint",
+    "storybook:dev": "pnpm --filter '@headless-toast/examples-react' dev",
+    "storybook:build": "pnpm --filter '@headless-toast/examples-react' build",
+    "test": "pnpm --filter '@headless-toast/core' test && pnpm --filter '@headless-toast/react' test",
+    "prepare": "husky",
+    "update": "pnpm update --interactive --recursive --latest",
+    "format": "prettier --write .",
+    "changelog:core": "git cliff --config cliff.toml --include-path 'core/**' --tag-pattern '@headless-toast/core@.*' --ignore-tags '.*-(alpha|beta|rc)' --output core/CHANGELOG.md",
+    "changelog:react": "git cliff --config cliff.toml --include-path 'adapters/react/**' --tag-pattern '@headless-toast/react@.*' --ignore-tags '.*-(alpha|beta|rc)' --output adapters/react/CHANGELOG.md"
+  },
+  "author": "Vitalij Nykyforenko <vitalij.nykyforenko@gmail.com>",
+  "license": "MIT",
+  "packageManager": "pnpm@10.30.3",
+  "devDependencies": {
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "husky": "^9.1.7",
+    "prettier": "^3.6.2"
+  }
+}

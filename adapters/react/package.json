@@ -1,0 +1,52 @@
+{
+  "name": "@headless-toast/react",
+  "version": "0.0.1-alpha.1",
+  "description": "React adapter for headless-toast",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "lint": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "toast",
+    "react",
+    "notifications",
+    "headless"
+  ],
+  "author": "Vitalij Nykyforenko <vitalij.nykyforenko@gmail.com>",
+  "license": "MIT",
+  "packageManager": "pnpm@10.30.3",
+  "dependencies": {
+    "@headless-toast/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^5.1.4",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^4.0.18"
+  }
+}

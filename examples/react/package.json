@@ -1,0 +1,33 @@
+{
+  "name": "@headless-toast/examples-react",
+  "private": true,
+  "description": "React Storybook examples for headless-toast",
+  "type": "module",
+  "scripts": {
+    "dev": "storybook dev -p 6006",
+    "build": "storybook build"
+  },
+  "dependencies": {
+    "@headless-toast/core": "workspace:*",
+    "@headless-toast/react": "workspace:*",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@floating-ui/react": "^0.27.19",
+    "@storybook/addon-docs": "^10.2.16",
+    "@storybook/react": "^10.2.16",
+    "@storybook/react-vite": "^10.2.16",
+    "@tailwindcss/vite": "^4.2.1",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@use-gesture/react": "^10.3.1",
+    "@vitejs/plugin-react": "^5.1.4",
+    "framer-motion": "^12.35.0",
+    "storybook": "^10.2.16",
+    "tailwindcss": "^4.2.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  },
+  "packageManager": "pnpm@10.30.3"
+}

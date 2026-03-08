@@ -1,0 +1,36 @@
+{
+  "name": "@headless-toast/core",
+  "version": "0.0.1-alpha.1",
+  "description": "Headless toast state machine with no DOM dependencies",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "lint": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [],
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Vitalij Nykyforenko <vitalij.nykyforenko@gmail.com>",
+  "license": "MIT",
+  "packageManager": "pnpm@10.30.3",
+  "devDependencies": {
+    "@types/node": "^25.3.5",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^4.0.18"
+  }
+}

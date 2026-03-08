@@ -1,0 +1,125 @@
+import { Meta, Canvas } from "@storybook/addon-docs/blocks";
+import * as ToasterBasicsStories from "../toaster/ToasterBasics.stories";
+import * as ToasterBehaviorStories from "../toaster/ToasterBehavior.stories";
+import * as FeatureLimitsStories from "../features/FeatureLimits.stories";
+
+<Meta title="Docs/Getting Started" />
+
+# Getting started
+
+This Storybook is organized around small, focused stories so you can inspect one behavior at a time.
+
+## Usage flow
+
+1. Create a toast store with `createToast()`.
+2. Mount a `Toaster` with your own toast component.
+3. Trigger notifications through the returned `toast` api.
+4. Add optional behavior like progress, pause-on-hover, or placement overrides.
+
+## How to create the smallest working setup
+
+```tsx
+import {
+  createToast,
+  Toaster,
+  useToast,
+  useToastAnimation,
+} from "@headless-toast/react";
+
+const { store, toast } = createToast();
+
+function AppToast() {
+  const { toast: item, dismiss, pauseOnHoverHandlers } = useToast();
+  const { ref, className, handlers, attributes } = useToastAnimation({
+    className: "demo-toast",
+  });
+
+  return (
+    <div
+      ref={ref}
+      className={className}
+      {...handlers}
+      {...pauseOnHoverHandlers}
+      {...attributes}
+    >
+      <strong>{String(item.data.title)}</strong>
+      <p>{String(item.data.body)}</p>
+      <button onClick={() => dismiss("user")}>Close</button>
+    </div>
+  );
+}
+
+export function App() {
+  return (
+    <>
+      <button
+        onClick={() =>
+          toast.success({
+            title: "Saved",
+            body: "Profile updated successfully.",
+          })
+        }
+      >
+        Show toast
+      </button>
+
+      <Toaster store={store} component={AppToast} />
+    </>
+  );
+}
+```
+
+## How to trigger different toast types
+
+```tsx
+toast.success({ title: "Saved", body: "Everything worked." });
+toast.error({ title: "Failed", body: "Please try again." });
+toast.warning({ title: "Careful", body: "Double-check this change." });
+toast.info({ title: "Heads up", body: "Background sync is running." });
+toast.loading({ title: "Uploading", body: "Please wait..." });
+```
+
+## How to set placement and timing
+
+```tsx
+toast.info(
+  {
+    title: "Bottom center",
+    body: "This toast renders in a custom placement.",
+  },
+  {
+    placement: "bottom-center",
+    duration: 5000,
+    pauseOnHover: true,
+    dismissible: true,
+  },
+);
+```
+
+## How to enforce a maximum number of visible toasts
+
+```tsx
+const { store, toast } = createToast({ maxToasts: 3 });
+
+toast.info({ title: "One" });
+toast.info({ title: "Two" });
+toast.info({ title: "Three" });
+toast.info({ title: "Four" });
+// The oldest visible toast is dismissed first.
+```
+
+## First examples
+
+Use these stories as the shortest path into the library:
+
+- `Components/Toaster/Basics` for core rendering and placements.
+- `Components/Toaster/Behavior` for timing and dismiss behavior.
+- `Features/Limits` for store-level constraints.
+
+## Live examples
+
+<Canvas of={ToasterBasicsStories.AllTypes} />
+
+<Canvas of={ToasterBehaviorStories.PauseOnHover} />
+
+<Canvas of={FeatureLimitsStories.MaxToasts3} />

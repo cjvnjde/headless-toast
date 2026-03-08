@@ -1,0 +1,6 @@
+packages:
+  - core
+  - adapters/*
+  - examples/*
+
+minimumReleaseAge: 1440

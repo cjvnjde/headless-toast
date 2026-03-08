@@ -1,0 +1,219 @@
+import { Meta, Canvas } from "@storybook/addon-docs/blocks";
+import * as InlineContainerStories from "../features/InlineContainers.stories";
+import * as UseStoreStories from "../useStore.stories";
+import * as ToastHookStories from "../ToastItem.stories";
+import * as TailwindStories from "../toaster/ToasterTailwind.stories";
+
+<Meta title="Docs/Usage Patterns" />
+
+# Usage patterns
+
+These examples show how the library fits into real app workflows beyond a single global toaster.
+
+## Common patterns
+
+### Scoped containers
+
+Use `containerId` when notifications should stay inside a panel, sidebar, or form.
+
+```tsx
+const { store, toast } = createToast();
+
+toast.success(
+  { title: "Saved", body: "Sidebar settings updated." },
+  { containerId: "sidebar", duration: 3000 },
+);
+
+function Sidebar() {
+  return (
+    <Toaster
+      store={store}
+      component={InlineToast}
+      containerId="sidebar"
+      inline
+      placements={["top-right"]}
+    />
+  );
+}
+```
+
+### Reactive inspection
+
+Use `useStore(store)` to render dashboards, counters, or developer tooling around the current toast array.
+
+```tsx
+import { useStore } from "@headless-toast/react";
+
+function ToastDebugPanel({ store }: { store: ReactToastStore }) {
+  const toasts = useStore(store);
+
+  return (
+    <ul>
+      {toasts.map((toast) => (
+        <li key={toast.id}>
+          {toast.type} - {toast.status} - {toast.remaining}ms left
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### Custom rendering
+
+Use `useToast()` in your own component to fully control markup and styling.
+
+```tsx
+function BrandToast() {
+  const { toast, dismiss } = useToast();
+  const { ref, className, handlers, attributes } = useToastAnimation({
+    className: "brand-toast",
+  });
+
+  return (
+    <div ref={ref} className={className} {...handlers} {...attributes}>
+      <div>
+        <strong>{String(toast.data.title)}</strong>
+        <p>{String(toast.data.body)}</p>
+      </div>
+      <button onClick={() => dismiss("user")}>Dismiss</button>
+    </div>
+  );
+}
+```
+
+### Style the default toast with Tailwind v4
+
+Use Tailwind only for presentation while keeping the same store, toaster, and animation hooks.
+
+```tsx
+import { Toaster, useToast, useToastAnimation } from "@headless-toast/react";
+
+function TailwindToast() {
+  const { toast, dismiss, pauseOnHoverHandlers } = useToast();
+  const { ref, className, handlers, attributes } = useToastAnimation({
+    className:
+      "toast-shell relative flex min-w-80 max-w-sm items-start gap-3 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-lg",
+  });
+
+  return (
+    <div
+      ref={ref}
+      className={className}
+      {...handlers}
+      {...pauseOnHoverHandlers}
+      {...attributes}
+    >
+      <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-sm font-semibold text-white">
+        OK
+      </div>
+
+      <div className="min-w-0 flex-1 pr-8">
+        <strong className="block text-sm font-semibold text-slate-900">
+          {String(toast.data.title)}
+        </strong>
+        <p className="mt-1 text-sm leading-5 text-slate-600">
+          {String(toast.data.body)}
+        </p>
+      </div>
+
+      <button
+        className="absolute right-3 top-3 inline-flex size-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+        onClick={() => dismiss("user")}
+      >
+        x
+      </button>
+    </div>
+  );
+}
+
+<Toaster store={store} component={TailwindToast} />;
+```
+
+Animation still needs explicit enter/exit rules because the store advances state from the element's computed animation or transition duration:
+
+```css
+.toast-shell[data-toast-status="entering"] {
+  animation: toast-enter 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toast-shell[data-toast-status="exiting"][data-toast-swipe-dismissed="false"] {
+  animation: toast-exit 240ms ease-in forwards;
+}
+
+.toast-shell[data-toast-status="exiting"][data-toast-swipe-dismissed="true"] {
+  animation: toast-swipe-exit 240ms ease-in forwards;
+}
+
+@keyframes toast-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.97);
+  }
+}
+```
+
+For Tailwind v4 setup in Storybook/Vite:
+
+```ts
+// .storybook/main.ts
+import tailwindcss from "@tailwindcss/vite";
+
+export default {
+  viteFinal: async (config) => ({
+    ...config,
+    plugins: [...(config.plugins ?? []), tailwindcss()],
+  }),
+};
+```
+
+```css
+/* tailwind.css */
+@import "tailwindcss";
+
+@theme {
+  --color-toast-success: oklch(0.72 0.18 150);
+  --color-toast-surface: oklch(0.98 0.01 240);
+}
+```
+
+### Update an existing toast by id
+
+```tsx
+toast.loading(
+  { title: "Uploading", body: "Starting upload..." },
+  { id: "file-upload", duration: 0 },
+);
+
+toast.success(
+  { title: "Uploaded", body: "All files are stored." },
+  { id: "file-upload", duration: 3000 },
+);
+```
+
+## Live examples
+
+<Canvas of={InlineContainerStories.SidebarInlineToast} />
+
+<Canvas of={UseStoreStories.ReactiveState} />
+
+<Canvas of={ToastHookStories.CustomComponent} />
+
+<Canvas of={TailwindStories.DefaultToastWithTailwind} />
