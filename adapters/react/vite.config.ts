@@ -4,7 +4,15 @@ import dts from "vite-plugin-dts";
 import { resolve } from "node:path";
 
 export default defineConfig({
-  plugins: [react(), dts({ insertTypesEntry: true })],
+  plugins: [
+    react(),
+    dts({
+      insertTypesEntry: true,
+      pathsToAliases: false,
+      rollupTypes: true,
+      tsconfigPath: "./tsconfig.build.json",
+    }),
+  ],
   resolve: {
     alias: {
       "@headless-toast/core": resolve(__dirname, "../../core/src/index.ts"),
