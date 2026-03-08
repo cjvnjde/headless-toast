@@ -53,7 +53,7 @@ jobs:
           echo "Dist tag:      $DIST_TAG"
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Validate package directory
         run: |
