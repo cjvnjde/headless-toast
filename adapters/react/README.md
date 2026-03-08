@@ -37,8 +37,9 @@ const { store, toast } = createToast<{
   title: string;
   body?: string;
 }>({
+  maxToasts: 3,
   defaults: {
-    duration: 3000,
+    duration: 4000,
     placement: "top-right",
     pauseOnHover: true,
     dismissible: true,
@@ -90,9 +91,32 @@ export function App() {
 
 The adapter reads the actual animation or transition duration from the rendered element. That means your toast component needs real CSS for enter and exit states.
 
+If you want a safe starting point, these defaults work well in most apps:
+
+- `maxToasts: 3`
+- `duration: 4000`
+- `placement: "top-right"`
+- `pauseOnHover: true`
+- `dismissible: true`
+
+They keep the UI readable, avoid overly aggressive auto-dismiss timing, and match common product expectations.
+
+For visuals, a good baseline is:
+
+- Width around `18rem` to `24rem`
+- Padding around `12px 16px`
+- Radius around `12px` to `16px`
+- A neutral surface with one accent color per toast type
+- Enter motion around `220ms` to `280ms`
+- Exit motion around `160ms` to `200ms`
+
 ```css
 .app-toast {
   min-width: 18rem;
+  max-width: 24rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
   border-radius: 14px;
   background: #ffffff;
   border: 1px solid #d0d7de;
@@ -110,6 +134,40 @@ The adapter reads the actual animation or transition duration from the rendered 
 
 .app-toast[data-toast-status="exiting"][data-toast-swipe-dismissed="true"] {
   animation: toast-swipe-exit 180ms ease-in forwards;
+}
+
+@keyframes toast-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+}
+
+@keyframes toast-swipe-exit {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
 }
 ```
 
