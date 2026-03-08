@@ -14,8 +14,8 @@ pnpm add @headless-toast/react react react-dom
 
 ## What You Get
 
-- `createToast()` for isolated `{ store, toast }` pairs
-- `toast` and `defaultStore` for a shared singleton flow
+- `createToast()` for isolated toast instances
+- `toast` for a shared singleton flow
 - `Toaster` to render your toast component
 - `useToast()` for per-toast state and actions
 - `useToastAnimation()` for DOM timing and phase completion
@@ -33,7 +33,7 @@ import {
   useToastAnimation,
 } from "@headless-toast/react";
 
-const { store, toast } = createToast<{
+const { toast } = createToast<{
   title: string;
   body?: string;
 }>({
@@ -47,7 +47,7 @@ const { store, toast } = createToast<{
 });
 
 function AppToast() {
-  const { toast: item, dismiss, pauseOnHoverHandlers } = useToast();
+  const { toast, dismiss, pauseOnHoverHandlers } = useToast();
   const { ref, className, attributes, handlers } = useToastAnimation({
     className: "app-toast",
   });
@@ -60,8 +60,8 @@ function AppToast() {
       {...pauseOnHoverHandlers}
       {...attributes}
     >
-      <strong>{String(item.data.title)}</strong>
-      {item.data.body ? <p>{String(item.data.body)}</p> : null}
+      <strong>{String(toast.data.title)}</strong>
+      {toast.data.body ? <p>{String(toast.data.body)}</p> : null}
       <button onClick={() => dismiss("user")}>Close</button>
     </div>
   );
@@ -81,7 +81,7 @@ export function App() {
         Show toast
       </button>
 
-      <Toaster store={store} component={AppToast} />
+      <Toaster store={toast} component={AppToast} />
     </>
   );
 }
@@ -202,13 +202,13 @@ toast.success(
 
 ### Custom reactive views
 
-Use `useStore(store)` when you want counters, debug panels, or analytics around the current toast list:
+Use `useStore(toast)` when you want counters, debug panels, or analytics around the current toast list:
 
 ```tsx
 import { useStore } from "@headless-toast/react";
 
 function ToastDebugPanel() {
-  const toasts = useStore(store);
+  const toasts = useStore(toast);
 
   return (
     <ul>

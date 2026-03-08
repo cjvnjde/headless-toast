@@ -1,28 +1,16 @@
 import type { ToastCustomOptions, ToastData } from "@headless-toast/core";
 import { createToastStore } from "@headless-toast/core";
-import type {
-  AdapterToastOptions,
-  AdapterStoreConfig,
-  ReactToastStore,
-} from "./types";
-
-function createToastApi<
-  TData extends ToastData = ToastData,
-  TCustom extends ToastCustomOptions = {},
->(store: ReactToastStore<TData, TCustom>) {
-  return store;
-}
+import type { AdapterToastOptions, AdapterStoreConfig } from "./types";
 
 function createToast<
   TData extends ToastData = ToastData,
   TCustom extends ToastCustomOptions = {},
 >(config?: AdapterStoreConfig<TData, TCustom>) {
-  const store = createToastStore<TData, TCustom & AdapterToastOptions>(config);
-  const toast = createToastApi(store);
+  const toast = createToastStore<TData, TCustom & AdapterToastOptions>(config);
 
-  return { store, toast };
+  return { toast };
 }
 
-const { store: defaultStore, toast } = createToast();
+const { toast } = createToast();
 
-export { defaultStore, toast, createToastApi, createToast };
+export { toast, createToast };

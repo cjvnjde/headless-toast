@@ -10,7 +10,7 @@ import {
 } from "framer-motion";
 import { ToastCtx, useStore, useToast } from "@headless-toast/react";
 import type { ReactToastStore } from "@headless-toast/react";
-import { useIsolatedToastContext } from "../shared/useIsolatedToastContext";
+import { useIsolatedToast } from "../shared/useIsolatedToast";
 import {
   getToastStyle,
   stripConflictingHandlers,
@@ -41,7 +41,8 @@ export default meta;
 type Story = StoryObj;
 
 function SwipeDismissToast() {
-  const { toast, store, dismiss, pauseOnHoverHandlers } = useToast();
+  const { toast, dismiss, pauseOnHoverHandlers, markEntered, pause, resume } =
+    useToast();
   const x = useMotionValue(0);
   const opacity = useTransform(x, [0, DISMISS_THRESHOLD], [1, 0.3]);
   const [dismissed, setDismissed] = useState(false);
@@ -49,9 +50,9 @@ function SwipeDismissToast() {
   useEffect(() => {
     if (toast.status !== "entering") return;
 
-    const timer = setTimeout(() => store.markEntered(toast.id), 400);
+    const timer = setTimeout(() => markEntered(), 400);
     return () => clearTimeout(timer);
-  }, [toast.id, toast.status, store]);
+  }, [toast.id, toast.status, toast]);
 
   const bind = useDrag(
     ({ active, movement: [mx], velocity: [vx], direction: [dx], last }) => {
@@ -59,7 +60,7 @@ function SwipeDismissToast() {
 
       if (active) {
         x.set(Math.max(0, mx));
-        store.pause(toast.id);
+        pause();
       }
 
       if (!last) return;
@@ -75,7 +76,7 @@ function SwipeDismissToast() {
       }
 
       animate(x, 0, { type: "spring", stiffness: 400, damping: 30 });
-      store.resume(toast.id);
+      resume();
     },
     { axis: "x", from: () => [x.get(), 0] },
   );
@@ -162,7 +163,15 @@ function SwipeDismissToaster({ store }: { store: ReactToastStore }) {
 }
 
 function ReverseSwipePinToast() {
-  const { toast, store, dismiss, update, pauseOnHoverHandlers } = useToast();
+  const {
+    toast,
+    dismiss,
+    update,
+    pauseOnHoverHandlers,
+    markEntered,
+    pause,
+    resume,
+  } = useToast();
   const x = useMotionValue(0);
   const [pinned, setPinned] = useState(false);
   const [dismissed, setDismissed] = useState(false);
@@ -177,9 +186,9 @@ function ReverseSwipePinToast() {
   useEffect(() => {
     if (toast.status !== "entering") return;
 
-    const timer = setTimeout(() => store.markEntered(toast.id), 400);
+    const timer = setTimeout(() => markEntered(), 400);
     return () => clearTimeout(timer);
-  }, [toast.id, toast.status, store]);
+  }, [toast.id, toast.status, toast]);
 
   const bind = useDrag(
     ({ active, movement: [mx], velocity: [vx], direction: [dx], last }) => {
@@ -187,7 +196,7 @@ function ReverseSwipePinToast() {
 
       if (active) {
         x.set(mx);
-        store.pause(toast.id);
+        pause();
       }
 
       if (!last) return;
@@ -210,7 +219,7 @@ function ReverseSwipePinToast() {
       }
 
       animate(x, 0, { type: "spring", stiffness: 400, damping: 30 });
-      store.resume(toast.id);
+      resume();
     },
     { from: () => [x.get(), 0] },
   );
@@ -339,7 +348,7 @@ function ReverseSwipePinToaster({ store }: { store: ReactToastStore }) {
 export const SwipeRightToDismiss: Story = {
   name: "Swipe Right to Dismiss",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -378,7 +387,7 @@ export const SwipeRightToDismiss: Story = {
             Dismiss All
           </button>
         </div>
-        <SwipeDismissToaster store={store} />
+        <SwipeDismissToaster store={toast} />
       </div>
     );
   },
@@ -387,7 +396,7 @@ export const SwipeRightToDismiss: Story = {
 export const SwipeToPinOrDismiss: Story = {
   name: "Swipe to Pin or Dismiss",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -425,7 +434,7 @@ export const SwipeToPinOrDismiss: Story = {
             Dismiss All
           </button>
         </div>
-        <ReverseSwipePinToaster store={store} />
+        <ReverseSwipePinToaster store={toast} />
       </div>
     );
   },

@@ -2,10 +2,10 @@ import { useRef } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Toaster } from "@headless-toast/react";
 import { createToast } from "@headless-toast/react";
-import type { ReactToastStore, ToastApi } from "@headless-toast/react";
+import type { ReactToastStore } from "@headless-toast/react";
 import { useStore } from "@headless-toast/react";
 import { DemoToast } from "./shared/DemoToast";
-import { useIsolatedToastContext } from "./shared/useIsolatedToastContext";
+import { useIsolatedToast } from "./shared/useIsolatedToast";
 
 const meta: Meta = {
   title: "Hooks/useStore",
@@ -35,7 +35,7 @@ type Story = StoryObj;
 export const ReactiveState: Story = {
   name: "Reactive State Inspector",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -62,8 +62,8 @@ export const ReactiveState: Story = {
             Dismiss All
           </button>
         </div>
-        <StateInspector store={store} />
-        <Toaster store={store} component={DemoToast} />
+        <StateInspector store={toast} />
+        <Toaster store={toast} component={DemoToast} />
       </div>
     );
   },
@@ -120,14 +120,12 @@ function StateInspector({ store }: { store: ReactToastStore }) {
 export const MultipleStores: Story = {
   name: "Multiple Independent Stores",
   render: function Render() {
-    const ctx1 = useIsolatedToastContext();
-    const ctx2Ref = useRef<{ store: ReactToastStore; toast: ToastApi } | null>(
-      null,
-    );
-    if (!ctx2Ref.current) {
-      ctx2Ref.current = createToast();
+    const toast1 = useIsolatedToast();
+    const toast2Ref = useRef<ReactToastStore | null>(null);
+    if (!toast2Ref.current) {
+      toast2Ref.current = createToast().toast;
     }
-    const ctx2 = ctx2Ref.current;
+    const toast2 = toast2Ref.current;
 
     return (
       <div className="story-wrapper">
@@ -142,7 +140,7 @@ export const MultipleStores: Story = {
             <button
               className="btn-info"
               onClick={() =>
-                ctx1.toast.info(
+                toast1.info(
                   { title: "Store 1", body: "Belongs to store 1." },
                   { placement: "top-left", duration: 0 },
                 )
@@ -150,10 +148,7 @@ export const MultipleStores: Story = {
             >
               Add to Store 1
             </button>
-            <button
-              className="btn-dismiss"
-              onClick={() => ctx1.toast.dismissAll()}
-            >
+            <button className="btn-dismiss" onClick={() => toast1.dismissAll()}>
               Dismiss Store 1
             </button>
           </div>
@@ -164,7 +159,7 @@ export const MultipleStores: Story = {
             <button
               className="btn-success"
               onClick={() =>
-                ctx2.toast.success(
+                toast2.success(
                   { title: "Store 2", body: "Belongs to store 2." },
                   { placement: "top-right", duration: 0 },
                 )
@@ -172,21 +167,18 @@ export const MultipleStores: Story = {
             >
               Add to Store 2
             </button>
-            <button
-              className="btn-dismiss"
-              onClick={() => ctx2.toast.dismissAll()}
-            >
+            <button className="btn-dismiss" onClick={() => toast2.dismissAll()}>
               Dismiss Store 2
             </button>
           </div>
         </div>
         <Toaster
-          store={ctx1.store}
+          store={toast1}
           component={DemoToast}
           placements={["top-left"]}
         />
         <Toaster
-          store={ctx2.store}
+          store={toast2}
           component={DemoToast}
           placements={["top-right"]}
         />

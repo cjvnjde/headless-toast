@@ -10,7 +10,7 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import { ToastCtx, useStore, useToast } from "@headless-toast/react";
 import type { ReactToastStore } from "@headless-toast/react";
-import { useIsolatedToastContext } from "../shared/useIsolatedToastContext";
+import { useIsolatedToast } from "../shared/useIsolatedToast";
 import { toastBaseStyle, toastFloatVariants, typeColors } from "./shared";
 
 const meta: Meta = {
@@ -32,14 +32,14 @@ export default meta;
 type Story = StoryObj;
 
 function FloatingToast() {
-  const { toast, store, dismiss, pauseOnHoverHandlers } = useToast();
+  const { toast, dismiss, pauseOnHoverHandlers, markEntered } = useToast();
 
   useEffect(() => {
     if (toast.status !== "entering") return;
 
-    const timer = setTimeout(() => store.markEntered(toast.id), 300);
+    const timer = setTimeout(() => markEntered(), 300);
     return () => clearTimeout(timer);
-  }, [toast.id, toast.status, store]);
+  }, [toast.id, toast.status, toast]);
 
   return (
     <div
@@ -132,9 +132,9 @@ function FloatingToastContainer({
 export const FloatingUIAnchored: Story = {
   name: "Floating UI Anchored",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
     const bellRef = useRef<HTMLButtonElement>(null);
-    const toasts = useStore(store);
+    const toasts = useStore(toast);
 
     return (
       <div className="story-wrapper">
@@ -213,7 +213,7 @@ export const FloatingUIAnchored: Story = {
             ) : null}
           </button>
         </div>
-        <FloatingToastContainer store={store} referenceRef={bellRef} />
+        <FloatingToastContainer store={toast} referenceRef={bellRef} />
       </div>
     );
   },

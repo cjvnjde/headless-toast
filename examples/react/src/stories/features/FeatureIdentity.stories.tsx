@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Toaster } from "@headless-toast/react";
 import { DemoToast } from "../shared/DemoToast";
 import { ToastCounter } from "../shared/ToastCounter";
-import { useIsolatedToastContext } from "../shared/useIsolatedToastContext";
+import { useIsolatedToast } from "../shared/useIsolatedToast";
 
 const meta: Meta = {
   title: "Features/Identity",
@@ -26,7 +26,7 @@ type Story = StoryObj;
 export const DuplicateIdPrevention: Story = {
   name: "Duplicate ID Prevention",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
     const counterRef = useRef(0);
 
     return (
@@ -89,8 +89,8 @@ export const DuplicateIdPrevention: Story = {
             Dismiss All
           </button>
         </div>
-        <ToastCounter store={store} />
-        <Toaster store={store} component={DemoToast} />
+        <ToastCounter store={toast} />
+        <Toaster store={toast} component={DemoToast} />
       </div>
     );
   },

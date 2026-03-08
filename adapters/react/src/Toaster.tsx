@@ -10,7 +10,7 @@ import type {
 } from "./types";
 import { filterByContainer } from "./filter";
 import { computeStackLayout, groupByPlacement } from "./stack";
-import { defaultStore } from "./toast";
+import { toast as sharedToast } from "./toast";
 import { useStore } from "./useStore";
 import { ToastCtx } from "./useToast";
 
@@ -127,7 +127,7 @@ function Toaster({
   containerId,
   inline,
 }: ToasterProps) {
-  const resolvedStore = store ?? defaultStore;
+  const resolvedStore = store ?? sharedToast;
   const allToasts = useStore(resolvedStore);
   const [isMounted, setIsMounted] = useState(false);
   const focusPausedIdsRef = useRef<Set<string>>(new Set());

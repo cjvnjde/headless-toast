@@ -7,14 +7,12 @@ import type {
   ResolvedToastOptions,
   StackConfig,
   StoreConfig,
-  ToastHandle,
   ToastMethodOptions,
   ToastState,
   ToastStore,
   ToastOptions,
   ToastPromiseConfig,
   PromiseToastOptions,
-  ToastReference,
   ToastUpdate,
   ToastPlacement,
 } from "@headless-toast/core";
@@ -126,60 +124,18 @@ type ToasterProps<
   inline?: boolean;
 };
 
-type ToastApi<
-  TData extends ToastData = ToastData,
-  TCustom extends ToastCustomOptions = {},
-> = {
-  add(
-    options: ReactToastOptions<TData, TCustom>,
-  ): ToastHandle<TData, ReactToastCustomOptions<TCustom>>;
-  success(
-    data: TData,
-    options?: ReactToastMethodOptions<TCustom>,
-  ): ToastHandle<TData, ReactToastCustomOptions<TCustom>>;
-  error(
-    data: TData,
-    options?: ReactToastMethodOptions<TCustom>,
-  ): ToastHandle<TData, ReactToastCustomOptions<TCustom>>;
-  warning(
-    data: TData,
-    options?: ReactToastMethodOptions<TCustom>,
-  ): ToastHandle<TData, ReactToastCustomOptions<TCustom>>;
-  info(
-    data: TData,
-    options?: ReactToastMethodOptions<TCustom>,
-  ): ToastHandle<TData, ReactToastCustomOptions<TCustom>>;
-  loading(
-    data: TData,
-    options?: ReactLoadingToastOptions<TCustom>,
-  ): ToastHandle<TData, ReactToastCustomOptions<TCustom>>;
-  dismiss(
-    reference: ToastReference<TData, ReactToastCustomOptions<TCustom>>,
-    reason?: CloseReason,
-  ): void;
-  dismissAll(): void;
-  update(
-    reference: ToastReference<TData, ReactToastCustomOptions<TCustom>>,
-    updates: ReactToastUpdate<TData, TCustom>,
-  ): void;
-  promise<T>(
-    promise: Promise<T>,
-    opts: ReactToastPromiseConfig<T, TData>,
-    options?: ReactToastPromiseOptions<TCustom>,
-  ): Promise<T>;
-};
-
 type UseToastResult<
   TData extends ToastData = ToastData,
   TCustom extends ToastCustomOptions = {},
 > = {
   toast: ReactToastState<TData, TCustom>;
-  store: ReactToastStore<TData, TCustom>;
   dismiss: (reason?: "user" | "programmatic" | "swipe") => void;
   pause: () => void;
   resume: () => void;
   update: (updates: ReactToastUpdate<TData, TCustom>) => void;
   waitForClose: () => Promise<CloseReason>;
+  markEntered: () => void;
+  markExited: () => void;
   pauseOnHoverHandlers: {
     onMouseEnter: () => void;
     onMouseLeave: () => void;
@@ -221,7 +177,6 @@ export type {
   AdapterToastOptions,
   ToastComponent,
   ToasterProps,
-  ToastApi,
   ReactToastStore,
   ReactResolvedToastOptions,
   ReactToastState,

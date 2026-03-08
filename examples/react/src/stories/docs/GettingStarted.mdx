@@ -26,10 +26,10 @@ import {
   useToastAnimation,
 } from "@headless-toast/react";
 
-const { store, toast } = createToast();
+const { toast } = createToast();
 
 function AppToast() {
-  const { toast: item, dismiss, pauseOnHoverHandlers } = useToast();
+  const { toast, dismiss, pauseOnHoverHandlers } = useToast();
   const { ref, className, handlers, attributes } = useToastAnimation({
     className: "demo-toast",
   });
@@ -42,8 +42,8 @@ function AppToast() {
       {...pauseOnHoverHandlers}
       {...attributes}
     >
-      <strong>{String(item.data.title)}</strong>
-      <p>{String(item.data.body)}</p>
+      <strong>{String(toast.data.title)}</strong>
+      <p>{String(toast.data.body)}</p>
       <button onClick={() => dismiss("user")}>Close</button>
     </div>
   );
@@ -63,7 +63,7 @@ export function App() {
         Show toast
       </button>
 
-      <Toaster store={store} component={AppToast} />
+      <Toaster store={toast} component={AppToast} />
     </>
   );
 }
@@ -101,7 +101,7 @@ toast.info(
 If you do not have a strong product-specific opinion yet, these defaults tend to feel solid in most apps:
 
 ```tsx
-const { store, toast } = createToast({
+const { toast } = createToast({
   maxToasts: 3,
   defaults: {
     duration: 4000,
@@ -202,7 +202,7 @@ If you are styling with Tailwind, this is a good baseline for a neutral app toas
 
 ```tsx
 function AppToast() {
-  const { toast: item, dismiss, pauseOnHoverHandlers } = useToast();
+  const { toast, dismiss, pauseOnHoverHandlers } = useToast();
   const { ref, className, handlers, attributes } = useToastAnimation({
     className:
       "toast-shell relative flex min-w-72 max-w-sm items-start gap-3 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 text-slate-900 shadow-lg",
@@ -222,11 +222,11 @@ function AppToast() {
 
       <div className="min-w-0 flex-1 pr-8">
         <strong className="block text-sm font-semibold tracking-tight text-slate-900">
-          {String(item.data.title)}
+          {String(toast.data.title)}
         </strong>
-        {item.data.body ? (
+        {toast.data.body ? (
           <p className="mt-1 text-sm leading-5 text-slate-600">
-            {String(item.data.body)}
+            {String(toast.data.body)}
           </p>
         ) : null}
       </div>
@@ -269,7 +269,7 @@ Tailwind still needs explicit animation rules because the adapter reads the comp
 ## How to enforce a maximum number of visible toasts
 
 ```tsx
-const { store, toast } = createToast({ maxToasts: 3 });
+const { toast } = createToast({ maxToasts: 3 });
 
 toast.info({ title: "One" });
 toast.info({ title: "Two" });

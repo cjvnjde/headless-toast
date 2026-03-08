@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Toaster } from "@headless-toast/react";
 import { DemoToast } from "../shared/DemoToast";
 import { ToastCounter } from "../shared/ToastCounter";
-import { useIsolatedToastContext } from "../shared/useIsolatedToastContext";
+import { useIsolatedToast } from "../shared/useIsolatedToast";
 
 const meta: Meta = {
   title: "Features/Limits",
@@ -24,7 +24,7 @@ export default meta;
 type Story = StoryObj;
 
 function MaxToastsStory({ maxToasts }: { maxToasts: number }) {
-  const { store, toast } = useIsolatedToastContext({ maxToasts });
+  const toast = useIsolatedToast({ maxToasts });
   const counterRef = useRef(0);
   const types = ["success", "error", "warning", "info"] as const;
 
@@ -73,8 +73,8 @@ function MaxToastsStory({ maxToasts }: { maxToasts: number }) {
           Dismiss All
         </button>
       </div>
-      <ToastCounter store={store} />
-      <Toaster store={store} component={DemoToast} />
+      <ToastCounter store={toast} />
+      <Toaster store={toast} component={DemoToast} />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Toaster } from "@headless-toast/react";
 import { DemoToast } from "../shared/DemoToast";
-import { useIsolatedToastContext } from "../shared/useIsolatedToastContext";
+import { useIsolatedToast } from "../shared/useIsolatedToast";
 
 const meta: Meta<typeof Toaster> = {
   title: "Components/Toaster/Behavior",
@@ -25,7 +25,7 @@ type Story = StoryObj<typeof Toaster>;
 export const WithProgress: Story = {
   name: "With Progress Bar",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -46,7 +46,7 @@ export const WithProgress: Story = {
             Add Toast with Progress
           </button>
         </div>
-        <Toaster store={store} component={DemoToast} />
+        <Toaster store={toast} component={DemoToast} />
       </div>
     );
   },
@@ -55,7 +55,7 @@ export const WithProgress: Story = {
 export const NonDismissible: Story = {
   name: "Non-Dismissible",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -79,7 +79,7 @@ export const NonDismissible: Story = {
             Non-Dismissible Toast
           </button>
         </div>
-        <Toaster store={store} component={DemoToast} />
+        <Toaster store={toast} component={DemoToast} />
       </div>
     );
   },
@@ -88,7 +88,7 @@ export const NonDismissible: Story = {
 export const PauseOnHover: Story = {
   name: "Pause on Hover",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -112,7 +112,7 @@ export const PauseOnHover: Story = {
             Add Pausable Toast
           </button>
         </div>
-        <Toaster store={store} component={DemoToast} />
+        <Toaster store={toast} component={DemoToast} />
       </div>
     );
   },

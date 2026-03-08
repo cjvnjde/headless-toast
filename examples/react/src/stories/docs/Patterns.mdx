@@ -17,7 +17,7 @@ These examples show how the library fits into real app workflows beyond a single
 Use `containerId` when notifications should stay inside a panel, sidebar, or form.
 
 ```tsx
-const { store, toast } = createToast();
+const { toast } = createToast();
 
 toast.success(
   { title: "Saved", body: "Sidebar settings updated." },
@@ -27,7 +27,7 @@ toast.success(
 function Sidebar() {
   return (
     <Toaster
-      store={store}
+      store={toast}
       component={InlineToast}
       containerId="sidebar"
       inline
@@ -127,7 +127,7 @@ function TailwindToast() {
   );
 }
 
-<Toaster store={store} component={TailwindToast} />;
+<Toaster store={toast} component={TailwindToast} />;
 ```
 
 Animation still needs explicit enter/exit rules because the store advances state from the element's computed animation or transition duration:

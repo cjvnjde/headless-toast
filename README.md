@@ -36,7 +36,7 @@ import {
   useToastAnimation,
 } from "@headless-toast/react";
 
-const { store, toast } = createToast<{
+const { toast } = createToast<{
   title: string;
   body?: string;
 }>({
@@ -48,7 +48,7 @@ const { store, toast } = createToast<{
 });
 
 function AppToast() {
-  const { toast: item, dismiss, pauseOnHoverHandlers } = useToast();
+  const { toast, dismiss, pauseOnHoverHandlers } = useToast();
   const { ref, className, attributes, handlers } = useToastAnimation({
     className: "app-toast",
   });
@@ -61,8 +61,8 @@ function AppToast() {
       {...pauseOnHoverHandlers}
       {...attributes}
     >
-      <strong>{String(item.data.title)}</strong>
-      {item.data.body ? <p>{String(item.data.body)}</p> : null}
+      <strong>{String(toast.data.title)}</strong>
+      {toast.data.body ? <p>{String(toast.data.body)}</p> : null}
       <button onClick={() => dismiss("user")}>Close</button>
     </div>
   );
@@ -82,7 +82,7 @@ export function App() {
         Show toast
       </button>
 
-      <Toaster store={store} component={AppToast} />
+      <Toaster store={toast} component={AppToast} />
     </>
   );
 }

@@ -21,20 +21,20 @@ These patterns all rely on the same primitives:
 
 - `useToast()` for state and actions.
 - `useStore()` for rendering custom stacks.
-- `store.markEntered()` and `store.markExited()` when custom animation systems own lifecycle timing.
+- `toast.markEntered()` and `toast.markExited()` when custom animation systems own lifecycle timing.
 
 ## How to wire a custom animation library
 
 ```tsx
 function MotionToast() {
-  const { toast, store, dismiss } = useToast();
+  const { toast, dismiss, markEntered, markExited } = useToast();
 
   useEffect(() => {
     if (toast.status !== "entering") return;
 
-    const timer = setTimeout(() => store.markEntered(toast.id), 300);
+    const timer = setTimeout(() => toast.markEntered(toast.id), 300);
     return () => clearTimeout(timer);
-  }, [toast.id, toast.status, store]);
+  }, [toast.id, toast.status, toast]);
 
   return (
     <motion.div
@@ -42,7 +42,7 @@ function MotionToast() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
       onAnimationComplete={(definition) => {
-        if (definition === "exit") store.markExited(toast.id);
+        if (definition === "exit") toast.markExited(toast.id);
       }}
     >
       <strong>{String(toast.data.title)}</strong>
@@ -102,7 +102,7 @@ return (
 
 ```tsx
 function onDropToast(id: string, placement: ToastPlacement) {
-  store.update(id, { placement });
+  toast.update(id, { placement });
 }
 ```
 

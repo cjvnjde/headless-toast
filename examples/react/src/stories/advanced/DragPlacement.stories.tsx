@@ -5,7 +5,7 @@ import { animate, motion, useMotionValue } from "framer-motion";
 import { ToastCtx, useStore, useToast } from "@headless-toast/react";
 import type { ReactToastStore } from "@headless-toast/react";
 import type { ToastPlacement } from "@headless-toast/core";
-import { useIsolatedToastContext } from "../shared/useIsolatedToastContext";
+import { useIsolatedToast } from "../shared/useIsolatedToast";
 import {
   PlacementZoneOverlay,
   REPOSITIONABLE_TOAST_WIDTH,
@@ -40,7 +40,15 @@ function RepositionableToast({
   onReposition: (id: string, placement: ToastPlacement) => void;
   stackIndex: number;
 }) {
-  const { toast, store, dismiss, pauseOnHoverHandlers } = useToast();
+  const {
+    toast,
+    dismiss,
+    pauseOnHoverHandlers,
+    markEntered,
+    markExited,
+    pause,
+    resume,
+  } = useToast();
   const placement = (toast.options.placement ?? "top-right") as ToastPlacement;
   const pos = getPositionStyle(placement, stackIndex);
   const x = useMotionValue(pos.x);
@@ -64,7 +72,7 @@ function RepositionableToast({
         x.set(screenX - REPOSITIONABLE_TOAST_WIDTH / 2);
         y.set(screenY - 40);
         scale.set(1.03);
-        store.pause(toast.id);
+        pause();
         setHoverPlacement(getPlacementFromPosition(screenX, screenY));
       }
 
@@ -82,7 +90,7 @@ function RepositionableToast({
         animate(y, resetPos.y, { type: "spring", stiffness: 300, damping: 30 });
       }
 
-      store.resume(toast.id);
+      resume();
     },
     { from: () => [x.get() + REPOSITIONABLE_TOAST_WIDTH / 2, y.get() + 40] },
   );
@@ -116,8 +124,8 @@ function RepositionableToast({
         }
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
         onAnimationComplete={() => {
-          if (toast.status === "entering") store.markEntered(toast.id);
-          else if (toast.status === "exiting") store.markExited(toast.id);
+          if (toast.status === "entering") markEntered();
+          else if (toast.status === "exiting") markExited();
         }}
         {...stripConflictingHandlers(bind())}
         onMouseEnter={pauseOnHoverHandlers.onMouseEnter}
@@ -193,14 +201,14 @@ function RepositionToaster({ store }: { store: ReactToastStore }) {
 export const DragToReposition: Story = {
   name: "Drag to Reposition",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
         <h2>Drag to Reposition</h2>
         <p className="story-subtitle">
           Grab a toast, move it into another zone, and persist the new placement
-          with `store.update()`.
+          with `toast.update()`.
         </p>
         <div className="story-controls">
           <button
@@ -243,7 +251,7 @@ export const DragToReposition: Story = {
             Dismiss All
           </button>
         </div>
-        <RepositionToaster store={store} />
+        <RepositionToaster store={toast} />
       </div>
     );
   },

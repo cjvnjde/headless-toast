@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Toaster, useToast, useToastAnimation } from "@headless-toast/react";
-import { useIsolatedToastContext } from "../shared/useIsolatedToastContext";
+import { useIsolatedToast } from "../shared/useIsolatedToast";
 
 const iconByType: Record<string, string> = {
   success: "OK",
@@ -108,7 +108,7 @@ type Story = StoryObj<typeof Toaster>;
 export const DefaultToastWithTailwind: Story = {
   name: "Default Toast Styled With Tailwind",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -158,7 +158,7 @@ export const DefaultToastWithTailwind: Story = {
             Dismiss All
           </button>
         </div>
-        <Toaster store={store} component={TailwindToast} />
+        <Toaster store={toast} component={TailwindToast} />
       </div>
     );
   },

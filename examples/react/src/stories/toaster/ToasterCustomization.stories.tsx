@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Toaster, useToast, useToastAnimation } from "@headless-toast/react";
 import { DemoToast } from "../shared/DemoToast";
-import { useIsolatedToastContext } from "../shared/useIsolatedToastContext";
+import { useIsolatedToast } from "../shared/useIsolatedToast";
 
 const meta: Meta<typeof Toaster> = {
   title: "Components/Toaster/Customization",
@@ -67,7 +67,7 @@ function FancyToast() {
 export const CustomComponent: Story = {
   name: "Custom Component",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -89,7 +89,7 @@ export const CustomComponent: Story = {
             Add Custom-Rendered Toast
           </button>
         </div>
-        <Toaster store={store} component={FancyToast} />
+        <Toaster store={toast} component={FancyToast} />
       </div>
     );
   },
@@ -97,7 +97,7 @@ export const CustomComponent: Story = {
 
 export const HeadlessSelectors: Story = {
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -172,7 +172,7 @@ export const HeadlessSelectors: Story = {
           </button>
         </div>
         <Toaster
-          store={store}
+          store={toast}
           component={DemoToast}
           className="selector-demo-region"
           placementClassName={({ placement, expanded, stack }) =>

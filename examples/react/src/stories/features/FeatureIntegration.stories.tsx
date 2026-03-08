@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Toaster } from "@headless-toast/react";
 import { DemoToast } from "../shared/DemoToast";
-import { useIsolatedToastContext } from "../shared/useIsolatedToastContext";
+import { useIsolatedToast } from "../shared/useIsolatedToast";
 
 const meta: Meta = {
   title: "Features/Integration",
@@ -11,7 +11,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "Integration-focused examples showing how the toast api can be used from non-React code paths.",
+          "Integration-focused examples showing how the store can be used from non-React code paths.",
       },
     },
   },
@@ -24,7 +24,7 @@ type Story = StoryObj;
 export const OutsideReact: Story = {
   name: "Toast Outside React",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     function simulateExternalCall() {
       toast.success({
@@ -46,8 +46,8 @@ export const OutsideReact: Story = {
       <div className="story-wrapper">
         <h2>Toast from Outside React</h2>
         <p className="story-subtitle">
-          The toast api is just JavaScript, so it can be called from
-          interceptors, service modules, and async utilities.
+          The store is just JavaScript, so it can be called from interceptors,
+          service modules, and async utilities.
         </p>
         <div className="story-controls">
           <button className="btn-success" onClick={simulateExternalCall}>
@@ -60,7 +60,7 @@ export const OutsideReact: Story = {
             Dismiss All
           </button>
         </div>
-        <Toaster store={store} component={DemoToast} />
+        <Toaster store={toast} component={DemoToast} />
       </div>
     );
   },

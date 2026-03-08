@@ -10,7 +10,7 @@ import { resolveDraggableConfig } from "./drag";
 import { useToast } from "./useToast";
 
 function useToastDrag() {
-  const { toast, store } = useToast();
+  const { toast, pause, resume, dismiss } = useToast();
   const [isDragging, setIsDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
@@ -38,10 +38,10 @@ function useToastDrag() {
       }
 
       if (shouldResume) {
-        store.resume(toast.id);
+        resume();
       }
     },
-    [store, swipeDismissed, toast.id],
+    [resume, swipeDismissed],
   );
 
   const onPointerDown = useCallback(
@@ -63,9 +63,9 @@ function useToastDrag() {
       setIsDragging(true);
       setSwipeDismissed(false);
 
-      store.pause(toast.id);
+      pause();
     },
-    [config, store, toast.id],
+    [config, pause],
   );
 
   const onPointerMove = useCallback(
@@ -103,10 +103,10 @@ function useToastDrag() {
           e.currentTarget.releasePointerCapture(e.pointerId);
         }
 
-        store.dismiss(toast.id, "swipe");
+        dismiss("swipe");
       }
     },
-    [config, store, toast.id],
+    [config, dismiss],
   );
 
   const onPointerUp = useCallback(

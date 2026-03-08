@@ -3,7 +3,7 @@ import { Toaster } from "@headless-toast/react";
 import { useToast } from "@headless-toast/react";
 import { useToastAnimation } from "@headless-toast/react";
 import { useToastDrag } from "@headless-toast/react";
-import { useIsolatedToastContext } from "./shared/useIsolatedToastContext";
+import { useIsolatedToast } from "./shared/useIsolatedToast";
 
 // ---- Shared draggable toast component ----
 
@@ -73,7 +73,7 @@ type Story = StoryObj;
 export const DragToDismiss: Story = {
   name: "Drag to Dismiss",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -95,7 +95,7 @@ export const DragToDismiss: Story = {
             Add Draggable Toast
           </button>
         </div>
-        <Toaster store={store} component={DraggableToast} />
+        <Toaster store={toast} component={DraggableToast} />
       </div>
     );
   },
@@ -107,7 +107,7 @@ export const DragToDismiss: Story = {
 export const DragDirections: Story = {
   name: "Drag Directions",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -151,7 +151,7 @@ export const DragDirections: Story = {
             Both Axes
           </button>
         </div>
-        <Toaster store={store} component={DraggableToast} />
+        <Toaster store={toast} component={DraggableToast} />
       </div>
     );
   },

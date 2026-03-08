@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Toaster } from "@headless-toast/react";
 import { useToast } from "@headless-toast/react";
 import { AnimationWrapper } from "@headless-toast/react";
-import { useIsolatedToastContext } from "./shared/useIsolatedToastContext";
+import { useIsolatedToast } from "./shared/useIsolatedToast";
 
 // ---- Toast using AnimationWrapper ----
 
@@ -57,7 +57,7 @@ type Story = StoryObj<typeof AnimationWrapper>;
 export const BasicUsage: Story = {
   name: "Basic Usage",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -95,7 +95,7 @@ export const BasicUsage: Story = {
             Dismiss All
           </button>
         </div>
-        <Toaster store={store} component={WrapperToast} />
+        <Toaster store={toast} component={WrapperToast} />
       </div>
     );
   },
@@ -107,15 +107,15 @@ export const BasicUsage: Story = {
 export const WithCustomClassName: Story = {
   name: "With Custom ClassName",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     function CustomClassToast() {
-      const { toast: t, dismiss } = useToast();
+      const { toast, dismiss } = useToast();
 
       return (
         <AnimationWrapper className="toast-custom-story">
-          <strong>{String(t.data.title)}</strong>
-          <p>{String(t.data.body)}</p>
+          <strong>{String(toast.data.title)}</strong>
+          <p>{String(toast.data.body)}</p>
           <button
             className="toast-close"
             onClick={() => dismiss("user")}
@@ -149,7 +149,7 @@ export const WithCustomClassName: Story = {
             Add Toast
           </button>
         </div>
-        <Toaster store={store} component={CustomClassToast} />
+        <Toaster store={toast} component={CustomClassToast} />
       </div>
     );
   },

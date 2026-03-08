@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Toaster } from "@headless-toast/react";
 import { useToast } from "@headless-toast/react";
 import { useToastAnimation } from "@headless-toast/react";
-import { useIsolatedToastContext } from "./shared/useIsolatedToastContext";
+import { useIsolatedToast } from "./shared/useIsolatedToast";
 
 // ---- Shared toast components for stories ----
 
@@ -123,7 +123,7 @@ const meta: Meta = {
       description: {
         component:
           "`useToast()` provides the current toast state and actions inside a user-defined " +
-          "toast component rendered by `<Toaster>`. It returns the toast state, store reference, " +
+          "toast component rendered by `<Toaster>`. It returns the current toast state " +
           "and convenience helpers (dismiss, pause, resume, update, waitForClose, pauseOnHoverHandlers).",
       },
     },
@@ -141,7 +141,7 @@ type Story = StoryObj;
 export const AllTypeVariants: Story = {
   name: "All Type Variants",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -174,7 +174,7 @@ export const AllTypeVariants: Story = {
             Dismiss All
           </button>
         </div>
-        <Toaster store={store} component={BasicToast} />
+        <Toaster store={toast} component={BasicToast} />
       </div>
     );
   },
@@ -186,7 +186,7 @@ export const AllTypeVariants: Story = {
 export const NonDismissible: Story = {
   name: "Non-Dismissible",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -211,7 +211,7 @@ export const NonDismissible: Story = {
             Dismiss All
           </button>
         </div>
-        <Toaster store={store} component={BasicToast} />
+        <Toaster store={toast} component={BasicToast} />
       </div>
     );
   },
@@ -223,7 +223,7 @@ export const NonDismissible: Story = {
 export const WithProgressBar: Story = {
   name: "With Progress Bar",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -245,7 +245,7 @@ export const WithProgressBar: Story = {
             Add Toast with Progress
           </button>
         </div>
-        <Toaster store={store} component={BasicToast} />
+        <Toaster store={toast} component={BasicToast} />
       </div>
     );
   },
@@ -257,7 +257,7 @@ export const WithProgressBar: Story = {
 export const CustomComponent: Story = {
   name: "Custom Component",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -291,7 +291,7 @@ export const CustomComponent: Story = {
             Add Custom Error
           </button>
         </div>
-        <Toaster store={store} component={CustomStyledToast} />
+        <Toaster store={toast} component={CustomStyledToast} />
       </div>
     );
   },
@@ -303,7 +303,7 @@ export const CustomComponent: Story = {
 export const InteractiveDismiss: Story = {
   name: "Interactive Dismiss",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -320,7 +320,7 @@ export const InteractiveDismiss: Story = {
               toast.info(
                 {
                   title: "Click the X",
-                  body: "Dismissing triggers store.dismiss()",
+                  body: "Dismissing triggers toast.dismiss()",
                 },
                 { duration: 0 },
               )
@@ -329,7 +329,7 @@ export const InteractiveDismiss: Story = {
             Add Dismissible Toast
           </button>
         </div>
-        <Toaster store={store} component={BasicToast} />
+        <Toaster store={toast} component={BasicToast} />
       </div>
     );
   },

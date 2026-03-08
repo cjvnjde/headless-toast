@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ToastCtx, useStore, useToast } from "@headless-toast/react";
 import type { ReactToastStore } from "@headless-toast/react";
-import { useIsolatedToastContext } from "../shared/useIsolatedToastContext";
+import { useIsolatedToast } from "../shared/useIsolatedToast";
 import { getToastStyle, toastSlideVariants } from "./shared";
 
 const meta: Meta = {
@@ -25,14 +25,14 @@ export default meta;
 type Story = StoryObj;
 
 function FramerMotionToast() {
-  const { toast, store, dismiss, pauseOnHoverHandlers } = useToast();
+  const { toast, dismiss, pauseOnHoverHandlers, markEntered } = useToast();
 
   useEffect(() => {
     if (toast.status !== "entering") return;
 
-    const timer = setTimeout(() => store.markEntered(toast.id), 400);
+    const timer = setTimeout(() => markEntered(), 400);
     return () => clearTimeout(timer);
-  }, [toast.id, toast.status, store]);
+  }, [toast.id, toast.status, toast]);
 
   return (
     <div
@@ -117,7 +117,7 @@ function FramerMotionToaster({ store }: { store: ReactToastStore }) {
 export const FramerMotionAnimations: Story = {
   name: "Framer Motion Animations",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -167,7 +167,7 @@ export const FramerMotionAnimations: Story = {
             Dismiss All
           </button>
         </div>
-        <FramerMotionToaster store={store} />
+        <FramerMotionToaster store={toast} />
       </div>
     );
   },

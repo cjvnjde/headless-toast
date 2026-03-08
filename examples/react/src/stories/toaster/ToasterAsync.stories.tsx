@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Toaster } from "@headless-toast/react";
 import { DemoToast } from "../shared/DemoToast";
-import { useIsolatedToastContext } from "../shared/useIsolatedToastContext";
+import { useIsolatedToast } from "../shared/useIsolatedToast";
 
 const meta: Meta<typeof Toaster> = {
   title: "Components/Toaster/Async",
@@ -24,7 +24,7 @@ type Story = StoryObj<typeof Toaster>;
 
 export const PromiseToast: Story = {
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -73,7 +73,7 @@ export const PromiseToast: Story = {
             Promise (rejects)
           </button>
         </div>
-        <Toaster store={store} component={DemoToast} />
+        <Toaster store={toast} component={DemoToast} />
       </div>
     );
   },
@@ -81,7 +81,7 @@ export const PromiseToast: Story = {
 
 export const StressTest: Story = {
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
     const types = ["success", "error", "warning", "info"] as const;
 
     return (
@@ -109,7 +109,7 @@ export const StressTest: Story = {
             Dismiss All
           </button>
         </div>
-        <Toaster store={store} component={DemoToast} />
+        <Toaster store={toast} component={DemoToast} />
       </div>
     );
   },

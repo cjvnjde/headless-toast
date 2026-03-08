@@ -1,5 +1,9 @@
 import { createContext, useContext, useCallback } from "react";
-import type { ToastCustomOptions, ToastData, CloseReason } from "@headless-toast/core";
+import type {
+  CloseReason,
+  ToastCustomOptions,
+  ToastData,
+} from "@headless-toast/core";
 import type {
   ReactToastState,
   ReactToastStore,
@@ -53,26 +57,35 @@ function useToast<
     return store.waitForClose(toast.id);
   }, [store, toast.id]);
 
+  const markEntered = useCallback(() => {
+    store.markEntered(toast.id);
+  }, [store, toast.id]);
+
+  const markExited = useCallback(() => {
+    store.markExited(toast.id);
+  }, [store, toast.id]);
+
   const onMouseEnter = useCallback(() => {
     if (toast.options.pauseOnHover) {
-      store.pause(toast.id);
+      pause();
     }
-  }, [toast.options.pauseOnHover, toast.id, store]);
+  }, [toast.options.pauseOnHover, pause]);
 
   const onMouseLeave = useCallback(() => {
     if (toast.options.pauseOnHover) {
-      store.resume(toast.id);
+      resume();
     }
-  }, [toast.options.pauseOnHover, toast.id, store]);
+  }, [toast.options.pauseOnHover, resume]);
 
   return {
     toast,
-    store,
     dismiss,
     pause,
     resume,
     update,
     waitForClose,
+    markEntered,
+    markExited,
     pauseOnHoverHandlers: {
       onMouseEnter,
       onMouseLeave,

@@ -1,5 +1,5 @@
 export { createToastStore } from "@headless-toast/core";
-export { toast, createToastApi, createToast, defaultStore } from "./toast";
+export { toast, createToast } from "./toast";
 export { useStore } from "./useStore";
 export { ToastCtx, useToast } from "./useToast";
 export { useToastAnimation } from "./useToastAnimation";
@@ -22,7 +22,6 @@ export type {
   AdapterStoreConfig,
   ToastComponent,
   ToasterProps,
-  ToastApi,
   ReactLoadingToastOptions,
   ReactResolvedToastOptions,
   ReactToastMethodOptions,

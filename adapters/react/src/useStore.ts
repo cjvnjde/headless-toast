@@ -1,15 +1,15 @@
 import { useSyncExternalStore, useCallback, useRef } from "react";
 import type { ToastCustomOptions, ToastData } from "@headless-toast/core";
-import { defaultStore } from "./toast";
+import { toast as sharedToast } from "./toast";
 import type { ReactToastState, ReactToastStore } from "./types";
 
 function useDefaultStore() {
-  const snapshotRef = useRef(defaultStore.getToasts());
+  const snapshotRef = useRef(sharedToast.getToasts());
 
   const subscribe = useCallback(
     (onStoreChange: () => void) =>
-      defaultStore.subscribe(() => {
-        snapshotRef.current = defaultStore.getToasts();
+      sharedToast.subscribe(() => {
+        snapshotRef.current = sharedToast.getToasts();
         onStoreChange();
       }),
     [],

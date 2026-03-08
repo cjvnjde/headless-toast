@@ -1,10 +1,15 @@
 import { useRef, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { ToastCtx, useStore, useToast, useToastAnimation } from "@headless-toast/react";
+import {
+  ToastCtx,
+  useStore,
+  useToast,
+  useToastAnimation,
+} from "@headless-toast/react";
 import type { ReactToastStore } from "@headless-toast/react";
 import { DemoToast } from "../shared/DemoToast";
 import { ToastCounter } from "../shared/ToastCounter";
-import { useIsolatedToastContext } from "../shared/useIsolatedToastContext";
+import { useIsolatedToast } from "../shared/useIsolatedToast";
 
 const TOAST_HEIGHT = 72;
 const COLLAPSED_GAP = 12;
@@ -191,7 +196,7 @@ function ScrollableToaster({ store }: { store: ReactToastStore }) {
 export const StackedDeck: Story = {
   name: "Stacked (Deck of Cards)",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
     const counterRef = useRef(0);
     const types = ["success", "error", "warning", "info"] as const;
 
@@ -239,8 +244,8 @@ export const StackedDeck: Story = {
             Dismiss All
           </button>
         </div>
-        <ToastCounter store={store} />
-        <StackedToaster store={store} />
+        <ToastCounter store={toast} />
+        <StackedToaster store={toast} />
       </div>
     );
   },
@@ -249,7 +254,7 @@ export const StackedDeck: Story = {
 export const ScrollingToasts: Story = {
   name: "Scrolling Toasts",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
     const counterRef = useRef(0);
     const types = ["success", "error", "warning", "info"] as const;
 
@@ -295,8 +300,8 @@ export const ScrollingToasts: Story = {
             Dismiss All
           </button>
         </div>
-        <ToastCounter store={store} />
-        <ScrollableToaster store={store} />
+        <ToastCounter store={toast} />
+        <ScrollableToaster store={toast} />
       </div>
     );
   },

@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Toaster } from "@headless-toast/react";
 import { DemoToast } from "../shared/DemoToast";
 import { InlineToast } from "../shared/InlineToast";
-import { useIsolatedToastContext } from "../shared/useIsolatedToastContext";
+import { useIsolatedToast } from "../shared/useIsolatedToast";
 
 const meta: Meta = {
   title: "Features/Inline Containers",
@@ -26,7 +26,7 @@ type Story = StoryObj;
 export const SidebarInlineToast: Story = {
   name: "Sidebar with Inline Toast",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
     const [formValue, setFormValue] = useState("My Project");
 
     function handleSave() {
@@ -91,7 +91,7 @@ export const SidebarInlineToast: Story = {
             </div>
 
             <Toaster
-              store={store}
+              store={toast}
               component={InlineToast}
               containerId="sidebar"
               inline
@@ -109,7 +109,7 @@ export const SidebarInlineToast: Story = {
           </div>
         </div>
 
-        <Toaster store={store} component={DemoToast} />
+        <Toaster store={toast} component={DemoToast} />
       </div>
     );
   },
@@ -118,7 +118,7 @@ export const SidebarInlineToast: Story = {
 export const MultipleContainers: Story = {
   name: "Multiple Inline Containers",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     function addToPanel(
       containerId: string,
@@ -161,7 +161,7 @@ export const MultipleContainers: Story = {
               </div>
             </div>
             <Toaster
-              store={store}
+              store={toast}
               component={InlineToast}
               containerId="panel-a"
               inline
@@ -189,7 +189,7 @@ export const MultipleContainers: Story = {
               </div>
             </div>
             <Toaster
-              store={store}
+              store={toast}
               component={InlineToast}
               containerId="panel-b"
               inline
@@ -215,7 +215,7 @@ export const MultipleContainers: Story = {
           </button>
         </div>
 
-        <Toaster store={store} component={DemoToast} />
+        <Toaster store={toast} component={DemoToast} />
       </div>
     );
   },
@@ -224,7 +224,7 @@ export const MultipleContainers: Story = {
 export const FormValidation: Story = {
   name: "Form Validation Feedback",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
     const [email, setEmail] = useState("");
     const [name, setName] = useState("");
 
@@ -281,7 +281,7 @@ export const FormValidation: Story = {
           </label>
 
           <Toaster
-            store={store}
+            store={toast}
             component={InlineToast}
             containerId="form-feedback"
             inline

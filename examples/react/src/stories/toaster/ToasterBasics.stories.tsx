@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Toaster } from "@headless-toast/react";
 import { DemoToast } from "../shared/DemoToast";
-import { useIsolatedToastContext } from "../shared/useIsolatedToastContext";
+import { useIsolatedToast } from "../shared/useIsolatedToast";
 
 const meta: Meta<typeof Toaster> = {
   title: "Components/Toaster/Basics",
@@ -25,7 +25,7 @@ type Story = StoryObj<typeof Toaster>;
 export const AllTypes: Story = {
   name: "All Toast Types",
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -79,7 +79,7 @@ export const AllTypes: Story = {
             Dismiss All
           </button>
         </div>
-        <Toaster store={store} component={DemoToast} />
+        <Toaster store={toast} component={DemoToast} />
       </div>
     );
   },
@@ -87,7 +87,7 @@ export const AllTypes: Story = {
 
 export const Placements: Story = {
   render: function Render() {
-    const { store, toast } = useIsolatedToastContext();
+    const toast = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -122,7 +122,7 @@ export const Placements: Story = {
             </button>
           ))}
         </div>
-        <Toaster store={store} component={DemoToast} />
+        <Toaster store={toast} component={DemoToast} />
       </div>
     );
   },
