@@ -3,6 +3,9 @@
   "version": "0.0.1-alpha.2",
   "description": "React adapter for headless-toast",
   "type": "module",
+  "repository": {
+    "url": "https://github.com/cjvnjde/headless-toast"
+  },
   "scripts": {
     "build": "vite build",
     "lint": "tsc --noEmit",
