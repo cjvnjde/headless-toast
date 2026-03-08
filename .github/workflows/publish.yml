@@ -111,18 +111,8 @@ jobs:
           echo "$NOTES" >> "$GITHUB_OUTPUT"
           echo "$EOF" >> "$GITHUB_OUTPUT"
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-          registry-url: https://registry.npmjs.org
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup Environment
+        uses: ./.github/actions/setup-env
 
       - name: Lint
         run: pnpm --filter "${{ steps.parse.outputs.package_name }}" lint
@@ -130,8 +120,6 @@ jobs:
       - name: Test
         run: pnpm --filter "${{ steps.parse.outputs.package_name }}" test
 
-      # Build the target package and its workspace dependencies (topological order).
-      # The "..." suffix tells pnpm to include transitive workspace deps.
       - name: Build
         run: pnpm --filter "${{ steps.parse.outputs.package_name }}..." build
 
