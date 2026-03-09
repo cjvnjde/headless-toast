@@ -188,8 +188,8 @@ git push origin main --tags
 Example for a prerelease:
 
 ```bash
-git tag "@headless-toast/react@0.3.0-beta.1"
-git push origin main --tags
+git tag "@headless-toast/react@0.3.0-beta.1" -m "Release: @headless-toast/react@0.3.0-beta.1"
+git push --tags
 ```
 
 ### Changelog generation
