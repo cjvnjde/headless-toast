@@ -7,7 +7,7 @@
     "url": "https://github.com/cjvnjde/headless-toast"
   },
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && tsc -p tsconfig.build.json",
     "lint": "tsc --noEmit",
     "test": "vitest run"
   },
@@ -20,8 +20,7 @@
     }
   },
   "files": [
-    "dist/index.js",
-    "dist/index.d.ts"
+    "dist"
   ],
   "keywords": [],
   "publishConfig": {
@@ -34,7 +33,6 @@
     "@types/node": "^25.3.5",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
-    "vite-plugin-dts": "^4.5.4",
     "vitest": "^4.0.18"
   }
 }

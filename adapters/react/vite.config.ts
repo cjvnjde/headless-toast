@@ -1,18 +1,9 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import dts from "vite-plugin-dts";
 import { resolve } from "node:path";
 
 export default defineConfig({
-  plugins: [
-    react(),
-    dts({
-      insertTypesEntry: true,
-      pathsToAliases: false,
-      rollupTypes: true,
-      tsconfigPath: "./tsconfig.build.json",
-    }),
-  ],
+  plugins: [react()],
   resolve: {
     alias: {
       "@headless-toast/core": resolve(__dirname, "../../core/src/index.ts"),
