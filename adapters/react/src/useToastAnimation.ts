@@ -7,16 +7,21 @@ import {
   type AnimationEvent,
   type TransitionEvent,
 } from "react";
+import type { AnimationResult } from "./types";
 import { ToastCtx, useToast } from "./useToast";
 import { getAnimationDuration } from "./utils";
 
-function useToastAnimation(options?: {
+type UseToastAnimationOptions = {
   className?: string;
   swipeDismissed?: boolean;
-}) {
+};
+
+function useToastAnimation<TElement extends HTMLElement = HTMLDivElement>(
+  options?: UseToastAnimationOptions,
+): AnimationResult<TElement> {
   const ctx = useContext(ToastCtx);
   const { toast, markEntered, markExited } = useToast();
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<TElement>(null);
 
   if (!ctx) {
     throw new Error(
@@ -59,15 +64,30 @@ function useToastAnimation(options?: {
     }
   }, [toast.status, toast.id, ctx, completeCurrentPhase]);
 
+  const handlePhaseEnd = useCallback(() => {
+    completeCurrentPhase();
+  }, [completeCurrentPhase]);
+
   const onAnimationEnd = useCallback(
-    (e: AnimationEvent<HTMLDivElement> | TransitionEvent<HTMLDivElement>) => {
+    (e: AnimationEvent<TElement>) => {
       if (e.target !== e.currentTarget) {
         return;
       }
 
-      completeCurrentPhase();
+      handlePhaseEnd();
     },
-    [completeCurrentPhase],
+    [handlePhaseEnd],
+  );
+
+  const onTransitionEnd = useCallback(
+    (e: TransitionEvent<TElement>) => {
+      if (e.target !== e.currentTarget) {
+        return;
+      }
+
+      handlePhaseEnd();
+    },
+    [handlePhaseEnd],
   );
 
   return {
@@ -82,7 +102,7 @@ function useToastAnimation(options?: {
     },
     handlers: {
       onAnimationEnd,
-      onTransitionEnd: onAnimationEnd,
+      onTransitionEnd,
     },
   };
 }

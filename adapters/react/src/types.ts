@@ -148,8 +148,8 @@ type DragResult = {
   swipeDismissed: boolean;
 };
 
-type AnimationResult = {
-  ref: Ref<HTMLDivElement | null>;
+type AnimationResult<TElement extends HTMLElement = HTMLDivElement> = {
+  ref: Ref<TElement | null>;
   className: string;
   attributes: {
     "data-toast": "";
@@ -159,8 +159,8 @@ type AnimationResult = {
     "data-toast-swipe-dismissed": "true" | "false";
   };
   handlers: {
-    onAnimationEnd: (e: AnimationEvent<HTMLDivElement>) => void;
-    onTransitionEnd: (e: TransitionEvent<HTMLDivElement>) => void;
+    onAnimationEnd: (e: AnimationEvent<TElement>) => void;
+    onTransitionEnd: (e: TransitionEvent<TElement>) => void;
   };
 };
 
