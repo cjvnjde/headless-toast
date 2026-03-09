@@ -16,7 +16,7 @@ pnpm add @headless-toast/react react react-dom
 
 - `createToast()` for isolated toast instances
 - `toast` for a shared singleton flow
-- `Toaster` to render your toast component
+- `Toaster` and `Toaster.List` to declare where toast groups render
 - `useToast()` for per-toast state and actions
 - `useToastAnimation()` for DOM timing and phase completion
 - `useToastDrag()` for pointer-driven drag-to-dismiss
@@ -81,11 +81,19 @@ export function App() {
         Show toast
       </button>
 
-      <Toaster store={toast} component={AppToast} />
+      <Toaster store={toast} className="app-toast-region">
+        <Toaster.List className="app-toast-list">
+          <AppToast />
+        </Toaster.List>
+      </Toaster>
     </>
   );
 }
 ```
+
+`Toaster` owns the region and portal behavior. `Toaster.List` is the element you
+style for placement groups. It renders once per active placement, while the
+store and hooks remain responsible for placement and toast state.
 
 ## Styling And Animation
 
@@ -111,6 +119,24 @@ For visuals, a good baseline is:
 - Exit motion around `160ms` to `200ms`
 
 ```css
+.app-toast-region {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.app-toast-list {
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(24rem, calc(100vw - 24px));
+  padding: 16px;
+}
+
 .app-toast {
   min-width: 18rem;
   max-width: 24rem;
@@ -191,14 +217,15 @@ toast.success(
   { containerId: "sidebar" },
 );
 
-<Toaster
-  store={store}
-  component={AppToast}
-  containerId="sidebar"
-  inline
-  placements={["top-right"]}
-/>;
+<Toaster store={store} containerId="sidebar" inline>
+  <Toaster.List className="sidebar-toast-list">
+    <AppToast />
+  </Toaster.List>
+</Toaster>;
 ```
+
+`Toaster` defines the region. `Toaster.List` defines the visible layout for each
+active placement group.
 
 ### Custom reactive views
 

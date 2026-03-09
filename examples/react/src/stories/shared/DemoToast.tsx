@@ -1,4 +1,4 @@
-import { useToast, useToastAnimation } from "@headless-toast/react";
+import { Toaster, useToast, useToastAnimation } from "@headless-toast/react";
 
 function DemoToast() {
   const { toast, dismiss, pauseOnHoverHandlers } = useToast();
@@ -40,3 +40,30 @@ function DemoToast() {
 }
 
 export { DemoToast };
+
+function DemoToaster({
+  store,
+  className,
+  containerId,
+  inline,
+}: {
+  store?: Parameters<typeof Toaster>[0]["store"];
+  className?: string;
+  containerId?: string;
+  inline?: boolean;
+}) {
+  return (
+    <Toaster
+      store={store}
+      className={className}
+      containerId={containerId}
+      inline={inline}
+    >
+      <Toaster.List>
+        <DemoToast />
+      </Toaster.List>
+    </Toaster>
+  );
+}
+
+export { DemoToaster };

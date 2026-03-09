@@ -95,7 +95,7 @@ export const BasicUsage: Story = {
             Dismiss All
           </button>
         </div>
-        <Toaster store={toast} component={WrapperToast} />
+        <Toaster store={toast}><Toaster.List><WrapperToast /></Toaster.List></Toaster>
       </div>
     );
   },
@@ -149,7 +149,7 @@ export const WithCustomClassName: Story = {
             Add Toast
           </button>
         </div>
-        <Toaster store={toast} component={CustomClassToast} />
+        <Toaster store={toast}><Toaster.List><CustomClassToast /></Toaster.List></Toaster>
       </div>
     );
   },

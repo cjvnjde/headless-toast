@@ -174,7 +174,7 @@ export const AllTypeVariants: Story = {
             Dismiss All
           </button>
         </div>
-        <Toaster store={toast} component={BasicToast} />
+        <Toaster store={toast}><Toaster.List><BasicToast /></Toaster.List></Toaster>
       </div>
     );
   },
@@ -211,7 +211,7 @@ export const NonDismissible: Story = {
             Dismiss All
           </button>
         </div>
-        <Toaster store={toast} component={BasicToast} />
+        <Toaster store={toast}><Toaster.List><BasicToast /></Toaster.List></Toaster>
       </div>
     );
   },
@@ -245,7 +245,7 @@ export const WithProgressBar: Story = {
             Add Toast with Progress
           </button>
         </div>
-        <Toaster store={toast} component={BasicToast} />
+        <Toaster store={toast}><Toaster.List><BasicToast /></Toaster.List></Toaster>
       </div>
     );
   },
@@ -291,7 +291,7 @@ export const CustomComponent: Story = {
             Add Custom Error
           </button>
         </div>
-        <Toaster store={toast} component={CustomStyledToast} />
+        <Toaster store={toast}><Toaster.List><CustomStyledToast /></Toaster.List></Toaster>
       </div>
     );
   },
@@ -329,7 +329,7 @@ export const InteractiveDismiss: Story = {
             Add Dismissible Toast
           </button>
         </div>
-        <Toaster store={toast} component={BasicToast} />
+        <Toaster store={toast}><Toaster.List><BasicToast /></Toaster.List></Toaster>
       </div>
     );
   },

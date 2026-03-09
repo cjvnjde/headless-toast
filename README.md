@@ -82,15 +82,41 @@ export function App() {
         Show toast
       </button>
 
-      <Toaster store={toast} component={AppToast} />
+      <Toaster store={toast} className="app-toast-region">
+        <Toaster.List className="app-toast-list">
+          <AppToast />
+        </Toaster.List>
+      </Toaster>
     </>
   );
 }
 ```
 
+`Toaster` is only the region. `Toaster.List` is the styled placement wrapper that
+repeats per active placement. The store and hooks still decide which placement
+each toast belongs to.
+
 The library is headless, so you provide the visuals and the animation CSS:
 
 ```css
+.app-toast-region {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.app-toast-list {
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(24rem, calc(100vw - 24px));
+  padding: 16px;
+}
+
 .app-toast {
   min-width: 18rem;
   border: 1px solid #d0d7de;

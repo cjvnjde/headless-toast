@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Toaster } from "@headless-toast/react";
-import { DemoToast } from "../shared/DemoToast";
+import { DemoToaster } from "../shared/DemoToast";
 import { useIsolatedToast } from "../shared/useIsolatedToast";
 
 const meta: Meta<typeof Toaster> = {
@@ -79,7 +79,7 @@ export const AllTypes: Story = {
             Dismiss All
           </button>
         </div>
-        <Toaster store={toast} component={DemoToast} />
+        <DemoToaster store={toast} />
       </div>
     );
   },
@@ -122,7 +122,7 @@ export const Placements: Story = {
             </button>
           ))}
         </div>
-        <Toaster store={toast} component={DemoToast} />
+        <DemoToaster store={toast} />
       </div>
     );
   },

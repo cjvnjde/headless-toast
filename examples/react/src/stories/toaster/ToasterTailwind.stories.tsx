@@ -95,7 +95,7 @@ const meta: Meta<typeof Toaster> = {
     docs: {
       description: {
         component:
-          "A default toast renderer styled with Tailwind CSS v4 utilities instead of handwritten component CSS.",
+          "A toast setup where the root region, placement list, and toast item are all styled with Tailwind CSS v4 utilities.",
       },
     },
   },
@@ -114,8 +114,8 @@ export const DefaultToastWithTailwind: Story = {
       <div className="story-wrapper">
         <h2>Default Toast Styled With Tailwind</h2>
         <p className="story-subtitle">
-          This keeps the same default toast structure but styles it with
-          Tailwind v4 classes and tokens.
+          This uses Tailwind v4 classes for the toaster region, the placement
+          list, and the toast item while keeping the same hook-driven behavior.
         </p>
         <div className="story-controls">
           <button
@@ -158,7 +158,14 @@ export const DefaultToastWithTailwind: Story = {
             Dismiss All
           </button>
         </div>
-        <Toaster store={toast} component={TailwindToast} />
+        <Toaster
+          store={toast}
+          className="pointer-events-none fixed inset-0 z-9999"
+        >
+          <Toaster.List className="pointer-events-none fixed flex w-[min(26rem,calc(100vw-24px))] max-w-[calc(100vw-24px)] flex-col gap-3 p-6 data-[placement=top-left]:left-0 data-[placement=top-left]:top-0 data-[placement=top-left]:items-start data-[placement=top-center]:left-1/2 data-[placement=top-center]:top-0 data-[placement=top-center]:-translate-x-1/2 data-[placement=top-center]:items-center data-[placement=top-right]:right-0 data-[placement=top-right]:top-0 data-[placement=top-right]:items-end data-[placement=bottom-left]:bottom-0 data-[placement=bottom-left]:left-0 data-[placement=bottom-left]:items-start data-[placement=bottom-center]:bottom-0 data-[placement=bottom-center]:left-1/2 data-[placement=bottom-center]:-translate-x-1/2 data-[placement=bottom-center]:items-center data-[placement=bottom-right]:right-0 data-[placement=bottom-right]:bottom-0 data-[placement=bottom-right]:items-end">
+            <TailwindToast />
+          </Toaster.List>
+        </Toaster>
       </div>
     );
   },

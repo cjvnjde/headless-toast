@@ -26,13 +26,11 @@ toast.success(
 
 function Sidebar() {
   return (
-    <Toaster
-      store={toast}
-      component={InlineToast}
-      containerId="sidebar"
-      inline
-      placements={["top-right"]}
-    />
+    <Toaster store={toast} containerId="sidebar" inline>
+      <Toaster.List className="sidebar-toast-list">
+        <InlineToast />
+      </Toaster.List>
+    </Toaster>
   );
 }
 ```
@@ -127,7 +125,11 @@ function TailwindToast() {
   );
 }
 
-<Toaster store={toast} component={TailwindToast} />;
+<Toaster store={toast} className="pointer-events-none fixed inset-0 z-[9999]">
+  <Toaster.List className="pointer-events-none fixed right-0 top-0 flex w-[min(26rem,calc(100vw-24px))] max-w-[calc(100vw-24px)] flex-col items-end gap-3 p-6">
+    <TailwindToast />
+  </Toaster.List>
+</Toaster>;
 ```
 
 Animation still needs explicit enter/exit rules because the store advances state from the element's computed animation or transition duration:

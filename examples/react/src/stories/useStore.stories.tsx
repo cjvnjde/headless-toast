@@ -1,10 +1,9 @@
 import { useRef } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { Toaster } from "@headless-toast/react";
 import { createToast } from "@headless-toast/react";
 import type { ReactToastStore } from "@headless-toast/react";
 import { useStore } from "@headless-toast/react";
-import { DemoToast } from "./shared/DemoToast";
+import { DemoToaster } from "./shared/DemoToast";
 import { useIsolatedToast } from "./shared/useIsolatedToast";
 
 const meta: Meta = {
@@ -63,7 +62,7 @@ export const ReactiveState: Story = {
           </button>
         </div>
         <StateInspector store={toast} />
-        <Toaster store={toast} component={DemoToast} />
+        <DemoToaster store={toast} />
       </div>
     );
   },
@@ -172,16 +171,8 @@ export const MultipleStores: Story = {
             </button>
           </div>
         </div>
-        <Toaster
-          store={toast1}
-          component={DemoToast}
-          placements={["top-left"]}
-        />
-        <Toaster
-          store={toast2}
-          component={DemoToast}
-          placements={["top-right"]}
-        />
+        <DemoToaster store={toast1} />
+        <DemoToaster store={toast2} />
       </div>
     );
   },

@@ -95,7 +95,7 @@ export const DragToDismiss: Story = {
             Add Draggable Toast
           </button>
         </div>
-        <Toaster store={toast} component={DraggableToast} />
+        <Toaster store={toast}><Toaster.List><DraggableToast /></Toaster.List></Toaster>
       </div>
     );
   },
@@ -151,7 +151,7 @@ export const DragDirections: Story = {
             Both Axes
           </button>
         </div>
-        <Toaster store={toast} component={DraggableToast} />
+        <Toaster store={toast}><Toaster.List><DraggableToast /></Toaster.List></Toaster>
       </div>
     );
   },

@@ -20,7 +20,7 @@ export {
 export type {
   AdapterToastOptions,
   AdapterStoreConfig,
-  ToastComponent,
+  ToasterListProps,
   ToasterProps,
   ReactLoadingToastOptions,
   ReactResolvedToastOptions,
@@ -29,8 +29,6 @@ export type {
   ReactToastPromiseOptions,
   ReactToastStore,
   ReactToastState,
-  PlacementClassNameContext,
-  PlacementClassName,
   ReactToastOptions,
   ReactToastUpdate,
   UseToastResult,

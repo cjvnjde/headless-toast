@@ -12,7 +12,7 @@ const meta: Meta<typeof Toaster> = {
     docs: {
       description: {
         component:
-          "Examples that focus on custom rendering and styling with user-provided selectors and placement class names.",
+          "Examples that focus on custom rendering and styling with explicit toaster regions and list wrappers.",
       },
     },
   },
@@ -89,7 +89,11 @@ export const CustomComponent: Story = {
             Add Custom-Rendered Toast
           </button>
         </div>
-        <Toaster store={toast} component={FancyToast} />
+        <Toaster store={toast}>
+          <Toaster.List>
+            <FancyToast />
+          </Toaster.List>
+        </Toaster>
       </div>
     );
   },
@@ -171,23 +175,11 @@ export const HeadlessSelectors: Story = {
             Dismiss All
           </button>
         </div>
-        <Toaster
-          store={toast}
-          component={DemoToast}
-          className="selector-demo-region"
-          placementClassName={({ placement, expanded, stack }) =>
-            [
-              "selector-demo-placement",
-              placement === "bottom-center"
-                ? "selector-demo-placement-wide"
-                : "",
-              stack ? "selector-demo-placement-stack" : "",
-              expanded ? "selector-demo-placement-expanded" : "",
-            ]
-              .filter(Boolean)
-              .join(" ")
-          }
-        />
+        <Toaster store={toast} className="selector-demo-region">
+          <Toaster.List className="selector-demo-placement">
+            <DemoToast />
+          </Toaster.List>
+        </Toaster>
       </div>
     );
   },

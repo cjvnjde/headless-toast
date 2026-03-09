@@ -25,8 +25,6 @@ import type {
   TransitionEvent,
 } from "react";
 
-type ToastComponent = () => ReactNode;
-
 type AdapterToastOptions = {
   placement?: ToastPlacement;
   containerId?: string;
@@ -63,25 +61,6 @@ type ReactToastState<
   options: ReactResolvedToastOptions<TData, TCustom>;
 };
 
-type PlacementClassNameContext<
-  TData extends ToastData = ToastData,
-  TCustom extends ToastCustomOptions = {},
-> = {
-  placement: ToastPlacement;
-  toasts: ReactToastState<TData, TCustom>[];
-  expanded: boolean;
-  stack: StackConfig | undefined;
-};
-
-type PlacementClassName<
-  TData extends ToastData = ToastData,
-  TCustom extends ToastCustomOptions = {},
-> =
-  | string
-  | ((
-      context: PlacementClassNameContext<TData, TCustom>,
-    ) => string | undefined);
-
 type ReactToastOptions<
   TData extends ToastData = ToastData,
   TCustom extends ToastCustomOptions = {},
@@ -116,12 +95,24 @@ type ToasterProps<
   TCustom extends ToastCustomOptions = {},
 > = {
   store?: ReactToastStore<TData, TCustom>;
-  component: ToastComponent;
-  placements?: ToastPlacement[];
+  children?: ReactNode;
   className?: string;
-  placementClassName?: PlacementClassName<TData, TCustom>;
   containerId?: string;
   inline?: boolean;
+};
+
+type ToasterListProps = {
+  children?: ReactNode;
+  className?: string;
+};
+
+type ToastProviderProps<
+  TData extends ToastData = ToastData,
+  TCustom extends ToastCustomOptions = {},
+> = {
+  children: ReactNode;
+  toast: ReactToastState<TData, TCustom>;
+  store: ReactToastStore<TData, TCustom>;
 };
 
 type UseToastResult<
@@ -175,13 +166,11 @@ type AnimationResult = {
 
 export type {
   AdapterToastOptions,
-  ToastComponent,
   ToasterProps,
+  ToasterListProps,
   ReactToastStore,
   ReactResolvedToastOptions,
   ReactToastState,
-  PlacementClassNameContext,
-  PlacementClassName,
   ReactToastOptions,
   ReactToastUpdate,
   ReactLoadingToastOptions,
@@ -189,6 +178,7 @@ export type {
   DragHandlers,
   DragResult,
   AnimationResult,
+  ToastProviderProps,
   AdapterStoreConfig,
   ReactToastMethodOptions,
   ReactToastPromiseOptions,

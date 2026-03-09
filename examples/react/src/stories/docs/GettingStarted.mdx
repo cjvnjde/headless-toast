@@ -12,7 +12,7 @@ This Storybook is organized around small, focused stories so you can inspect one
 ## Usage flow
 
 1. Create a toast store with `createToast()`.
-2. Mount a `Toaster` with your own toast component.
+2. Mount a `Toaster` root and a `Toaster.List` where toast groups should render.
 3. Trigger notifications through the returned `toast` api.
 4. Add optional behavior like progress, pause-on-hover, or placement overrides.
 
@@ -63,11 +63,18 @@ export function App() {
         Show toast
       </button>
 
-      <Toaster store={toast} component={AppToast} />
+      <Toaster store={toast} className="app-toast-region">
+        <Toaster.List className="app-toast-list">
+          <AppToast />
+        </Toaster.List>
+      </Toaster>
     </>
   );
 }
 ```
+
+`Toaster` is only the region. `Toaster.List` is the visible placement-group
+container you style.
 
 ## How to trigger different toast types
 
@@ -133,6 +140,24 @@ Good visual defaults:
 - Move only a little during animation, usually `8px` to `14px` plus a slight scale change.
 
 ```css
+.app-toast-region {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.app-toast-list {
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(24rem, calc(100vw - 24px));
+  padding: 16px;
+}
+
 .demo-toast {
   min-width: 18rem;
   max-width: 24rem;
@@ -240,6 +265,12 @@ function AppToast() {
     </div>
   );
 }
+
+<Toaster store={toast} className="pointer-events-none fixed inset-0 z-[9999]">
+  <Toaster.List className="pointer-events-none fixed right-0 top-0 flex w-[min(24rem,calc(100vw-24px))] max-w-[calc(100vw-24px)] flex-col items-end gap-3 p-4">
+    <AppToast />
+  </Toaster.List>
+</Toaster>;
 ```
 
 Good Tailwind defaults:

@@ -1,8 +1,7 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { Toaster } from "@headless-toast/react";
-import { DemoToast } from "../shared/DemoToast";
-import { InlineToast } from "../shared/InlineToast";
+import { DemoToaster } from "../shared/DemoToast";
+import { InlineToaster } from "../shared/InlineToast";
 import { useIsolatedToast } from "../shared/useIsolatedToast";
 
 const meta: Meta = {
@@ -90,13 +89,7 @@ export const SidebarInlineToast: Story = {
               </label>
             </div>
 
-            <Toaster
-              store={toast}
-              component={InlineToast}
-              containerId="sidebar"
-              inline
-              placements={["top-right"]}
-            />
+            <InlineToaster store={toast} containerId="sidebar" inline />
 
             <div className="demo-sidebar-footer">
               <button className="demo-btn-save" onClick={handleSave}>
@@ -109,7 +102,7 @@ export const SidebarInlineToast: Story = {
           </div>
         </div>
 
-        <Toaster store={toast} component={DemoToast} />
+        <DemoToaster store={toast} />
       </div>
     );
   },
@@ -160,13 +153,7 @@ export const MultipleContainers: Story = {
                 </button>
               </div>
             </div>
-            <Toaster
-              store={toast}
-              component={InlineToast}
-              containerId="panel-a"
-              inline
-              placements={["top-right"]}
-            />
+            <InlineToaster store={toast} containerId="panel-a" inline />
           </div>
 
           <div className="demo-panel">
@@ -188,13 +175,7 @@ export const MultipleContainers: Story = {
                 </button>
               </div>
             </div>
-            <Toaster
-              store={toast}
-              component={InlineToast}
-              containerId="panel-b"
-              inline
-              placements={["top-right"]}
-            />
+            <InlineToaster store={toast} containerId="panel-b" inline />
           </div>
         </div>
 
@@ -215,7 +196,7 @@ export const MultipleContainers: Story = {
           </button>
         </div>
 
-        <Toaster store={toast} component={DemoToast} />
+        <DemoToaster store={toast} />
       </div>
     );
   },
@@ -280,13 +261,7 @@ export const FormValidation: Story = {
             />
           </label>
 
-          <Toaster
-            store={toast}
-            component={InlineToast}
-            containerId="form-feedback"
-            inline
-            placements={["top-right"]}
-          />
+          <InlineToaster store={toast} containerId="form-feedback" inline />
 
           <button className="demo-btn-save" type="submit">
             Submit

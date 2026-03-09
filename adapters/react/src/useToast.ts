@@ -1,4 +1,4 @@
-import { createContext, useContext, useCallback } from "react";
+import { createContext, createElement, useContext, useCallback } from "react";
 import type {
   CloseReason,
   ToastCustomOptions,
@@ -8,6 +8,7 @@ import type {
   ReactToastState,
   ReactToastStore,
   ReactToastUpdate,
+  ToastProviderProps,
 } from "./types";
 
 type ToastContextValue = {
@@ -16,6 +17,17 @@ type ToastContextValue = {
 };
 
 const ToastCtx = createContext<ToastContextValue | null>(null);
+
+function ToastProvider<
+  TData extends ToastData = ToastData,
+  TCustom extends ToastCustomOptions = {},
+>({ children, toast, store }: ToastProviderProps<TData, TCustom>) {
+  return createElement(
+    ToastCtx.Provider,
+    { value: { toast, store } },
+    children,
+  );
+}
 
 function useToast<
   TData extends ToastData = ToastData,
@@ -93,4 +105,4 @@ function useToast<
   };
 }
 
-export { ToastCtx, useToast };
+export { ToastCtx, ToastProvider, useToast };

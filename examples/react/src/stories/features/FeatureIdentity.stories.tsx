@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { Toaster } from "@headless-toast/react";
-import { DemoToast } from "../shared/DemoToast";
+import { DemoToaster } from "../shared/DemoToast";
 import { ToastCounter } from "../shared/ToastCounter";
 import { useIsolatedToast } from "../shared/useIsolatedToast";
 
@@ -90,7 +89,7 @@ export const DuplicateIdPrevention: Story = {
           </button>
         </div>
         <ToastCounter store={toast} />
-        <Toaster store={toast} component={DemoToast} />
+        <DemoToaster store={toast} />
       </div>
     );
   },
