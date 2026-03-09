@@ -1,3 +1,4 @@
+import { TOAST_STATUS } from "@headless-toast/core";
 import {
   useContext,
   useRef,
@@ -24,12 +25,9 @@ function useToastAnimation(options?: {
   }
 
   const completeCurrentPhase = useCallback(() => {
-    if (toast.status === "entering") {
+    if (toast.status === TOAST_STATUS.ENTERING) {
       markEntered();
-      return;
-    }
-
-    if (toast.status === "exiting") {
+    } else if (toast.status === TOAST_STATUS.EXITING) {
       markExited();
     }
   }, [toast.status, markEntered, markExited]);
@@ -41,8 +39,11 @@ function useToastAnimation(options?: {
       return;
     }
 
-    if (toast.status === "entering" || toast.status === "exiting") {
-      const phase = toast.status === "entering" ? "enter" : "exit";
+    if (
+      toast.status === TOAST_STATUS.ENTERING ||
+      toast.status === TOAST_STATUS.EXITING
+    ) {
+      const phase = toast.status === TOAST_STATUS.ENTERING ? "enter" : "exit";
 
       const rafId = requestAnimationFrame(() => {
         const duration = getAnimationDuration(el);

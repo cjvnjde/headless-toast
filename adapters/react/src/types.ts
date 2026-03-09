@@ -129,7 +129,7 @@ type UseToastResult<
   TCustom extends ToastCustomOptions = {},
 > = {
   toast: ReactToastState<TData, TCustom>;
-  dismiss: (reason?: "user" | "programmatic" | "swipe") => void;
+  dismiss: (reason?: Exclude<CloseReason, "timeout">) => void;
   pause: () => void;
   resume: () => void;
   update: (updates: ReactToastUpdate<TData, TCustom>) => void;

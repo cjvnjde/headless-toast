@@ -1,48 +1,42 @@
 type ValueOf<T> = T[keyof T];
 
-function defineStringValues<const T extends Record<string, string>>(
-  values: T,
-): T {
-  return values;
-}
-
-const TOAST_PLACEMENT = defineStringValues({
+const TOAST_PLACEMENT = {
   TOP_LEFT: "top-left",
   TOP_CENTER: "top-center",
   TOP_RIGHT: "top-right",
   BOTTOM_LEFT: "bottom-left",
   BOTTOM_CENTER: "bottom-center",
   BOTTOM_RIGHT: "bottom-right",
-});
+} as const;
 
 type ToastPlacement = ValueOf<typeof TOAST_PLACEMENT>;
 
-const CLOSE_REASON = defineStringValues({
+const CLOSE_REASON = {
   TIMEOUT: "timeout",
   USER: "user",
   PROGRAMMATIC: "programmatic",
   SWIPE: "swipe",
-});
+} as const;
 
 type CloseReason = ValueOf<typeof CLOSE_REASON>;
 
-const TOAST_TYPE = defineStringValues({
+const TOAST_TYPE = {
   SUCCESS: "success",
   ERROR: "error",
   WARNING: "warning",
   INFO: "info",
   LOADING: "loading",
   CUSTOM: "custom",
-});
+} as const;
 
 type ToastType = ValueOf<typeof TOAST_TYPE>;
 
-const ANIMATION_EASING = defineStringValues({
+const ANIMATION_EASING = {
   EASE: "ease",
   EASE_IN: "ease-in",
   EASE_OUT: "ease-out",
   LINEAR: "linear",
-});
+} as const;
 
 type AnimationEasing = ValueOf<typeof ANIMATION_EASING>;
 
@@ -85,11 +79,11 @@ type AnimationConfig = {
   easing?: AnimationEasing | ((t: number) => number);
 };
 
-const DRAG_DIRECTION = defineStringValues({
+const DRAG_DIRECTION = {
   X: "x",
   Y: "y",
   BOTH: "both",
-});
+} as const;
 
 type DragDirection = ValueOf<typeof DRAG_DIRECTION>;
 
@@ -115,18 +109,18 @@ type GestureInput = {
   vy: number;
 };
 
-const STACK_MODE = defineStringValues({
+const STACK_MODE = {
   EXPANDED: "expanded",
   COLLAPSED: "collapsed",
-});
+} as const;
 
 type StackMode = ValueOf<typeof STACK_MODE>;
 
-const STACK_EXPAND_ON = defineStringValues({
+const STACK_EXPAND_ON = {
   HOVER: "hover",
   CLICK: "click",
   ALWAYS: "always",
-});
+} as const;
 
 type StackExpandOn = ValueOf<typeof STACK_EXPAND_ON>;
 
@@ -242,12 +236,12 @@ type ToastReference<
   TCustom extends ToastCustomOptions = {},
 > = string | ToastHandle<TData, TCustom>;
 
-const TOAST_STATUS = defineStringValues({
+const TOAST_STATUS = {
   ENTERING: "entering",
   VISIBLE: "visible",
   EXITING: "exiting",
   REMOVED: "removed",
-});
+} as const;
 
 type ToastStatus = ValueOf<typeof TOAST_STATUS>;
 
@@ -267,10 +261,10 @@ type ToastState<
   options: ResolvedToastOptions<TData, TCustom>;
 };
 
-const TOAST_PHASE = defineStringValues({
+const TOAST_PHASE = {
   ENTER: "enter",
   EXIT: "exit",
-});
+} as const;
 
 type ToastPhase = ValueOf<typeof TOAST_PHASE>;
 

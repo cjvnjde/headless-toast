@@ -5,7 +5,7 @@ import {
   type PointerEvent,
   type CSSProperties,
 } from "react";
-import { computeDragState } from "@headless-toast/core";
+import { CLOSE_REASON, computeDragState } from "@headless-toast/core";
 import { resolveDraggableConfig } from "./drag";
 import { useToast } from "./useToast";
 
@@ -103,7 +103,7 @@ function useToastDrag() {
           e.currentTarget.releasePointerCapture(e.pointerId);
         }
 
-        dismiss("swipe");
+        dismiss(CLOSE_REASON.SWIPE);
       }
     },
     [config, dismiss],

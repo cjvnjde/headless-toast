@@ -32,7 +32,7 @@ function useToast<
   const { toast, store } = ctx;
 
   const dismiss = useCallback(
-    (reason?: "user" | "programmatic" | "swipe") => {
+    (reason?: Exclude<CloseReason, "timeout">) => {
       store.dismiss(toast.id, reason);
     },
     [store, toast.id],

@@ -1,12 +1,14 @@
-import type {
-  StackConfig,
-  ToastPlacement,
-  ToastCustomOptions,
-  ToastData,
+import {
+  type StackConfig,
+  type ToastPlacement,
+  type ToastCustomOptions,
+  type ToastData,
+  STACK_MODE,
+  TOAST_PLACEMENT,
 } from "@headless-toast/core";
 import type { ReactToastState } from "./types";
 
-const DEFAULT_PLACEMENT: ToastPlacement = "top-right";
+const DEFAULT_PLACEMENT: ToastPlacement = TOAST_PLACEMENT.TOP_RIGHT;
 const DEFAULT_MAX_VISIBLE = 3;
 
 type StackedToast<
@@ -52,7 +54,9 @@ function computeStackLayout<
     ...toast,
     stackIndex: index,
     isCollapsed:
-      !isExpanded && config.mode === "collapsed" && index >= maxVisible,
+      !isExpanded &&
+      config.mode === STACK_MODE.COLLAPSED &&
+      index >= maxVisible,
   }));
 }
 

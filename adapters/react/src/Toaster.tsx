@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import type { ToastPlacement } from "@headless-toast/core";
+import {
+  STACK_EXPAND_ON,
+  TOAST_PLACEMENT,
+  TOAST_STATUS,
+  type ToastPlacement,
+} from "@headless-toast/core";
 import type {
   PlacementClassName,
   ReactToastState,
@@ -14,14 +19,7 @@ import { toast as sharedToast } from "./toast";
 import { useStore } from "./useStore";
 import { ToastCtx } from "./useToast";
 
-const ALL_PLACEMENTS: ToastPlacement[] = [
-  "top-left",
-  "top-center",
-  "top-right",
-  "bottom-left",
-  "bottom-center",
-  "bottom-right",
-];
+const ALL_PLACEMENTS = Object.values(TOAST_PLACEMENT);
 
 type PlacementContainerProps = {
   placement: ToastPlacement;
@@ -68,9 +66,9 @@ function PlacementContainer({
   const [isHoverExpanded, setIsHoverExpanded] = useState(false);
   const [isClickExpanded, setIsClickExpanded] = useState(false);
   const isExpanded =
-    stackConfig?.expandOn === "always" ||
-    (stackConfig?.expandOn === "hover" && isHoverExpanded) ||
-    (stackConfig?.expandOn === "click" && isClickExpanded);
+    stackConfig?.expandOn === STACK_EXPAND_ON.ALWAYS ||
+    (stackConfig?.expandOn === STACK_EXPAND_ON.HOVER && isHoverExpanded) ||
+    (stackConfig?.expandOn === STACK_EXPAND_ON.CLICK && isClickExpanded);
   const visibleToasts = stackConfig
     ? computeStackLayout(toasts, stackConfig, isExpanded).filter(
         (toast) => !toast.isCollapsed,
@@ -89,12 +87,12 @@ function PlacementContainer({
   }
 
   const containerHandlers =
-    stackConfig?.expandOn === "hover"
+    stackConfig?.expandOn === STACK_EXPAND_ON.HOVER
       ? {
           onMouseEnter: () => setIsHoverExpanded(true),
           onMouseLeave: () => setIsHoverExpanded(false),
         }
-      : stackConfig?.expandOn === "click"
+      : stackConfig?.expandOn === STACK_EXPAND_ON.CLICK
         ? { onClick: () => setIsClickExpanded((value) => !value) }
         : {};
 
@@ -154,7 +152,7 @@ function Toaster({
           continue;
         }
 
-        if (toast.status !== "visible") {
+        if (toast.status !== TOAST_STATUS.VISIBLE) {
           continue;
         }
 
