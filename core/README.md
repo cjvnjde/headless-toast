@@ -1,5 +1,7 @@
 # @headless-toast/core
 
+[![NPM Version](https://img.shields.io/npm/v/%40headless-toast%2Fcore?label=%40headless-toast%2Fcore)](https://www.npmjs.com/package/@headless-toast/core)
+
 Framework-free toast state management.
 
 `@headless-toast/core` owns toast lifecycle and timing without touching the DOM or any UI framework. It is the engine that adapters subscribe to.
