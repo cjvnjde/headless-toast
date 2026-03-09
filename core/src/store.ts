@@ -30,6 +30,7 @@ import {
   isPhaseStatus,
   getPhaseHintDuration,
 } from "./utils";
+import { mergeObjects } from "./utils/mergeObjects";
 
 const DEFAULT_STORE_CONFIG = {
   defaults: {
@@ -43,16 +44,6 @@ const DEFAULT_STORE_CONFIG = {
     promiseErrorDuration: 5000,
   },
 } satisfies Required<StoreConfig>;
-
-function mergeObjects<TLeft extends object, TRight extends object>(
-  left: TLeft,
-  right: TRight,
-): TLeft & TRight {
-  return {
-    ...left,
-    ...right,
-  };
-}
 
 class Store<
   TData extends ToastData = ToastData,
