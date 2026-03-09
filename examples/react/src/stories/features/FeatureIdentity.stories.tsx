@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { DemoToaster } from "../shared/DemoToast";
+import { noControlsParameters, withCodeDocs } from "../shared/storybookDocs";
 import { ToastCounter } from "../shared/ToastCounter";
 import { useIsolatedToast } from "../shared/useIsolatedToast";
 
@@ -12,7 +13,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "Examples for toast identity, deduplication, and update-in-place behavior using explicit ids.",
+          "Toast ids let you dedupe notifications, update them in place, and map long-running work such as uploads or saves to one persistent UI item.",
       },
     },
   },
@@ -24,6 +25,21 @@ type Story = StoryObj;
 
 export const DuplicateIdPrevention: Story = {
   name: "Duplicate ID Prevention",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "Reuse a stable `id` when a toast should represent a single ongoing task or notification slot instead of creating duplicates.",
+      `toastStore.loading(
+  { title: "Download Progress", body: "Downloading file..." },
+  { id: "download", duration: 0 },
+);
+
+toastStore.success(
+  { title: "Download Complete", body: "File saved!" },
+  { id: "download", duration: 3000 },
+);`,
+    ),
+  },
   render: function Render() {
     const toast = useIsolatedToast();
     const counterRef = useRef(0);

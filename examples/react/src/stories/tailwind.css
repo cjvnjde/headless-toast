@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Satoshi", "Avenir Next", "Segoe UI", sans-serif;
+  --font-sans: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
   --color-toast-surface: oklch(0.98 0.01 240);
   --color-toast-ink: oklch(0.24 0.02 255);
   --color-toast-muted: oklch(0.55 0.03 250);

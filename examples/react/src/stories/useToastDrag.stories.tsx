@@ -1,18 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Toaster } from "@headless-toast/react";
-import { useToast } from "@headless-toast/react";
-import { useToastAnimation } from "@headless-toast/react";
-import { useToastDrag } from "@headless-toast/react";
+import {
+  Toaster,
+  useToast,
+  useToastAnimation,
+  useToastDrag,
+} from "@headless-toast/react";
+import { noControlsParameters, withCodeDocs } from "./shared/storybookDocs";
 import { useIsolatedToast } from "./shared/useIsolatedToast";
 
-// ---- Shared draggable toast component ----
-
-/**
- * Example toast component with drag-to-dismiss support.
- * Uses all three hooks — no props needed.
- */
 function DraggableToast() {
-  const { toast, dismiss, pauseOnHoverHandlers } = useToast();
+  const { toast: currentToast, dismiss, pauseOnHoverHandlers } = useToast();
   const drag = useToastDrag();
   const { ref, className, attributes, handlers } = useToastAnimation({
     className: "demo-toast",
@@ -29,9 +26,13 @@ function DraggableToast() {
         {...drag.handlers}
         {...attributes}
       >
-        {toast.data.title ? <strong>{String(toast.data.title)}</strong> : null}
-        {toast.data.body ? <p>{String(toast.data.body)}</p> : null}
-        {toast.options.dismissible !== false && (
+        {currentToast.data.title ? (
+          <strong>{String(currentToast.data.title)}</strong>
+        ) : null}
+        {currentToast.data.body ? (
+          <p>{String(currentToast.data.body)}</p>
+        ) : null}
+        {currentToast.options.dismissible !== false ? (
           <button
             className="toast-close"
             onClick={() => dismiss("user")}
@@ -39,7 +40,7 @@ function DraggableToast() {
           >
             &times;
           </button>
-        )}
+        ) : null}
       </div>
     </div>
   );
@@ -50,12 +51,13 @@ const meta: Meta = {
   tags: ["autodocs"],
   parameters: {
     layout: "fullscreen",
+    controls: {
+      disable: true,
+    },
     docs: {
       description: {
         component:
-          "`useToastDrag` provides drag-to-dismiss functionality for individual toasts. " +
-          "It captures pointer events and feeds them into core's `computeDragState` function. " +
-          "Drag horizontally to dismiss a toast.",
+          "`useToastDrag()` adds pointer-based drag and swipe-to-dismiss behavior to a single toast. Pair it with `useToastAnimation()` so swipe exits can use a different exit animation state.",
       },
     },
   },
@@ -64,16 +66,30 @@ const meta: Meta = {
 export default meta;
 type Story = StoryObj;
 
-// ---- Stories ----
-
-/**
- * Drag a toast sideways to dismiss it. The hook applies `transform` styles
- * during the gesture and snaps back on release if the threshold isn't met.
- */
 export const DragToDismiss: Story = {
   name: "Drag to Dismiss",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "Use the built-in drag hook when you want pointer-driven swipe dismissal without bringing in another gesture library.",
+      `const drag = useToastDrag();
+const animation = useToastAnimation({
+  className: "demo-toast",
+  swipeDismissed: drag.swipeDismissed,
+});
+
+<div
+  ref={animation.ref}
+  className={animation.className}
+  style={drag.style}
+  {...animation.handlers}
+  {...drag.handlers}
+  {...animation.attributes}
+/>;`,
+    ),
+  },
   render: function Render() {
-    const toast = useIsolatedToast();
+    const toastStore = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -86,7 +102,7 @@ export const DragToDismiss: Story = {
           <button
             className="btn-info"
             onClick={() =>
-              toast.info(
+              toastStore.info(
                 { title: "Drag me", body: "Swipe left or right to dismiss." },
                 { draggable: true, duration: 0 },
               )
@@ -95,19 +111,30 @@ export const DragToDismiss: Story = {
             Add Draggable Toast
           </button>
         </div>
-        <Toaster store={toast}><Toaster.List><DraggableToast /></Toaster.List></Toaster>
+        <Toaster store={toastStore}>
+          <Toaster.List>
+            <DraggableToast />
+          </Toaster.List>
+        </Toaster>
       </div>
     );
   },
 };
 
-/**
- * Draggable toast with a custom direction configuration.
- */
 export const DragDirections: Story = {
   name: "Drag Directions",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "Pass a draggable config to control axis and threshold. This is useful when your UI should allow only horizontal swipe, only vertical dismissal, or both.",
+      `toastStore.info(
+  { title: "Horizontal", body: "Drag left or right only." },
+  { draggable: { direction: "x", threshold: 100 }, duration: 0 },
+);`,
+    ),
+  },
   render: function Render() {
-    const toast = useIsolatedToast();
+    const toastStore = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -119,8 +146,8 @@ export const DragDirections: Story = {
         <div className="story-controls">
           <button
             onClick={() =>
-              toast.info(
-                { title: "Horizontal", body: "Drag left/right only." },
+              toastStore.info(
+                { title: "Horizontal", body: "Drag left or right only." },
                 { draggable: { direction: "x", threshold: 100 }, duration: 0 },
               )
             }
@@ -129,8 +156,8 @@ export const DragDirections: Story = {
           </button>
           <button
             onClick={() =>
-              toast.info(
-                { title: "Vertical", body: "Drag up/down only." },
+              toastStore.info(
+                { title: "Vertical", body: "Drag up or down only." },
                 { draggable: { direction: "y", threshold: 100 }, duration: 0 },
               )
             }
@@ -139,7 +166,7 @@ export const DragDirections: Story = {
           </button>
           <button
             onClick={() =>
-              toast.info(
+              toastStore.info(
                 { title: "Both Axes", body: "Drag in any direction." },
                 {
                   draggable: { direction: "both", threshold: 100 },
@@ -151,7 +178,11 @@ export const DragDirections: Story = {
             Both Axes
           </button>
         </div>
-        <Toaster store={toast}><Toaster.List><DraggableToast /></Toaster.List></Toaster>
+        <Toaster store={toastStore}>
+          <Toaster.List>
+            <DraggableToast />
+          </Toaster.List>
+        </Toaster>
       </div>
     );
   },

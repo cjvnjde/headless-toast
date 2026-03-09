@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ToastCtx, useStore, useToast } from "@headless-toast/react";
 import type { ReactToastStore } from "@headless-toast/react";
+import { noControlsParameters, withCodeDocs } from "../shared/storybookDocs";
 import { useIsolatedToast } from "../shared/useIsolatedToast";
 import { getToastStyle, toastSlideVariants } from "./shared";
 
@@ -14,7 +15,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "Use Framer Motion instead of CSS transitions while still notifying the toast store about lifecycle milestones.",
+          "Use Framer Motion instead of CSS transitions while still notifying the toast store when enter and exit phases have completed.",
       },
     },
   },
@@ -116,56 +117,119 @@ function FramerMotionToaster({ store }: { store: ReactToastStore }) {
 
 export const FramerMotionAnimations: Story = {
   name: "Framer Motion Animations",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "When another animation library owns the DOM timing, call `markEntered()` and `markExited()` yourself so the store can advance phases correctly.",
+      `function FramerMotionToast() {
+  const {
+    toast: currentToast,
+    dismiss,
+    pauseOnHoverHandlers,
+    markEntered,
+    markExited,
+  } = useToast();
+
+  useEffect(() => {
+    if (currentToast.status !== "entering") return;
+
+    const timer = setTimeout(() => markEntered(), 400);
+    return () => clearTimeout(timer);
+  }, [currentToast.id, currentToast.status, markEntered]);
+
+  return (
+    <motion.div
+      onMouseEnter={pauseOnHoverHandlers.onMouseEnter}
+      onMouseLeave={pauseOnHoverHandlers.onMouseLeave}
+      onAnimationComplete={(definition) => {
+        if (definition === "exit") {
+          markExited();
+        }
+      }}
+    >
+      <button type="button" onClick={() => dismiss("user")}>Close</button>
+    </motion.div>
+  );
+}`,
+      [
+        {
+          title: "Custom render loop",
+          language: "tsx",
+          code: `function FramerMotionToaster({ store }: { store: ReactToastStore }) {
+  const toasts = useStore(store).filter((toast) => toast.status !== "exiting");
+
+  return (
+    <AnimatePresence>
+      {toasts.map((toast) => (
+        <ToastCtx.Provider key={toast.id} value={{ toast, store }}>
+          <FramerMotionToast />
+        </ToastCtx.Provider>
+      ))}
+    </AnimatePresence>
+  );
+}`,
+        },
+      ],
+    ),
+  },
   render: function Render() {
     const toast = useIsolatedToast();
 
     return (
-      <div className="story-wrapper">
-        <h2>Framer Motion Animations</h2>
-        <p className="story-subtitle">
-          Replace the default animation flow with physics-based transitions and
-          manually report `markEntered()` and `markExited()`.
-        </p>
-        <div className="story-controls">
-          <button
-            className="btn-success"
-            onClick={() =>
-              toast.success(
-                {
-                  title: "Spring In!",
-                  body: "Framer Motion spring animation.",
-                },
-                { duration: 5000, pauseOnHover: true },
-              )
-            }
-          >
-            Success
-          </button>
-          <button
-            className="btn-error"
-            onClick={() =>
-              toast.error(
-                { title: "Error Toast", body: "Same physics, different data." },
-                { duration: 5000, pauseOnHover: true },
-              )
-            }
-          >
-            Error
-          </button>
-          <button
-            className="btn-info"
-            onClick={() =>
-              toast.info(
-                { title: "Info Toast", body: "Smooth layout transitions too." },
-                { duration: 5000, pauseOnHover: true },
-              )
-            }
-          >
-            Info
-          </button>
-          <button className="btn-dismiss" onClick={() => toast.dismissAll()}>
-            Dismiss All
-          </button>
+      <div className="story-stage">
+        <div className="story-stage-panel">
+          <h2>Framer Motion Animations</h2>
+          <p className="story-subtitle">
+            Replace the default animation flow with physics-based transitions
+            and manually report `markEntered()` and `markExited()`.
+          </p>
+          <div className="story-controls">
+            <button
+              className="btn-success"
+              onClick={() =>
+                toast.success(
+                  {
+                    title: "Spring In!",
+                    body: "Framer Motion spring animation.",
+                  },
+                  { duration: 5000, pauseOnHover: true },
+                )
+              }
+            >
+              Success
+            </button>
+            <button
+              className="btn-error"
+              onClick={() =>
+                toast.error(
+                  {
+                    title: "Error Toast",
+                    body: "Same physics, different data.",
+                  },
+                  { duration: 5000, pauseOnHover: true },
+                )
+              }
+            >
+              Error
+            </button>
+            <button
+              className="btn-info"
+              onClick={() =>
+                toast.info(
+                  {
+                    title: "Info Toast",
+                    body: "Smooth layout transitions too.",
+                  },
+                  { duration: 5000, pauseOnHover: true },
+                )
+              }
+            >
+              Info
+            </button>
+            <button className="btn-dismiss" onClick={() => toast.dismissAll()}>
+              Dismiss All
+            </button>
+          </div>
         </div>
         <FramerMotionToaster store={toast} />
       </div>

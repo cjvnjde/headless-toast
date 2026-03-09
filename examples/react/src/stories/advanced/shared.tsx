@@ -11,8 +11,7 @@ const toastBaseStyle: CSSProperties = {
   padding: "12px 16px",
   borderRadius: 8,
   boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-  fontFamily:
-    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  fontFamily: '"IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif',
   fontSize: 14,
   lineHeight: 1.4,
   color: "#1a1a1a",

@@ -1,18 +1,24 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Toaster } from "@headless-toast/react";
 import { DemoToaster } from "../shared/DemoToast";
+import {
+  noControlsParameters,
+  withDemoToasterDocs,
+  toasterArgTypes,
+} from "../shared/storybookDocs";
 import { useIsolatedToast } from "../shared/useIsolatedToast";
 
 const meta: Meta<typeof Toaster> = {
   title: "Components/Toaster/Behavior",
   component: Toaster,
   tags: ["autodocs"],
+  argTypes: toasterArgTypes,
   parameters: {
     layout: "fullscreen",
     docs: {
       description: {
         component:
-          "Interaction-focused toaster examples: progress bars, dismissibility, and pause-on-hover timing.",
+          "These stories focus on runtime behavior layered on top of the basic toaster render pipeline: progress feedback, dismissibility, and timeout pausing.",
       },
     },
   },
@@ -24,8 +30,22 @@ type Story = StoryObj<typeof Toaster>;
 
 export const WithProgress: Story = {
   name: "With Progress Bar",
+  parameters: {
+    ...noControlsParameters,
+    ...withDemoToasterDocs(
+      "Expose the remaining lifetime of an auto-closing toast with `progress: true` and render your own progress UI from the current toast state.",
+      `import { createToast } from "@headless-toast/react";
+
+const { toast: toastStore } = createToast();
+
+toastStore.success(
+  { title: "Downloading", body: "Your file is being prepared." },
+  { progress: true, duration: 5000 },
+);`,
+    ),
+  },
   render: function Render() {
-    const toast = useIsolatedToast();
+    const toastStore = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -37,7 +57,7 @@ export const WithProgress: Story = {
           <button
             className="btn-success"
             onClick={() =>
-              toast.success(
+              toastStore.success(
                 { title: "Downloading", body: "Your file is being prepared." },
                 { progress: true, duration: 5000 },
               )
@@ -46,7 +66,7 @@ export const WithProgress: Story = {
             Add Toast with Progress
           </button>
         </div>
-        <DemoToaster store={toast} />
+        <DemoToaster store={toastStore} />
       </div>
     );
   },
@@ -54,8 +74,25 @@ export const WithProgress: Story = {
 
 export const NonDismissible: Story = {
   name: "Non-Dismissible",
+  parameters: {
+    ...noControlsParameters,
+    ...withDemoToasterDocs(
+      "Turn off the close button by setting `dismissible: false` while still letting the store manage the rest of the toast lifecycle.",
+      `import { createToast } from "@headless-toast/react";
+
+const { toast: toastStore } = createToast();
+
+toastStore.info(
+  {
+    title: "Persistent",
+    body: "This toast cannot be manually dismissed.",
+  },
+  { dismissible: false, duration: 5000 },
+);`,
+    ),
+  },
   render: function Render() {
-    const toast = useIsolatedToast();
+    const toastStore = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -67,7 +104,7 @@ export const NonDismissible: Story = {
           <button
             className="btn-info"
             onClick={() =>
-              toast.info(
+              toastStore.info(
                 {
                   title: "Persistent",
                   body: "This toast cannot be manually dismissed.",
@@ -79,7 +116,7 @@ export const NonDismissible: Story = {
             Non-Dismissible Toast
           </button>
         </div>
-        <DemoToaster store={toast} />
+        <DemoToaster store={toastStore} />
       </div>
     );
   },
@@ -87,8 +124,25 @@ export const NonDismissible: Story = {
 
 export const PauseOnHover: Story = {
   name: "Pause on Hover",
+  parameters: {
+    ...noControlsParameters,
+    ...withDemoToasterDocs(
+      "Pause the timeout while the user hovers the toast so longer messages remain readable without increasing your default duration.",
+      `import { createToast } from "@headless-toast/react";
+
+const { toast: toastStore } = createToast();
+
+toastStore.info(
+  {
+    title: "Hover me",
+    body: "Auto-close pauses while you hover.",
+  },
+  { pauseOnHover: true, duration: 3000, progress: true },
+);`,
+    ),
+  },
   render: function Render() {
-    const toast = useIsolatedToast();
+    const toastStore = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -100,7 +154,7 @@ export const PauseOnHover: Story = {
           <button
             className="btn-info"
             onClick={() =>
-              toast.info(
+              toastStore.info(
                 {
                   title: "Hover me",
                   body: "Auto-close pauses while you hover.",
@@ -112,7 +166,7 @@ export const PauseOnHover: Story = {
             Add Pausable Toast
           </button>
         </div>
-        <DemoToaster store={toast} />
+        <DemoToaster store={toastStore} />
       </div>
     );
   },

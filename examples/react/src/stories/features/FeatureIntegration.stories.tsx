@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { DemoToaster } from "../shared/DemoToast";
+import { noControlsParameters, withCodeDocs } from "../shared/storybookDocs";
 import { useIsolatedToast } from "../shared/useIsolatedToast";
 
 const meta: Meta = {
@@ -10,7 +11,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "Integration-focused examples showing how the store can be used from non-React code paths.",
+          "The toast store is plain JavaScript. You can trigger it from interceptors, async utilities, service modules, or any event source outside the React tree.",
       },
     },
   },
@@ -22,11 +23,25 @@ type Story = StoryObj;
 
 export const OutsideReact: Story = {
   name: "Toast Outside React",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "Keep the store in a module or app service layer when non-React code paths need to trigger notifications.",
+      `export const notifications = createToast().toast;
+
+apiClient.onError((error) => {
+  notifications.error({
+    title: "API Error",
+    body: error.message,
+  });
+});`,
+    ),
+  },
   render: function Render() {
-    const toast = useIsolatedToast();
+    const toastStore = useIsolatedToast();
 
     function simulateExternalCall() {
-      toast.success({
+      toastStore.success({
         title: "External Call",
         body: "This was triggered from outside React!",
       });
@@ -34,7 +49,7 @@ export const OutsideReact: Story = {
 
     function simulateApiInterceptor() {
       setTimeout(() => {
-        toast.error({
+        toastStore.error({
           title: "API Error",
           body: "Request failed with status 500",
         });
@@ -55,11 +70,14 @@ export const OutsideReact: Story = {
           <button className="btn-error" onClick={simulateApiInterceptor}>
             Simulate API Error (500ms delay)
           </button>
-          <button className="btn-dismiss" onClick={() => toast.dismissAll()}>
+          <button
+            className="btn-dismiss"
+            onClick={() => toastStore.dismissAll()}
+          >
             Dismiss All
           </button>
         </div>
-        <DemoToaster store={toast} />
+        <DemoToaster store={toastStore} />
       </div>
     );
   },

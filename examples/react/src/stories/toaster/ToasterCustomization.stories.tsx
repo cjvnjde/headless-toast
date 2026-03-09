@@ -1,18 +1,24 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Toaster, useToast, useToastAnimation } from "@headless-toast/react";
 import { DemoToast } from "../shared/DemoToast";
+import {
+  noControlsParameters,
+  withDemoToasterDocs,
+  toasterArgTypes,
+} from "../shared/storybookDocs";
 import { useIsolatedToast } from "../shared/useIsolatedToast";
 
 const meta: Meta<typeof Toaster> = {
   title: "Components/Toaster/Customization",
   component: Toaster,
   tags: ["autodocs"],
+  argTypes: toasterArgTypes,
   parameters: {
     layout: "fullscreen",
     docs: {
       description: {
         component:
-          "Examples that focus on custom rendering and styling with explicit toaster regions and list wrappers.",
+          "Customization stories focus on the boundary between the headless toast state machine and your own visual system. Use these when you want full markup control or selector-driven styling.",
       },
     },
   },
@@ -23,7 +29,7 @@ export default meta;
 type Story = StoryObj<typeof Toaster>;
 
 function FancyToast() {
-  const { toast, dismiss } = useToast();
+  const { toast: currentToast, dismiss } = useToast();
   const { ref, className, attributes, handlers } = useToastAnimation({
     className: "demo-toast",
   });
@@ -39,12 +45,18 @@ function FancyToast() {
         }}
       >
         <span style={{ fontSize: 24 }}>
-          {toast.type === "success" ? "OK" : toast.type === "error" ? "!" : "i"}
+          {currentToast.type === "success"
+            ? "OK"
+            : currentToast.type === "error"
+              ? "!"
+              : "i"}
         </span>
         <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 600 }}>{String(toast.data.title)}</div>
+          <div style={{ fontWeight: 600 }}>
+            {String(currentToast.data.title)}
+          </div>
           <div style={{ fontSize: 12, color: "#6b7280" }}>
-            {String(toast.data.body)}
+            {String(currentToast.data.body)}
           </div>
         </div>
         <button
@@ -66,8 +78,22 @@ function FancyToast() {
 
 export const CustomComponent: Story = {
   name: "Custom Component",
+  parameters: {
+    ...noControlsParameters,
+    ...withDemoToasterDocs(
+      "Replace the entire toast item while keeping the same store, placement grouping, and lifecycle hooks underneath.",
+      `import { createToast } from "@headless-toast/react";
+
+const { toast: toastStore } = createToast();
+
+toastStore.success({
+  title: "Custom Render",
+  body: "Styled differently.",
+});`,
+    ),
+  },
   render: function Render() {
-    const toast = useIsolatedToast();
+    const toastStore = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -80,7 +106,7 @@ export const CustomComponent: Story = {
           <button
             className="btn-success"
             onClick={() =>
-              toast.success({
+              toastStore.success({
                 title: "Custom Render",
                 body: "Styled differently.",
               })
@@ -89,7 +115,7 @@ export const CustomComponent: Story = {
             Add Custom-Rendered Toast
           </button>
         </div>
-        <Toaster store={toast}>
+        <Toaster store={toastStore}>
           <Toaster.List>
             <FancyToast />
           </Toaster.List>
@@ -100,8 +126,27 @@ export const CustomComponent: Story = {
 };
 
 export const HeadlessSelectors: Story = {
+  parameters: {
+    ...noControlsParameters,
+    ...withDemoToasterDocs(
+      "Style stacks and lifecycle phases entirely through emitted data attributes like `data-placement`, `data-stack-expanded`, and `data-toast-status`.",
+      `import { createToast } from "@headless-toast/react";
+
+const { toast: toastStore } = createToast();
+
+toastStore.success(
+  { title: "Saved", body: "Styled via data attributes." },
+  {
+    placement: "top-left",
+    stack: { mode: "collapsed", expandOn: "hover", maxVisible: 3 },
+    pauseOnHover: true,
+    duration: 5000,
+  },
+);`,
+    ),
+  },
   render: function Render() {
-    const toast = useIsolatedToast();
+    const toastStore = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -114,7 +159,7 @@ export const HeadlessSelectors: Story = {
           <button
             className="btn-success"
             onClick={() =>
-              toast.success(
+              toastStore.success(
                 { title: "Saved", body: "Styled via data attributes." },
                 {
                   placement: "top-left",
@@ -134,7 +179,7 @@ export const HeadlessSelectors: Story = {
           <button
             className="btn-info"
             onClick={() =>
-              toast.info(
+              toastStore.info(
                 { title: "Center", body: "Use data-placement selectors." },
                 {
                   placement: "bottom-center",
@@ -154,7 +199,7 @@ export const HeadlessSelectors: Story = {
           <button
             className="btn-warning"
             onClick={() =>
-              toast.warning(
+              toastStore.warning(
                 { title: "Hover stack", body: "Container expands on hover." },
                 {
                   placement: "top-right",
@@ -171,11 +216,14 @@ export const HeadlessSelectors: Story = {
           >
             Top Right Hover Stack
           </button>
-          <button className="btn-dismiss" onClick={() => toast.dismissAll()}>
+          <button
+            className="btn-dismiss"
+            onClick={() => toastStore.dismissAll()}
+          >
             Dismiss All
           </button>
         </div>
-        <Toaster store={toast} className="selector-demo-region">
+        <Toaster store={toastStore} className="selector-demo-region">
           <Toaster.List className="selector-demo-placement">
             <DemoToast />
           </Toaster.List>

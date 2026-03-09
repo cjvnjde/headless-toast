@@ -10,6 +10,7 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import { ToastCtx, useStore, useToast } from "@headless-toast/react";
 import type { ReactToastStore } from "@headless-toast/react";
+import { noControlsParameters, withCodeDocs } from "../shared/storybookDocs";
 import { useIsolatedToast } from "../shared/useIsolatedToast";
 import { toastBaseStyle, toastFloatVariants, typeColors } from "./shared";
 
@@ -21,7 +22,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "Anchor toast stacks to arbitrary reference elements with Floating UI instead of viewport placements.",
+          "Use Floating UI when toasts should follow a trigger, badge, or anchored surface instead of one of the built-in viewport placements.",
       },
     },
   },
@@ -131,87 +132,123 @@ function FloatingToastContainer({
 
 export const FloatingUIAnchored: Story = {
   name: "Floating UI Anchored",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "Drive a custom anchored toast stack from `useStore(store)` and let Floating UI handle positioning relative to another element.",
+      `function FloatingToastContainer({ store, referenceRef }: {
+  store: ReactToastStore;
+  referenceRef: React.RefObject<HTMLElement | null>;
+}) {
+  const toasts = useStore(store).filter((toast) => toast.status !== "exiting");
+  const { refs, floatingStyles } = useFloating({
+    elements: { reference: referenceRef.current },
+    placement: "bottom-end",
+    middleware: [offset(8), flip(), shift({ padding: 16 })],
+    whileElementsMounted: autoUpdate,
+  });
+
+  return (
+    <div ref={refs.setFloating} style={floatingStyles}>
+      {toasts.map((toast) => (
+        <ToastCtx.Provider key={toast.id} value={{ toast, store }}>
+          <FloatingToast />
+        </ToastCtx.Provider>
+      ))}
+    </div>
+  );
+}`,
+      [
+        {
+          title: "Bell trigger",
+          language: "tsx",
+          code: `const bellRef = useRef<HTMLButtonElement>(null);
+const toasts = useStore(toastStore);
+
+<button ref={bellRef}>
+  Bell
+  {toasts.length > 0 ? <span>{toasts.length}</span> : null}
+</button>;`,
+        },
+      ],
+    ),
+  },
   render: function Render() {
     const toast = useIsolatedToast();
     const bellRef = useRef<HTMLButtonElement>(null);
     const toasts = useStore(toast);
 
     return (
-      <div className="story-wrapper">
-        <h2>Floating UI Anchored Toast</h2>
-        <p className="story-subtitle">
-          Attach toast groups to a button, badge, or menu trigger instead of the
-          viewport edge.
-        </p>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 16,
-            marginBottom: 16,
-          }}
-        >
-          <div className="story-controls" style={{ marginBottom: 0 }}>
+      <div className="story-stage">
+        <div className="story-stage-panel story-stage-panel--wide">
+          <h2>Floating UI Anchored Toast</h2>
+          <p className="story-subtitle">
+            Attach toast groups to a button, badge, or menu trigger instead of
+            the viewport edge.
+          </p>
+          <div className="story-stage-toolbar">
+            <div className="story-controls" style={{ marginBottom: 0 }}>
+              <button
+                className="btn-success"
+                onClick={() =>
+                  toast.success(
+                    { title: "Saved!", body: "Your changes were saved." },
+                    { duration: 5000, pauseOnHover: true },
+                  )
+                }
+              >
+                Trigger Success
+              </button>
+              <button
+                className="btn-error"
+                onClick={() =>
+                  toast.error(
+                    { title: "Error", body: "Something went wrong." },
+                    { duration: 5000, pauseOnHover: true },
+                  )
+                }
+              >
+                Trigger Error
+              </button>
+            </div>
+            <div className="story-stage-spacer" />
             <button
-              className="btn-success"
-              onClick={() =>
-                toast.success(
-                  { title: "Saved!", body: "Your changes were saved." },
-                  { duration: 5000, pauseOnHover: true },
-                )
-              }
+              ref={bellRef}
+              style={{
+                position: "relative",
+                background: "none",
+                border: "1px solid #d1d5db",
+                borderRadius: 8,
+                padding: "8px 12px",
+                cursor: "pointer",
+                fontSize: 20,
+                fontFamily: "inherit",
+              }}
             >
-              Trigger Success
-            </button>
-            <button
-              className="btn-error"
-              onClick={() =>
-                toast.error(
-                  { title: "Error", body: "Something went wrong." },
-                  { duration: 5000, pauseOnHover: true },
-                )
-              }
-            >
-              Trigger Error
+              Bell
+              {toasts.length > 0 ? (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: -4,
+                    right: -4,
+                    background: "#ef4444",
+                    color: "#fff",
+                    fontSize: 10,
+                    fontWeight: 700,
+                    borderRadius: "50%",
+                    width: 18,
+                    height: 18,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {toasts.length}
+                </span>
+              ) : null}
             </button>
           </div>
-          <div style={{ flex: 1 }} />
-          <button
-            ref={bellRef}
-            style={{
-              position: "relative",
-              background: "none",
-              border: "1px solid #d1d5db",
-              borderRadius: 8,
-              padding: "8px 12px",
-              cursor: "pointer",
-              fontSize: 20,
-              fontFamily: "inherit",
-            }}
-          >
-            Bell
-            {toasts.length > 0 ? (
-              <span
-                style={{
-                  position: "absolute",
-                  top: -4,
-                  right: -4,
-                  background: "#ef4444",
-                  color: "#fff",
-                  fontSize: 10,
-                  fontWeight: 700,
-                  borderRadius: "50%",
-                  width: 18,
-                  height: 18,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {toasts.length}
-              </span>
-            ) : null}
-          </button>
         </div>
         <FloatingToastContainer store={toast} referenceRef={bellRef} />
       </div>

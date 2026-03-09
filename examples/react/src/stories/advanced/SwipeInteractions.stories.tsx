@@ -18,6 +18,7 @@ import {
   toastSlideVariants,
   typeColors,
 } from "./shared";
+import { noControlsParameters, withCodeDocs } from "../shared/storybookDocs";
 
 const DISMISS_THRESHOLD = 150;
 const PIN_THRESHOLD = 80;
@@ -30,7 +31,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "Combine `@use-gesture/react` and Framer Motion for richer swipe interactions like dismiss and pinning.",
+          "Combine Framer Motion and `@use-gesture/react` when you want richer gesture-driven behavior than the built-in drag hook provides.",
       },
     },
   },
@@ -347,45 +348,80 @@ function ReverseSwipePinToaster({ store }: { store: ReactToastStore }) {
 
 export const SwipeRightToDismiss: Story = {
   name: "Swipe Right to Dismiss",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "Use a gesture library when swipe interactions need more expressive motion, thresholds, or animation feedback than a simple drag-to-dismiss flow.",
+      `const bind = useDrag(({ movement: [mx], velocity: [vx], direction: [dx], last }) => {
+  if (last && mx > DISMISS_THRESHOLD) {
+    dismiss("swipe");
+  }
+});`,
+      [
+        {
+          title: "Reproduction sketch",
+          language: "tsx",
+          code: `function SwipeDismissToast() {
+  const { toast: currentToast, dismiss, pauseOnHoverHandlers } = useToast();
+  const x = useMotionValue(0);
+
+  const bind = useDrag(({ movement: [mx], last }) => {
+    if (!last) {
+      x.set(Math.max(0, mx));
+      return;
+    }
+
+    if (mx > DISMISS_THRESHOLD) dismiss("swipe");
+    else animate(x, 0, { type: "spring", stiffness: 400, damping: 30 });
+  });
+
+  return <motion.div {...bind()} onMouseEnter={pauseOnHoverHandlers.onMouseEnter} />;
+}`,
+        },
+      ],
+    ),
+  },
   render: function Render() {
     const toast = useIsolatedToast();
 
     return (
-      <div className="story-wrapper">
-        <h2>Swipe Right to Dismiss</h2>
-        <p className="story-subtitle">
-          Add swipe gestures and spring-based motion without changing the core
-          store.
-        </p>
-        <div className="story-controls">
-          <button
-            className="btn-info"
-            onClick={() =>
-              toast.info(
-                {
-                  title: "Drag me right!",
-                  body: "Swipe past the threshold to dismiss.",
-                },
-                { duration: 0, pauseOnHover: true },
-              )
-            }
-          >
-            Add Swipeable Toast
-          </button>
-          <button
-            className="btn-success"
-            onClick={() =>
-              toast.success(
-                { title: "New message", body: "You have a notification." },
-                { duration: 8000, pauseOnHover: true },
-              )
-            }
-          >
-            Auto-close Toast
-          </button>
-          <button className="btn-dismiss" onClick={() => toast.dismissAll()}>
-            Dismiss All
-          </button>
+      <div className="story-stage">
+        <div className="story-stage-panel">
+          <h2>Swipe Right to Dismiss</h2>
+          <p className="story-subtitle">
+            Add swipe gestures and spring-based motion without changing the core
+            store.
+          </p>
+          <div className="story-controls">
+            <button
+              className="btn-info"
+              onClick={() =>
+                toast.info(
+                  {
+                    title: "Drag me right!",
+                    body: "Swipe past the threshold to dismiss.",
+                  },
+                  { duration: 0, pauseOnHover: true },
+                )
+              }
+            >
+              Add Swipeable Toast
+            </button>
+            <button
+              className="btn-success"
+              onClick={() =>
+                toast.success(
+                  { title: "New message", body: "You have a notification." },
+                  { duration: 8000, pauseOnHover: true },
+                )
+              }
+            >
+              Auto-close Toast
+            </button>
+            <button className="btn-dismiss" onClick={() => toast.dismissAll()}>
+              Dismiss All
+            </button>
+          </div>
         </div>
         <SwipeDismissToaster store={toast} />
       </div>
@@ -395,44 +431,73 @@ export const SwipeRightToDismiss: Story = {
 
 export const SwipeToPinOrDismiss: Story = {
   name: "Swipe to Pin or Dismiss",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "Convert a gesture into an in-place toast update such as `duration: 0`, or dismiss the toast with the opposite swipe direction.",
+      `if (mx < -PIN_THRESHOLD) {
+  update({ duration: 0 });
+}
+
+if (mx > DISMISS_THRESHOLD) {
+  dismiss("swipe");
+}`,
+      [
+        {
+          title: "Reproduction sketch",
+          language: "tsx",
+          code: `if (mx < -PIN_THRESHOLD) {
+  setPinned(true);
+  update({ duration: 0 });
+}
+
+if (mx > DISMISS_THRESHOLD) {
+  dismiss("swipe");
+}`,
+        },
+      ],
+    ),
+  },
   render: function Render() {
     const toast = useIsolatedToast();
 
     return (
-      <div className="story-wrapper">
-        <h2>Swipe to Pin or Dismiss</h2>
-        <p className="story-subtitle">
-          Swipe left to pin a toast in place or right to dismiss it.
-        </p>
-        <div className="story-controls">
-          <button
-            className="btn-info"
-            onClick={() =>
-              toast.info(
-                {
-                  title: "Try pinning me!",
-                  body: "Swipe left to pin, right to dismiss.",
-                },
-                { duration: 6000, pauseOnHover: true },
-              )
-            }
-          >
-            Add Toast (6s autoclose)
-          </button>
-          <button
-            className="btn-warning"
-            onClick={() =>
-              toast.warning(
-                { title: "Important!", body: "Pin me to keep me around." },
-                { duration: 4000, pauseOnHover: true },
-              )
-            }
-          >
-            Add Warning Toast
-          </button>
-          <button className="btn-dismiss" onClick={() => toast.dismissAll()}>
-            Dismiss All
-          </button>
+      <div className="story-stage">
+        <div className="story-stage-panel">
+          <h2>Swipe to Pin or Dismiss</h2>
+          <p className="story-subtitle">
+            Swipe left to pin a toast in place or right to dismiss it.
+          </p>
+          <div className="story-controls">
+            <button
+              className="btn-info"
+              onClick={() =>
+                toast.info(
+                  {
+                    title: "Try pinning me!",
+                    body: "Swipe left to pin, right to dismiss.",
+                  },
+                  { duration: 6000, pauseOnHover: true },
+                )
+              }
+            >
+              Add Toast (6s autoclose)
+            </button>
+            <button
+              className="btn-warning"
+              onClick={() =>
+                toast.warning(
+                  { title: "Important!", body: "Pin me to keep me around." },
+                  { duration: 4000, pauseOnHover: true },
+                )
+              }
+            >
+              Add Warning Toast
+            </button>
+            <button className="btn-dismiss" onClick={() => toast.dismissAll()}>
+              Dismiss All
+            </button>
+          </div>
         </div>
         <ReverseSwipePinToaster store={toast} />
       </div>

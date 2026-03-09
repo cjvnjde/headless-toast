@@ -1,18 +1,33 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Toaster } from "@headless-toast/react";
 import { DemoToaster } from "../shared/DemoToast";
+import {
+  noControlsParameters,
+  withDemoToasterDocs,
+  toasterArgTypes,
+} from "../shared/storybookDocs";
 import { useIsolatedToast } from "../shared/useIsolatedToast";
+
+const placements = [
+  "top-left",
+  "top-center",
+  "top-right",
+  "bottom-left",
+  "bottom-center",
+  "bottom-right",
+] as const;
 
 const meta: Meta<typeof Toaster> = {
   title: "Components/Toaster/Basics",
   component: Toaster,
   tags: ["autodocs"],
+  argTypes: toasterArgTypes,
   parameters: {
     layout: "fullscreen",
     docs: {
       description: {
         component:
-          "Core toaster basics: render a toast component, choose placements, and verify the headless adapter API in small focused examples.",
+          "`Toaster` creates the live region and placement context. `Toaster.List` renders one list per supported placement, then your toast component renders once for each toast inside that list.",
       },
     },
   },
@@ -24,8 +39,23 @@ type Story = StoryObj<typeof Toaster>;
 
 export const AllTypes: Story = {
   name: "All Toast Types",
+  parameters: {
+    ...noControlsParameters,
+    ...withDemoToasterDocs(
+      "Trigger each built-in helper to see how one toast component can react to `data-toast-type` and keep the rendering contract the same.",
+      `import { createToast } from "@headless-toast/react";
+
+const { toast: toastStore } = createToast();
+
+toastStore.success({ title: "Success", body: "Operation completed." });
+toastStore.error({ title: "Error", body: "Something went wrong." });
+toastStore.warning({ title: "Warning", body: "Check your input." });
+toastStore.info({ title: "Info", body: "Here is some information." });
+toastStore.loading({ title: "Loading", body: "Please wait..." });`,
+    ),
+  },
   render: function Render() {
-    const toast = useIsolatedToast();
+    const toastStore = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -38,7 +68,10 @@ export const AllTypes: Story = {
           <button
             className="btn-success"
             onClick={() =>
-              toast.success({ title: "Success", body: "Operation completed." })
+              toastStore.success({
+                title: "Success",
+                body: "Operation completed.",
+              })
             }
           >
             Success
@@ -46,7 +79,10 @@ export const AllTypes: Story = {
           <button
             className="btn-error"
             onClick={() =>
-              toast.error({ title: "Error", body: "Something went wrong." })
+              toastStore.error({
+                title: "Error",
+                body: "Something went wrong.",
+              })
             }
           >
             Error
@@ -54,7 +90,10 @@ export const AllTypes: Story = {
           <button
             className="btn-warning"
             onClick={() =>
-              toast.warning({ title: "Warning", body: "Check your input." })
+              toastStore.warning({
+                title: "Warning",
+                body: "Check your input.",
+              })
             }
           >
             Warning
@@ -62,7 +101,10 @@ export const AllTypes: Story = {
           <button
             className="btn-info"
             onClick={() =>
-              toast.info({ title: "Info", body: "Here is some information." })
+              toastStore.info({
+                title: "Info",
+                body: "Here is some information.",
+              })
             }
           >
             Info
@@ -70,24 +112,44 @@ export const AllTypes: Story = {
           <button
             className="btn-loading"
             onClick={() =>
-              toast.loading({ title: "Loading", body: "Please wait..." })
+              toastStore.loading({
+                title: "Loading",
+                body: "Please wait...",
+              })
             }
           >
             Loading
           </button>
-          <button className="btn-dismiss" onClick={() => toast.dismissAll()}>
+          <button
+            className="btn-dismiss"
+            onClick={() => toastStore.dismissAll()}
+          >
             Dismiss All
           </button>
         </div>
-        <DemoToaster store={toast} />
+        <DemoToaster store={toastStore} />
       </div>
     );
   },
 };
 
 export const Placements: Story = {
+  parameters: {
+    ...noControlsParameters,
+    ...withDemoToasterDocs(
+      "Send the same toast UI to each placement to verify that placement changes only the list layout, not the toast item component.",
+      `import { createToast } from "@headless-toast/react";
+
+const { toast: toastStore } = createToast();
+
+toastStore.info(
+  { title: "bottom-center", body: "Toast at bottom-center" },
+  { placement: "bottom-center" },
+);`,
+    ),
+  },
   render: function Render() {
-    const toast = useIsolatedToast();
+    const toastStore = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -96,20 +158,11 @@ export const Placements: Story = {
           Render the same toast component in any supported placement.
         </p>
         <div className="story-controls">
-          {(
-            [
-              "top-left",
-              "top-center",
-              "top-right",
-              "bottom-left",
-              "bottom-center",
-              "bottom-right",
-            ] as const
-          ).map((placement) => (
+          {placements.map((placement) => (
             <button
               key={placement}
               onClick={() =>
-                toast.info(
+                toastStore.info(
                   { title: placement, body: `Toast at ${placement}` },
                   { placement },
                 )
@@ -122,7 +175,7 @@ export const Placements: Story = {
             </button>
           ))}
         </div>
-        <DemoToaster store={toast} />
+        <DemoToaster store={toastStore} />
       </div>
     );
   },

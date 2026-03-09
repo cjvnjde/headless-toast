@@ -5,6 +5,7 @@ import { animate, motion, useMotionValue } from "framer-motion";
 import { ToastCtx, useStore, useToast } from "@headless-toast/react";
 import type { ReactToastStore } from "@headless-toast/react";
 import type { ToastPlacement } from "@headless-toast/core";
+import { noControlsParameters, withCodeDocs } from "../shared/storybookDocs";
 import { useIsolatedToast } from "../shared/useIsolatedToast";
 import {
   PlacementZoneOverlay,
@@ -23,7 +24,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "Drag a toast across the viewport and update its placement dynamically with store updates.",
+          "Treat placement as state: drag a toast to another zone, then persist the new placement by updating the store.",
       },
     },
   },
@@ -200,56 +201,103 @@ function RepositionToaster({ store }: { store: ReactToastStore }) {
 
 export const DragToReposition: Story = {
   name: "Drag to Reposition",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "Update `placement` in the store when a custom drag interaction ends so the toast remains in its new home after the gesture completes.",
+      `function RepositionToaster({ store }: { store: ReactToastStore }) {
+  const toasts = useStore(store);
+  const stackCounts = new Map<ToastPlacement, number>();
+
+  return (
+    <>
+      {toasts.map((toast) => {
+        const placement = (toast.options.placement ?? "top-right") as ToastPlacement;
+        const stackIndex = stackCounts.get(placement) ?? 0;
+        stackCounts.set(placement, stackIndex + 1);
+
+        return (
+          <ToastCtx.Provider key={toast.id} value={{ toast, store }}>
+            <RepositionableToast
+              stackIndex={stackIndex}
+              onReposition={(id, nextPlacement) => {
+                store.update(id, { placement: nextPlacement });
+              }}
+            />
+          </ToastCtx.Provider>
+        );
+      })}
+    </>
+  );
+}`,
+      [
+        {
+          title: "Reposition handler",
+          language: "tsx",
+          code: `const bind = useDrag(({ xy: [screenX, screenY], last }) => {
+  if (!last) return;
+
+  const nextPlacement = getPlacementFromPosition(screenX, screenY);
+  if (nextPlacement !== placement) {
+    onReposition(currentToast.id, nextPlacement);
+  }
+});`,
+        },
+      ],
+    ),
+  },
   render: function Render() {
     const toast = useIsolatedToast();
 
     return (
-      <div className="story-wrapper">
-        <h2>Drag to Reposition</h2>
-        <p className="story-subtitle">
-          Grab a toast, move it into another zone, and persist the new placement
-          with `toast.update()`.
-        </p>
-        <div className="story-controls">
-          <button
-            className="btn-info"
-            onClick={() =>
-              toast.info(
-                {
-                  title: "Drag me anywhere!",
-                  body: "Drop in a different zone to reposition.",
-                },
-                { placement: "top-right", duration: 0 },
-              )
-            }
-          >
-            Top Right
-          </button>
-          <button
-            className="btn-success"
-            onClick={() =>
-              toast.success(
-                { title: "Another toast", body: "Try a different zone." },
-                { placement: "bottom-left", duration: 0 },
-              )
-            }
-          >
-            Bottom Left
-          </button>
-          <button
-            className="btn-warning"
-            onClick={() =>
-              toast.warning(
-                { title: "Move me!", body: "Drag to any corner." },
-                { placement: "top-left", duration: 0 },
-              )
-            }
-          >
-            Top Left
-          </button>
-          <button className="btn-dismiss" onClick={() => toast.dismissAll()}>
-            Dismiss All
-          </button>
+      <div className="story-stage">
+        <div className="story-stage-panel">
+          <h2>Drag to Reposition</h2>
+          <p className="story-subtitle">
+            Grab a toast, move it into another zone, and persist the new
+            placement with `toast.update()`.
+          </p>
+          <div className="story-controls">
+            <button
+              className="btn-info"
+              onClick={() =>
+                toast.info(
+                  {
+                    title: "Drag me anywhere!",
+                    body: "Drop in a different zone to reposition.",
+                  },
+                  { placement: "top-right", duration: 0 },
+                )
+              }
+            >
+              Top Right
+            </button>
+            <button
+              className="btn-success"
+              onClick={() =>
+                toast.success(
+                  { title: "Another toast", body: "Try a different zone." },
+                  { placement: "bottom-left", duration: 0 },
+                )
+              }
+            >
+              Bottom Left
+            </button>
+            <button
+              className="btn-warning"
+              onClick={() =>
+                toast.warning(
+                  { title: "Move me!", body: "Drag to any corner." },
+                  { placement: "top-left", duration: 0 },
+                )
+              }
+            >
+              Top Left
+            </button>
+            <button className="btn-dismiss" onClick={() => toast.dismissAll()}>
+              Dismiss All
+            </button>
+          </div>
         </div>
         <RepositionToaster store={toast} />
       </div>

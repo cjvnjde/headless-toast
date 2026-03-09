@@ -1,20 +1,25 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Toaster } from "@headless-toast/react";
-import { useToast } from "@headless-toast/react";
-import { AnimationWrapper } from "@headless-toast/react";
+import { AnimationWrapper, Toaster, useToast } from "@headless-toast/react";
+import {
+  animationWrapperArgTypes,
+  noControlsParameters,
+  withCodeDocs,
+} from "./shared/storybookDocs";
 import { useIsolatedToast } from "./shared/useIsolatedToast";
 
-// ---- Toast using AnimationWrapper ----
-
 function WrapperToast() {
-  const { toast, dismiss, pauseOnHoverHandlers } = useToast();
+  const { toast: currentToast, dismiss, pauseOnHoverHandlers } = useToast();
 
   return (
     <AnimationWrapper className="demo-toast">
       <div {...pauseOnHoverHandlers}>
-        {toast.data.title ? <strong>{String(toast.data.title)}</strong> : null}
-        {toast.data.body ? <p>{String(toast.data.body)}</p> : null}
-        {toast.options.dismissible !== false && (
+        {currentToast.data.title ? (
+          <strong>{String(currentToast.data.title)}</strong>
+        ) : null}
+        {currentToast.data.body ? (
+          <p>{String(currentToast.data.body)}</p>
+        ) : null}
+        {currentToast.options.dismissible !== false ? (
           <button
             className="toast-close"
             onClick={() => dismiss("user")}
@@ -22,7 +27,7 @@ function WrapperToast() {
           >
             &times;
           </button>
-        )}
+        ) : null}
       </div>
     </AnimationWrapper>
   );
@@ -32,15 +37,13 @@ const meta: Meta<typeof AnimationWrapper> = {
   title: "Components/AnimationWrapper",
   component: AnimationWrapper,
   tags: ["autodocs"],
+  argTypes: animationWrapperArgTypes,
   parameters: {
     layout: "fullscreen",
     docs: {
       description: {
         component:
-          "`<AnimationWrapper />` wraps a single toast element and wires animation lifecycle events to the store. " +
-          "It emits data attributes like `data-toast-status` and `data-toast-type`, while `className` stays fully user-controlled. " +
-          "It listens for `animationend`/`transitionend` to advance the state machine. " +
-          "Must be used inside a toast component rendered by `<Toaster>` (reads from context).",
+          "`AnimationWrapper` is the convenience version of `useToastAnimation()`. Use it when one wrapper element is enough and you do not need to spread animation handlers manually.",
       },
     },
   },
@@ -49,19 +52,35 @@ const meta: Meta<typeof AnimationWrapper> = {
 export default meta;
 type Story = StoryObj<typeof AnimationWrapper>;
 
-// ---- Stories ----
-
-/**
- * AnimationWrapper used inside a Toaster — demonstrates the simplified API.
- */
 export const BasicUsage: Story = {
   name: "Basic Usage",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "Use `AnimationWrapper` when your toast has a single outer element and you want CSS lifecycle wiring without manually handling refs and DOM events.",
+      `function WrapperToast() {
+  const { toast: currentToast, dismiss, pauseOnHoverHandlers } = useToast();
+
+  return (
+    <AnimationWrapper className="demo-toast">
+      <div {...pauseOnHoverHandlers}>
+        <strong>{String(currentToast.data.title)}</strong>
+        <p>{String(currentToast.data.body)}</p>
+        <button type="button" className="toast-close" onClick={() => dismiss("user")}>
+          &times;
+        </button>
+      </div>
+    </AnimationWrapper>
+  );
+}`,
+    ),
+  },
   render: function Render() {
-    const toast = useIsolatedToast();
+    const toastStore = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
-        <h2>AnimationWrapper &mdash; Basic Usage</h2>
+        <h2>AnimationWrapper - Basic Usage</h2>
         <p className="story-subtitle">
           <code>&lt;AnimationWrapper /&gt;</code> handles animation lifecycle
           events automatically while leaving all selectors up to you. Add your
@@ -72,7 +91,7 @@ export const BasicUsage: Story = {
           <button
             className="btn-success"
             onClick={() =>
-              toast.success({
+              toastStore.success({
                 title: "Animated",
                 body: "Using AnimationWrapper component.",
               })
@@ -83,7 +102,7 @@ export const BasicUsage: Story = {
           <button
             className="btn-error"
             onClick={() =>
-              toast.error({
+              toastStore.error({
                 title: "Error",
                 body: "AnimationWrapper handles all animation.",
               })
@@ -91,31 +110,54 @@ export const BasicUsage: Story = {
           >
             Add Error
           </button>
-          <button className="btn-dismiss" onClick={() => toast.dismissAll()}>
+          <button
+            className="btn-dismiss"
+            onClick={() => toastStore.dismissAll()}
+          >
             Dismiss All
           </button>
         </div>
-        <Toaster store={toast}><Toaster.List><WrapperToast /></Toaster.List></Toaster>
+        <Toaster store={toastStore}>
+          <Toaster.List>
+            <WrapperToast />
+          </Toaster.List>
+        </Toaster>
       </div>
     );
   },
 };
 
-/**
- * AnimationWrapper with a custom CSS class applied via the className prop.
- */
 export const WithCustomClassName: Story = {
   name: "With Custom ClassName",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "Pass a custom class name when your design system wants to style the wrapper directly while still relying on the emitted data attributes.",
+      `function CustomClassToast() {
+  const { toast: currentToast, dismiss } = useToast();
+
+  return (
+    <AnimationWrapper className="toast-custom-story">
+      <strong>{String(currentToast.data.title)}</strong>
+      <p>{String(currentToast.data.body)}</p>
+      <button type="button" className="toast-close" onClick={() => dismiss("user")}>
+        &times;
+      </button>
+    </AnimationWrapper>
+  );
+}`,
+    ),
+  },
   render: function Render() {
-    const toast = useIsolatedToast();
+    const toastStore = useIsolatedToast();
 
     function CustomClassToast() {
-      const { toast, dismiss } = useToast();
+      const { toast: currentToast, dismiss } = useToast();
 
       return (
         <AnimationWrapper className="toast-custom-story">
-          <strong>{String(toast.data.title)}</strong>
-          <p>{String(toast.data.body)}</p>
+          <strong>{String(currentToast.data.title)}</strong>
+          <p>{String(currentToast.data.body)}</p>
           <button
             className="toast-close"
             onClick={() => dismiss("user")}
@@ -129,7 +171,7 @@ export const WithCustomClassName: Story = {
 
     return (
       <div className="story-wrapper">
-        <h2>AnimationWrapper &mdash; Custom ClassName</h2>
+        <h2>AnimationWrapper - Custom ClassName</h2>
         <p className="story-subtitle">
           Pass an additional <code>className</code> prop to
           <code> &lt;AnimationWrapper&gt;</code>. The class is applied as-is, so
@@ -140,7 +182,7 @@ export const WithCustomClassName: Story = {
           <button
             className="btn-success"
             onClick={() =>
-              toast.success({
+              toastStore.success({
                 title: "Custom Class",
                 body: "Extra class 'toast-custom-story' appended.",
               })
@@ -149,7 +191,11 @@ export const WithCustomClassName: Story = {
             Add Toast
           </button>
         </div>
-        <Toaster store={toast}><Toaster.List><CustomClassToast /></Toaster.List></Toaster>
+        <Toaster store={toastStore}>
+          <Toaster.List>
+            <CustomClassToast />
+          </Toaster.List>
+        </Toaster>
       </div>
     );
   },

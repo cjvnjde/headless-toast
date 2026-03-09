@@ -1,62 +1,103 @@
 import { Meta, Canvas } from "@storybook/addon-docs/blocks";
+import * as DragPlacementStories from "../advanced/DragPlacement.stories";
 import * as FramerStories from "../advanced/FramerMotionIntegrations.stories";
 import * as SwipeStories from "../advanced/SwipeInteractions.stories";
 import * as FloatingStories from "../advanced/FloatingAnchored.stories";
 
 <Meta title="Docs/Advanced Recipes" />
 
-# Advanced recipes
+<div className="docs-hero">
+  <p className="docs-kicker">Advanced recipes</p>
+  <h1>Replace the renderer, not the state machine.</h1>
+  <p className="docs-lead">
+    The core stays headless even when your UI gets more ambitious. These recipes
+    show where your custom animation, gesture, and positioning code must keep
+    the store informed.
+  </p>
+</div>
 
-The toast core stays headless, so advanced UI behavior can be layered on top with other libraries.
+## What changes in advanced setups?
 
-## What these examples demonstrate
+| Concern               | Default CSS flow                                        | Advanced flow                                                             |
+| --------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Enter and exit timing | `useToastAnimation()` reads computed CSS duration.      | Your renderer must call `markEntered()` and `markExited()`.               |
+| Rendering loop        | `Toaster` and `Toaster.List` render grouped placements. | `useStore(store)` can drive a fully custom renderer.                      |
+| Gestures              | `useToastDrag()` handles pointer drag out of the box.   | You can combine store actions with Framer Motion or use-gesture.          |
+| Placement             | `Toaster.List` groups by `placement`.                   | You can anchor or reposition toasts as long as store state stays updated. |
 
-- Replacing CSS animations with Framer Motion.
-- Adding gesture-driven swipe interactions.
-- Anchoring floating toast stacks to a trigger element.
+## Custom animation libraries
 
-## Integration notes
-
-These patterns all rely on the same primitives:
-
-- `useToast()` for state and actions.
-- `useStore()` for rendering custom stacks.
-- `toast.markEntered()` and `toast.markExited()` when custom animation systems own lifecycle timing.
-
-## How to wire a custom animation library
+When CSS is not the source of truth for timing, your renderer becomes responsible for lifecycle completion.
 
 ```tsx
+import { useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ToastCtx, useStore, useToast } from "@headless-toast/react";
+import type { ReactToastStore } from "@headless-toast/react";
+
 function MotionToast() {
-  const { toast, dismiss, markEntered, markExited } = useToast();
+  const {
+    toast: currentToast,
+    dismiss,
+    pauseOnHoverHandlers,
+    markEntered,
+    markExited,
+  } = useToast();
 
   useEffect(() => {
-    if (toast.status !== "entering") return;
+    if (currentToast.status !== "entering") return;
 
-    const timer = setTimeout(() => toast.markEntered(toast.id), 300);
-    return () => clearTimeout(timer);
-  }, [toast.id, toast.status, toast]);
+    const timer = window.setTimeout(markEntered, 300);
+    return () => window.clearTimeout(timer);
+  }, [currentToast.id, currentToast.status, markEntered]);
 
   return (
-    <motion.div
+    <motion.article
       initial={{ opacity: 0, y: -16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
       onAnimationComplete={(definition) => {
-        if (definition === "exit") toast.markExited(toast.id);
+        if (definition === "exit") markExited();
       }}
+      onMouseEnter={pauseOnHoverHandlers.onMouseEnter}
+      onMouseLeave={pauseOnHoverHandlers.onMouseLeave}
     >
-      <strong>{String(toast.data.title)}</strong>
-      <button onClick={() => dismiss("user")}>Close</button>
-    </motion.div>
+      <strong>{String(currentToast.data.title)}</strong>
+      <button type="button" onClick={() => dismiss("user")}>
+        Close
+      </button>
+    </motion.article>
+  );
+}
+
+function MotionToaster({ store }: { store: ReactToastStore }) {
+  const toasts = useStore(store).filter((toast) => toast.status !== "exiting");
+
+  return (
+    <AnimatePresence>
+      {toasts.map((toast) => (
+        <ToastCtx.Provider key={toast.id} value={{ toast, store }}>
+          <MotionToast />
+        </ToastCtx.Provider>
+      ))}
+    </AnimatePresence>
   );
 }
 ```
 
-## How to add swipe-to-dismiss
+## Swipe interactions
+
+Use the built-in drag hook for pointer-driven swipe or swap in another gesture system when you need richer motion.
 
 ```tsx
+import {
+  useToast,
+  useToastAnimation,
+  useToastDrag,
+} from "@headless-toast/react";
+
 function DraggableToast() {
-  const { toast, dismiss } = useToast();
+  const { toast: currentToast, dismiss, pauseOnHoverHandlers } = useToast();
   const drag = useToastDrag();
   const { ref, className, handlers, attributes } = useToastAnimation({
     className: "demo-toast",
@@ -64,24 +105,38 @@ function DraggableToast() {
   });
 
   return (
-    <div
-      ref={ref}
-      className={className}
-      style={drag.style}
-      {...handlers}
-      {...drag.handlers}
-      {...attributes}
-    >
-      <strong>{String(toast.data.title)}</strong>
-      <button onClick={() => dismiss("user")}>Close</button>
+    <div {...pauseOnHoverHandlers}>
+      <div
+        ref={ref}
+        className={className}
+        style={drag.style}
+        {...handlers}
+        {...drag.handlers}
+        {...attributes}
+      >
+        <strong>{String(currentToast.data.title)}</strong>
+        <button type="button" onClick={() => dismiss("user")}>
+          Close
+        </button>
+      </div>
     </div>
   );
 }
 ```
 
-## How to anchor toasts to a button or badge
+## Floating anchors
+
+Anchored stacks are just a custom render loop driven by `useStore(store)`.
 
 ```tsx
+import {
+  autoUpdate,
+  flip,
+  offset,
+  shift,
+  useFloating,
+} from "@floating-ui/react";
+
 const { refs, floatingStyles } = useFloating({
   elements: { reference: buttonRef.current },
   placement: "bottom-end",
@@ -92,17 +147,23 @@ const { refs, floatingStyles } = useFloating({
 return (
   <div ref={refs.setFloating} style={floatingStyles}>
     {toasts.map((toast) => (
-      <CustomToast key={toast.id} toast={toast} />
+      <ToastCtx.Provider key={toast.id} value={{ toast, store }}>
+        <FloatingToast />
+      </ToastCtx.Provider>
     ))}
   </div>
 );
 ```
 
-## How to move a toast across placements
+## Moving toasts across placements
+
+Placement is just toast state. If a drag target changes, update the toast and let your renderer react.
 
 ```tsx
-function onDropToast(id: string, placement: ToastPlacement) {
-  toast.update(id, { placement });
+import type { ToastPlacement } from "@headless-toast/core";
+
+function onDropToast(id: string, nextPlacement: ToastPlacement) {
+  toastStore.update(id, { placement: nextPlacement });
 }
 ```
 
@@ -113,3 +174,5 @@ function onDropToast(id: string, placement: ToastPlacement) {
 <Canvas of={SwipeStories.SwipeRightToDismiss} />
 
 <Canvas of={FloatingStories.FloatingUIAnchored} />
+
+<Canvas of={DragPlacementStories.DragToReposition} />

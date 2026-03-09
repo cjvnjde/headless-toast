@@ -8,6 +8,7 @@ import {
 } from "@headless-toast/react";
 import type { ReactToastStore } from "@headless-toast/react";
 import { DemoToast } from "../shared/DemoToast";
+import { noControlsParameters, withCodeDocs } from "../shared/storybookDocs";
 import { ToastCounter } from "../shared/ToastCounter";
 import { useIsolatedToast } from "../shared/useIsolatedToast";
 
@@ -24,7 +25,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "Alternative toast layout behaviors, including deck-style collapsed stacks and scrollable overflow containers.",
+          "These stories leave the core store untouched and show how `useStore(store)` can drive completely custom layout behaviors such as collapsed decks and scrollable stacks.",
       },
     },
   },
@@ -195,6 +196,14 @@ function ScrollableToaster({ store }: { store: ReactToastStore }) {
 
 export const StackedDeck: Story = {
   name: "Stacked (Deck of Cards)",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "Use `useStore(store)` to build a custom hover-expandable deck layout when you want dense notification previews without flooding the viewport.",
+      `const toasts = useStore(store);
+const reversed = [...toasts].reverse();`,
+    ),
+  },
   render: function Render() {
     const toast = useIsolatedToast();
     const counterRef = useRef(0);
@@ -253,6 +262,23 @@ export const StackedDeck: Story = {
 
 export const ScrollingToasts: Story = {
   name: "Scrolling Toasts",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "Build a scrollable custom stack when a surface can legitimately hold many simultaneous notifications and you do not want them to overlap.",
+      `const toasts = useStore(store);
+
+return (
+  <div style={{ maxHeight: "calc(100vh - 32px)", overflowY: "auto" }}>
+    {toasts.map((toast) => (
+      <ToastCtx.Provider key={toast.id} value={{ toast, store }}>
+        <DemoToast />
+      </ToastCtx.Provider>
+    ))}
+  </div>
+);`,
+    ),
+  },
   render: function Render() {
     const toast = useIsolatedToast();
     const counterRef = useRef(0);

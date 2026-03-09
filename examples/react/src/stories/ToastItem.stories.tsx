@@ -1,16 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Toaster } from "@headless-toast/react";
-import { useToast } from "@headless-toast/react";
-import { useToastAnimation } from "@headless-toast/react";
+import { Toaster, useToast, useToastAnimation } from "@headless-toast/react";
+import { noControlsParameters, withCodeDocs } from "./shared/storybookDocs";
 import { useIsolatedToast } from "./shared/useIsolatedToast";
 
-// ---- Shared toast components for stories ----
-
-/**
- * Basic toast component that demonstrates useToast() hook output.
- */
 function BasicToast() {
-  const { toast, dismiss, pauseOnHoverHandlers } = useToast();
+  const { toast: currentToast, dismiss, pauseOnHoverHandlers } = useToast();
   const { ref, className, attributes, handlers } = useToastAnimation({
     className: "demo-toast",
   });
@@ -23,9 +17,11 @@ function BasicToast() {
       {...pauseOnHoverHandlers}
       {...attributes}
     >
-      {toast.data.title ? <strong>{String(toast.data.title)}</strong> : null}
-      {toast.data.body ? <p>{String(toast.data.body)}</p> : null}
-      {toast.options.dismissible !== false && (
+      {currentToast.data.title ? (
+        <strong>{String(currentToast.data.title)}</strong>
+      ) : null}
+      {currentToast.data.body ? <p>{String(currentToast.data.body)}</p> : null}
+      {currentToast.options.dismissible !== false ? (
         <button
           className="toast-close"
           onClick={() => dismiss("user")}
@@ -33,26 +29,23 @@ function BasicToast() {
         >
           &times;
         </button>
-      )}
-      {toast.options.progress && (
+      ) : null}
+      {currentToast.options.progress ? (
         <div
           className="toast-progress"
-          style={{ width: `${toast.progress * 100}%` }}
+          style={{ width: `${currentToast.progress * 100}%` }}
           role="progressbar"
-          aria-valuenow={Math.round(toast.progress * 100)}
+          aria-valuenow={Math.round(currentToast.progress * 100)}
           aria-valuemin={0}
           aria-valuemax={100}
         />
-      )}
+      ) : null}
     </div>
   );
 }
 
-/**
- * Custom-styled toast to demonstrate full rendering control via useToast().
- */
 function CustomStyledToast() {
-  const { toast, dismiss } = useToast();
+  const { toast: currentToast, dismiss } = useToast();
   const { ref, className, attributes, handlers } = useToastAnimation();
 
   return (
@@ -71,9 +64,9 @@ function CustomStyledToast() {
             height: 36,
             borderRadius: "50%",
             background:
-              toast.type === "success"
+              currentToast.type === "success"
                 ? "#dcfce7"
-                : toast.type === "error"
+                : currentToast.type === "error"
                   ? "#fee2e2"
                   : "#dbeafe",
             display: "flex",
@@ -83,18 +76,18 @@ function CustomStyledToast() {
             flexShrink: 0,
           }}
         >
-          {toast.type === "success"
+          {currentToast.type === "success"
             ? "\u2713"
-            : toast.type === "error"
+            : currentToast.type === "error"
               ? "\u2717"
               : "\u2139"}
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 600, fontSize: 14 }}>
-            {String(toast.data.title)}
+            {String(currentToast.data.title)}
           </div>
           <div style={{ fontSize: 12, color: "#6b7280" }}>
-            {String(toast.data.body)}
+            {String(currentToast.data.body)}
           </div>
         </div>
         <button
@@ -119,12 +112,13 @@ const meta: Meta = {
   tags: ["autodocs"],
   parameters: {
     layout: "fullscreen",
+    controls: {
+      disable: true,
+    },
     docs: {
       description: {
         component:
-          "`useToast()` provides the current toast state and actions inside a user-defined " +
-          "toast component rendered by `<Toaster>`. It returns the current toast state " +
-          "and convenience helpers (dismiss, pause, resume, update, waitForClose, pauseOnHoverHandlers).",
+          "`useToast()` is the hook you call inside your toast item component. It gives you the current toast state plus actions such as `dismiss()`, `update()`, `pause()`, `resume()`, `markEntered()`, and `markExited()`.",
       },
     },
   },
@@ -133,15 +127,38 @@ const meta: Meta = {
 export default meta;
 type Story = StoryObj;
 
-// ---- Stories ----
-
-/**
- * Default toast rendered via `useToast()` hook — all type variants.
- */
 export const AllTypeVariants: Story = {
   name: "All Type Variants",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "Use `useToast()` when one component should render every toast variant and react to the current toast state directly.",
+      `function BasicToast() {
+  const { toast: currentToast, dismiss, pauseOnHoverHandlers } = useToast();
+  const { ref, className, attributes, handlers } = useToastAnimation({
+    className: "demo-toast",
+  });
+
+  return (
+    <div
+      ref={ref}
+      className={className}
+      {...handlers}
+      {...pauseOnHoverHandlers}
+      {...attributes}
+    >
+      <strong>{String(currentToast.data.title)}</strong>
+      {currentToast.data.body ? <p>{String(currentToast.data.body)}</p> : null}
+      <button type="button" className="toast-close" onClick={() => dismiss("user")}>
+        &times;
+      </button>
+    </div>
+  );
+}`,
+    ),
+  },
   render: function Render() {
-    const toast = useIsolatedToast();
+    const toastStore = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -157,7 +174,7 @@ export const AllTypeVariants: Story = {
                 key={type}
                 className={`btn-${type}`}
                 onClick={() =>
-                  toast[type](
+                  toastStore[type](
                     {
                       title: type.charAt(0).toUpperCase() + type.slice(1),
                       body: `This is a ${type} toast.`,
@@ -170,23 +187,37 @@ export const AllTypeVariants: Story = {
               </button>
             ),
           )}
-          <button className="btn-dismiss" onClick={() => toast.dismissAll()}>
+          <button
+            className="btn-dismiss"
+            onClick={() => toastStore.dismissAll()}
+          >
             Dismiss All
           </button>
         </div>
-        <Toaster store={toast}><Toaster.List><BasicToast /></Toaster.List></Toaster>
+        <Toaster store={toastStore}>
+          <Toaster.List>
+            <BasicToast />
+          </Toaster.List>
+        </Toaster>
       </div>
     );
   },
 };
 
-/**
- * Toast without a close button (dismissible: false).
- */
 export const NonDismissible: Story = {
   name: "Non-Dismissible",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "Read `toast.options.dismissible` from `useToast()` and decide whether your component should show a close affordance.",
+      `toastStore.warning(
+  { title: "Persistent", body: "No close button on this one." },
+  { dismissible: false, duration: 0 },
+);`,
+    ),
+  },
   render: function Render() {
-    const toast = useIsolatedToast();
+    const toastStore = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -199,7 +230,7 @@ export const NonDismissible: Story = {
           <button
             className="btn-warning"
             onClick={() =>
-              toast.warning(
+              toastStore.warning(
                 { title: "Persistent", body: "No close button on this one." },
                 { dismissible: false, duration: 0 },
               )
@@ -207,23 +238,37 @@ export const NonDismissible: Story = {
           >
             Add Non-Dismissible Toast
           </button>
-          <button className="btn-dismiss" onClick={() => toast.dismissAll()}>
+          <button
+            className="btn-dismiss"
+            onClick={() => toastStore.dismissAll()}
+          >
             Dismiss All
           </button>
         </div>
-        <Toaster store={toast}><Toaster.List><BasicToast /></Toaster.List></Toaster>
+        <Toaster store={toastStore}>
+          <Toaster.List>
+            <BasicToast />
+          </Toaster.List>
+        </Toaster>
       </div>
     );
   },
 };
 
-/**
- * Toast with progress bar visible.
- */
 export const WithProgressBar: Story = {
   name: "With Progress Bar",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "Use `toast.progress` from `useToast()` to build a progress bar or countdown UI inside your custom toast component.",
+      `toastStore.info(
+  { title: "Downloading", body: "Watch the progress bar..." },
+  { progress: true, duration: 5000 },
+);`,
+    ),
+  },
   render: function Render() {
-    const toast = useIsolatedToast();
+    const toastStore = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -236,7 +281,7 @@ export const WithProgressBar: Story = {
           <button
             className="btn-info"
             onClick={() =>
-              toast.info(
+              toastStore.info(
                 { title: "Downloading", body: "Watch the progress bar..." },
                 { progress: true, duration: 5000 },
               )
@@ -245,19 +290,45 @@ export const WithProgressBar: Story = {
             Add Toast with Progress
           </button>
         </div>
-        <Toaster store={toast}><Toaster.List><BasicToast /></Toaster.List></Toaster>
+        <Toaster store={toastStore}>
+          <Toaster.List>
+            <BasicToast />
+          </Toaster.List>
+        </Toaster>
       </div>
     );
   },
 };
 
-/**
- * Custom toast component with different visual style.
- */
 export const CustomComponent: Story = {
   name: "Custom Component",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "`useToast()` is not tied to any specific markup. Use it to plug toast state into your own design-system component or branded layout.",
+      `function CustomStyledToast() {
+  const { toast: currentToast, dismiss } = useToast();
+  const { ref, className, attributes, handlers } = useToastAnimation();
+
+  return (
+    <div ref={ref} className={className} {...handlers} {...attributes}>
+      <div style={{ display: "flex", gap: 12, width: "100%" }}>
+        <div style={{ width: 36, height: 36, borderRadius: "50%" }} />
+        <div style={{ flex: 1 }}>
+          <div>{String(currentToast.data.title)}</div>
+          <div>{String(currentToast.data.body)}</div>
+        </div>
+        <button type="button" onClick={() => dismiss("user")}>
+          &times;
+        </button>
+      </div>
+    </div>
+  );
+}`,
+    ),
+  },
   render: function Render() {
-    const toast = useIsolatedToast();
+    const toastStore = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -271,7 +342,7 @@ export const CustomComponent: Story = {
           <button
             className="btn-success"
             onClick={() =>
-              toast.success({
+              toastStore.success({
                 title: "Custom Render",
                 body: "Styled with a custom component.",
               })
@@ -282,7 +353,7 @@ export const CustomComponent: Story = {
           <button
             className="btn-error"
             onClick={() =>
-              toast.error({
+              toastStore.error({
                 title: "Custom Error",
                 body: "Different icon and background.",
               })
@@ -291,19 +362,31 @@ export const CustomComponent: Story = {
             Add Custom Error
           </button>
         </div>
-        <Toaster store={toast}><Toaster.List><CustomStyledToast /></Toaster.List></Toaster>
+        <Toaster store={toastStore}>
+          <Toaster.List>
+            <CustomStyledToast />
+          </Toaster.List>
+        </Toaster>
       </div>
     );
   },
 };
 
-/**
- * Interactive dismiss: demonstrates that dismiss() from useToast() works.
- */
 export const InteractiveDismiss: Story = {
   name: "Interactive Dismiss",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "Call `dismiss()` from the hook to trigger exit animation and cleanup from any element inside your custom toast component.",
+      `const { dismiss } = useToast();
+
+<button type="button" onClick={() => dismiss("user")}>
+  Close
+</button>;`,
+    ),
+  },
   render: function Render() {
-    const toast = useIsolatedToast();
+    const toastStore = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
@@ -317,7 +400,7 @@ export const InteractiveDismiss: Story = {
           <button
             className="btn-info"
             onClick={() =>
-              toast.info(
+              toastStore.info(
                 {
                   title: "Click the X",
                   body: "Dismissing triggers toast.dismiss()",
@@ -329,7 +412,11 @@ export const InteractiveDismiss: Story = {
             Add Dismissible Toast
           </button>
         </div>
-        <Toaster store={toast}><Toaster.List><BasicToast /></Toaster.List></Toaster>
+        <Toaster store={toastStore}>
+          <Toaster.List>
+            <BasicToast />
+          </Toaster.List>
+        </Toaster>
       </div>
     );
   },

@@ -1,46 +1,88 @@
 import { Meta, Canvas } from "@storybook/addon-docs/blocks";
 import * as InlineContainerStories from "../features/InlineContainers.stories";
+import * as FeatureIdentityStories from "../features/FeatureIdentity.stories";
 import * as UseStoreStories from "../useStore.stories";
 import * as ToastHookStories from "../ToastItem.stories";
 import * as TailwindStories from "../toaster/ToasterTailwind.stories";
 
 <Meta title="Docs/Usage Patterns" />
 
-# Usage patterns
+<div className="docs-hero">
+  <p className="docs-kicker">Usage patterns</p>
+  <h1>Choose the rendering pattern that matches the UI around the toast.</h1>
+  <p className="docs-lead">
+    The same store primitives can drive global app toasts, inline panel
+    feedback, design-system wrappers, and custom debug UIs. Use this page to
+    decide which primitive owns each job.
+  </p>
+</div>
 
-These examples show how the library fits into real app workflows beyond a single global toaster.
+## Which primitive should you reach for?
 
-## Common patterns
+| Goal                                         | Primary primitive                                        | Why                                                              |
+| -------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------- |
+| Keep feedback inside a panel or form         | `containerId` + `inline` toaster                         | One store can drive local and global toasts without duplication. |
+| Build counters, dashboards, or custom stacks | `useStore(store)`                                        | You get the raw toast array and render anything from it.         |
+| Fully own markup and styling                 | `useToast()`                                             | You control every element and interaction of one toast item.     |
+| Keep the system utility-first                | `useToastAnimation()` + Tailwind                         | Lifecycle stays stable while styling changes freely.             |
+| Replace or refresh an existing toast         | Stable `id` + `toastStore.update()` or repeated triggers | A stable id turns a new trigger into an in-place update.         |
 
-### Scoped containers
+## Scoped containers
 
-Use `containerId` when notifications should stay inside a panel, sidebar, or form.
+Use `containerId` when notifications should stay inside a sidebar, drawer, panel, or form.
 
 ```tsx
-const { toast } = createToast();
+import {
+  createToast,
+  Toaster,
+  useToast,
+  useToastAnimation,
+} from "@headless-toast/react";
 
-toast.success(
-  { title: "Saved", body: "Sidebar settings updated." },
-  { containerId: "sidebar", duration: 3000 },
-);
+const { toast: toastStore } = createToast();
 
-function Sidebar() {
+function InlineToast() {
+  const { toast: currentToast, dismiss } = useToast();
+  const { ref, className, handlers, attributes } = useToastAnimation({
+    className: "inline-toast",
+  });
+
   return (
-    <Toaster store={toast} containerId="sidebar" inline>
+    <div ref={ref} className={className} {...handlers} {...attributes}>
+      <div>
+        <strong>{String(currentToast.data.title)}</strong>
+        <span>{String(currentToast.data.body)}</span>
+      </div>
+      <button type="button" onClick={() => dismiss("user")}>
+        Close
+      </button>
+    </div>
+  );
+}
+
+function SidebarFeedback() {
+  return (
+    <Toaster store={toastStore} containerId="sidebar" inline>
       <Toaster.List className="sidebar-toast-list">
         <InlineToast />
       </Toaster.List>
     </Toaster>
   );
 }
+
+toastStore.success(
+  { title: "Saved", body: "Sidebar settings updated." },
+  { containerId: "sidebar", duration: 3000 },
+);
 ```
 
-### Reactive inspection
+## Reactive inspection
 
-Use `useStore(store)` to render dashboards, counters, or developer tooling around the current toast array.
+Use `useStore(store)` when you need counters, devtools, analytics overlays, or custom render loops.
 
 ```tsx
 import { useStore } from "@headless-toast/react";
+import type { ReactToastStore } from "@headless-toast/react";
 
 function ToastDebugPanel({ store }: { store: ReactToastStore }) {
   const toasts = useStore(store);
@@ -49,7 +91,7 @@ function ToastDebugPanel({ store }: { store: ReactToastStore }) {
     <ul>
       {toasts.map((toast) => (
         <li key={toast.id}>
-          {toast.type} - {toast.status} - {toast.remaining}ms left
+          {toast.type} - {toast.status} - {toast.remaining}ms remaining
         </li>
       ))}
     </ul>
@@ -57,41 +99,54 @@ function ToastDebugPanel({ store }: { store: ReactToastStore }) {
 }
 ```
 
-### Custom rendering
+## Custom rendering
 
-Use `useToast()` in your own component to fully control markup and styling.
+Use `useToast()` when you want design-system markup instead of a demo shell.
 
 ```tsx
+import { useToast, useToastAnimation } from "@headless-toast/react";
+
 function BrandToast() {
-  const { toast, dismiss } = useToast();
+  const { toast: currentToast, dismiss } = useToast();
   const { ref, className, handlers, attributes } = useToastAnimation({
     className: "brand-toast",
   });
 
   return (
-    <div ref={ref} className={className} {...handlers} {...attributes}>
+    <article ref={ref} className={className} {...handlers} {...attributes}>
       <div>
-        <strong>{String(toast.data.title)}</strong>
-        <p>{String(toast.data.body)}</p>
+        <strong>{String(currentToast.data.title)}</strong>
+        {currentToast.data.body ? (
+          <p>{String(currentToast.data.body)}</p>
+        ) : null}
       </div>
-      <button onClick={() => dismiss("user")}>Dismiss</button>
-    </div>
+      <button type="button" onClick={() => dismiss("user")}>
+        Dismiss
+      </button>
+    </article>
   );
 }
 ```
 
-### Style the default toast with Tailwind v4
+## Tailwind v4 styling
 
-Use Tailwind only for presentation while keeping the same store, toaster, and animation hooks.
+Tailwind changes only the presentation layer. The store, toaster, and hooks stay exactly the same.
 
 ```tsx
-import { Toaster, useToast, useToastAnimation } from "@headless-toast/react";
+import {
+  createToast,
+  Toaster,
+  useToast,
+  useToastAnimation,
+} from "@headless-toast/react";
+import "./tailwind.css";
+
+const { toast: toastStore } = createToast();
 
 function TailwindToast() {
-  const { toast, dismiss, pauseOnHoverHandlers } = useToast();
+  const { toast: currentToast, dismiss, pauseOnHoverHandlers } = useToast();
   const { ref, className, handlers, attributes } = useToastAnimation({
-    className:
-      "toast-shell relative flex min-w-80 max-w-sm items-start gap-3 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-lg",
+    className: "toast-shell",
   });
 
   return (
@@ -102,21 +157,20 @@ function TailwindToast() {
       {...pauseOnHoverHandlers}
       {...attributes}
     >
-      <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-sm font-semibold text-white">
-        OK
-      </div>
-
       <div className="min-w-0 flex-1 pr-8">
-        <strong className="block text-sm font-semibold text-slate-900">
-          {String(toast.data.title)}
+        <strong className="block text-sm font-semibold text-[var(--color-toast-ink)]">
+          {String(currentToast.data.title)}
         </strong>
-        <p className="mt-1 text-sm leading-5 text-slate-600">
-          {String(toast.data.body)}
-        </p>
+        {currentToast.data.body ? (
+          <p className="mt-1 text-sm text-[var(--color-toast-muted)]">
+            {String(currentToast.data.body)}
+          </p>
+        ) : null}
       </div>
 
       <button
-        className="absolute right-3 top-3 inline-flex size-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+        className="toast-close-btn"
+        type="button"
         onClick={() => dismiss("user")}
       >
         x
@@ -125,86 +179,39 @@ function TailwindToast() {
   );
 }
 
-<Toaster store={toast} className="pointer-events-none fixed inset-0 z-[9999]">
+<Toaster
+  store={toastStore}
+  className="pointer-events-none fixed inset-0 z-[9999]"
+>
   <Toaster.List className="pointer-events-none fixed right-0 top-0 flex w-[min(26rem,calc(100vw-24px))] max-w-[calc(100vw-24px)] flex-col items-end gap-3 p-6">
     <TailwindToast />
   </Toaster.List>
 </Toaster>;
 ```
 
-Animation still needs explicit enter/exit rules because the store advances state from the element's computed animation or transition duration:
-
 ```css
+@import "tailwindcss";
+
 .toast-shell[data-toast-status="entering"] {
-  animation: toast-enter 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  animation: toast-tailwind-enter 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .toast-shell[data-toast-status="exiting"][data-toast-swipe-dismissed="false"] {
-  animation: toast-exit 240ms ease-in forwards;
-}
-
-.toast-shell[data-toast-status="exiting"][data-toast-swipe-dismissed="true"] {
-  animation: toast-swipe-exit 240ms ease-in forwards;
-}
-
-@keyframes toast-enter {
-  from {
-    opacity: 0;
-    transform: translateY(14px) scale(0.96);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes toast-exit {
-  from {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-
-  to {
-    opacity: 0;
-    transform: translateY(-10px) scale(0.97);
-  }
+  animation: toast-tailwind-exit 240ms ease-in forwards;
 }
 ```
 
-For Tailwind v4 setup in Storybook/Vite:
+## Updating an existing toast by id
 
-```ts
-// .storybook/main.ts
-import tailwindcss from "@tailwindcss/vite";
-
-export default {
-  viteFinal: async (config) => ({
-    ...config,
-    plugins: [...(config.plugins ?? []), tailwindcss()],
-  }),
-};
-```
-
-```css
-/* tailwind.css */
-@import "tailwindcss";
-
-@theme {
-  --color-toast-success: oklch(0.72 0.18 150);
-  --color-toast-surface: oklch(0.98 0.01 240);
-}
-```
-
-### Update an existing toast by id
+Stable ids are the easiest way to dedupe or turn loading into success and error states.
 
 ```tsx
-toast.loading(
+toastStore.loading(
   { title: "Uploading", body: "Starting upload..." },
   { id: "file-upload", duration: 0 },
 );
 
-toast.success(
+toastStore.success(
   { title: "Uploaded", body: "All files are stored." },
   { id: "file-upload", duration: 3000 },
 );
@@ -219,3 +226,5 @@ toast.success(
 <Canvas of={ToastHookStories.CustomComponent} />
 
 <Canvas of={TailwindStories.DefaultToastWithTailwind} />
+
+<Canvas of={FeatureIdentityStories.DuplicateIdPrevention} />

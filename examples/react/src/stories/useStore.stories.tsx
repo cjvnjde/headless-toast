@@ -4,6 +4,7 @@ import { createToast } from "@headless-toast/react";
 import type { ReactToastStore } from "@headless-toast/react";
 import { useStore } from "@headless-toast/react";
 import { DemoToaster } from "./shared/DemoToast";
+import { noControlsParameters, withCodeDocs } from "./shared/storybookDocs";
 import { useIsolatedToast } from "./shared/useIsolatedToast";
 
 const meta: Meta = {
@@ -11,12 +12,13 @@ const meta: Meta = {
   tags: ["autodocs"],
   parameters: {
     layout: "fullscreen",
+    controls: {
+      disable: true,
+    },
     docs: {
       description: {
         component:
-          "`useStore` is a React hook that subscribes to a `ToastStore` using " +
-          "`useSyncExternalStore`. It returns the current array of `ToastState` objects, " +
-          "updating reactively whenever the store changes.",
+          "`useStore(store)` subscribes React to the current array of toast states. Use it when you want dashboards, counters, alternate layouts, or custom render loops outside the default `Toaster.List` flow.",
       },
     },
   },
@@ -25,44 +27,64 @@ const meta: Meta = {
 export default meta;
 type Story = StoryObj;
 
-// ---- Stories ----
-
-/**
- * Demonstrates reactive state updates. The table below the Toaster shows
- * the live toast state array returned by `useStore()`.
- */
 export const ReactiveState: Story = {
   name: "Reactive State Inspector",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "Subscribe to the raw toast array and render your own inspector, analytics panel, or badge UI from it.",
+      `function ToastDebugPanel({ store }: { store: ReactToastStore }) {
+  const toasts = useStore(store);
+
+  return (
+    <ul>
+      {toasts.map((toast) => (
+        <li key={toast.id}>
+          {toast.type} - {toast.status} - {toast.remaining}ms remaining
+        </li>
+      ))}
+    </ul>
+  );
+}`,
+    ),
+  },
   render: function Render() {
-    const toast = useIsolatedToast();
+    const toastStore = useIsolatedToast();
 
     return (
       <div className="story-wrapper">
         <h2>Reactive State Inspector</h2>
         <p className="story-subtitle">
-          The table below shows the live toast state array returned by{" "}
-          <code>useStore()</code>. Add toasts and watch the state update in real
-          time.
+          The table below shows the live toast state array returned by
+          <code> useStore()</code>. Add toasts and watch the state update in
+          real time.
         </p>
         <div className="story-controls">
           <button
             className="btn-success"
-            onClick={() => toast.success({ title: "Success", body: "Done!" })}
+            onClick={() =>
+              toastStore.success({ title: "Success", body: "Done!" })
+            }
           >
             Add Success
           </button>
           <button
             className="btn-error"
-            onClick={() => toast.error({ title: "Error", body: "Failed!" })}
+            onClick={() =>
+              toastStore.error({ title: "Error", body: "Failed!" })
+            }
           >
             Add Error
           </button>
-          <button className="btn-dismiss" onClick={() => toast.dismissAll()}>
+          <button
+            className="btn-dismiss"
+            onClick={() => toastStore.dismissAll()}
+          >
             Dismiss All
           </button>
         </div>
-        <StateInspector store={toast} />
-        <DemoToaster store={toast} />
+        <StateInspector store={toastStore} />
+        <DemoToaster store={toastStore} />
       </div>
     );
   },
@@ -96,13 +118,15 @@ function StateInspector({ store }: { store: ReactToastStore }) {
             </tr>
           </thead>
           <tbody>
-            {toasts.map((t) => (
-              <tr key={t.id} style={{ borderBottom: "1px solid #f3f4f6" }}>
-                <td style={{ padding: "4px 8px" }}>{t.id.slice(0, 8)}...</td>
-                <td style={{ padding: "4px 8px" }}>{t.type}</td>
-                <td style={{ padding: "4px 8px" }}>{t.status}</td>
-                <td style={{ padding: "4px 8px" }}>{String(t.paused)}</td>
-                <td style={{ padding: "4px 8px" }}>{t.remaining}ms</td>
+            {toasts.map((toast) => (
+              <tr key={toast.id} style={{ borderBottom: "1px solid #f3f4f6" }}>
+                <td style={{ padding: "4px 8px" }}>
+                  {toast.id.slice(0, 8)}...
+                </td>
+                <td style={{ padding: "4px 8px" }}>{toast.type}</td>
+                <td style={{ padding: "4px 8px" }}>{toast.status}</td>
+                <td style={{ padding: "4px 8px" }}>{String(toast.paused)}</td>
+                <td style={{ padding: "4px 8px" }}>{toast.remaining}ms</td>
               </tr>
             ))}
           </tbody>
@@ -112,67 +136,79 @@ function StateInspector({ store }: { store: ReactToastStore }) {
   );
 }
 
-/**
- * Shows that multiple stores are independent — toasts added to one
- * store don't appear in the other.
- */
 export const MultipleStores: Story = {
   name: "Multiple Independent Stores",
+  parameters: {
+    ...noControlsParameters,
+    ...withCodeDocs(
+      "Create multiple stores when different parts of the product should have fully isolated toast streams and defaults.",
+      `const storeA = createToast({ defaults: { placement: "top-left" } }).toast;
+const storeB = createToast({ defaults: { placement: "top-right" } }).toast;`,
+    ),
+  },
   render: function Render() {
-    const toast1 = useIsolatedToast();
-    const toast2Ref = useRef<ReactToastStore | null>(null);
-    if (!toast2Ref.current) {
-      toast2Ref.current = createToast().toast;
+    const toastStoreA = useIsolatedToast();
+    const toastStoreBRef = useRef<ReactToastStore | null>(null);
+
+    if (!toastStoreBRef.current) {
+      toastStoreBRef.current = createToast().toast;
     }
-    const toast2 = toast2Ref.current;
+
+    const toastStoreB = toastStoreBRef.current;
 
     return (
       <div className="story-wrapper">
         <h2>Multiple Independent Stores</h2>
         <p className="story-subtitle">
           Each store is fully isolated. Toasts added to one store never appear
-          in the other. Store 1 renders top-left, Store 2 renders top-right.
+          in the other. Store A renders top-left, Store B renders top-right.
         </p>
         <div className="story-section">
-          <h3>Store 1 (top-left)</h3>
+          <h3>Store A (top-left)</h3>
           <div className="story-controls">
             <button
               className="btn-info"
               onClick={() =>
-                toast1.info(
-                  { title: "Store 1", body: "Belongs to store 1." },
+                toastStoreA.info(
+                  { title: "Store A", body: "Belongs to store A." },
                   { placement: "top-left", duration: 0 },
                 )
               }
             >
-              Add to Store 1
+              Add to Store A
             </button>
-            <button className="btn-dismiss" onClick={() => toast1.dismissAll()}>
-              Dismiss Store 1
+            <button
+              className="btn-dismiss"
+              onClick={() => toastStoreA.dismissAll()}
+            >
+              Dismiss Store A
             </button>
           </div>
         </div>
         <div className="story-section">
-          <h3>Store 2 (top-right)</h3>
+          <h3>Store B (top-right)</h3>
           <div className="story-controls">
             <button
               className="btn-success"
               onClick={() =>
-                toast2.success(
-                  { title: "Store 2", body: "Belongs to store 2." },
+                toastStoreB.success(
+                  { title: "Store B", body: "Belongs to store B." },
                   { placement: "top-right", duration: 0 },
                 )
               }
             >
-              Add to Store 2
+              Add to Store B
             </button>
-            <button className="btn-dismiss" onClick={() => toast2.dismissAll()}>
-              Dismiss Store 2
+            <button
+              className="btn-dismiss"
+              onClick={() => toastStoreB.dismissAll()}
+            >
+              Dismiss Store B
             </button>
           </div>
         </div>
-        <DemoToaster store={toast1} />
-        <DemoToaster store={toast2} />
+        <DemoToaster store={toastStoreA} />
+        <DemoToaster store={toastStoreB} />
       </div>
     );
   },
