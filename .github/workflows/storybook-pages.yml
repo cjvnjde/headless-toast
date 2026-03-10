@@ -32,12 +32,17 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: Resolve base commit
+        if: github.event_name != 'workflow_dispatch'
+        id: base
+        run: echo "sha=$(git rev-parse HEAD~1)" >> "$GITHUB_OUTPUT"
+
       - name: Detect storybook-related changes
         if: github.event_name != 'workflow_dispatch'
         id: filter
         uses: dorny/paths-filter@v3
         with:
-          base: HEAD~1
+          base: ${{ steps.base.outputs.sha }}
           filters: |
             storybook:
               - ".github/workflows/storybook-pages.yml"
