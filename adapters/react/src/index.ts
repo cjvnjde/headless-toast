@@ -1,7 +1,7 @@
 export { createToastStore } from "@headless-toast/core";
 export { toast, createToast } from "./toast";
 export { useStore } from "./useStore";
-export { ToastCtx, useToast } from "./useToast";
+export { ToastCtx, useToastContext, useToast } from "./useToast";
 export { useToastAnimation } from "./useToastAnimation";
 export { useToastDrag } from "./useToastDrag";
 export { Toaster } from "./Toaster";

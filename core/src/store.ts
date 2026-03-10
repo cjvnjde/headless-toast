@@ -30,7 +30,6 @@ import {
   isPhaseStatus,
   getPhaseHintDuration,
 } from "./utils";
-import { mergeObjects } from "./utils/mergeObjects";
 
 const DEFAULT_STORE_CONFIG = {
   defaults: {
@@ -97,8 +96,7 @@ class Store<
           return;
         }
 
-        toast.progress = progress;
-
+        this.patchToast(id, { progress });
         this.notify();
       },
     });
@@ -129,7 +127,7 @@ class Store<
       return this.createHandle(id);
     }
 
-    const toast = {
+    const toast = Object.freeze({
       id,
       status: TOAST_STATUS.ENTERING,
       type: toastOptions.type,
@@ -140,7 +138,7 @@ class Store<
       progress: 0,
       data: toastOptions.data,
       options: toastOptions,
-    } satisfies ToastState<TData, TCustom>;
+    } satisfies ToastState<TData, TCustom>);
 
     this.getOrCreateClosePromise(id);
     this.toasts.set(id, toast);
@@ -172,9 +170,11 @@ class Store<
 
   public loading(data: TData, options?: LoadingToastOptions<TCustom>) {
     const baseOptions: LoadingToastOptions<TCustom> = options ?? {};
-    const typedOptions = mergeObjects(baseOptions, { duration: 0 });
 
-    return this.addTypedToast(TOAST_TYPE.LOADING, data, typedOptions);
+    return this.addTypedToast(TOAST_TYPE.LOADING, data, {
+      ...baseOptions,
+      duration: 0,
+    });
   }
 
   public dismiss(
@@ -195,8 +195,10 @@ class Store<
     this.timerManager.clearAutoclose(id);
     this.timerManager.clearSafetyTimeout(id);
 
-    toast.status = TOAST_STATUS.EXITING;
-    toast.updatedAt = Date.now();
+    this.patchToast(id, {
+      status: TOAST_STATUS.EXITING,
+      updatedAt: Date.now(),
+    });
 
     this.closeReasons.set(id, reason);
 
@@ -227,30 +229,32 @@ class Store<
       return;
     }
 
+    let patch: Partial<ToastState<TData, TCustom>> = {};
+
     if (toast.status === TOAST_STATUS.EXITING) {
-      toast.status = TOAST_STATUS.VISIBLE;
+      patch.status = TOAST_STATUS.VISIBLE;
+      patch.remaining = 0;
 
       this.timerManager.clearSafetyTimeout(id);
       this.closeReasons.delete(id);
-
-      toast.remaining = 0;
     }
 
     if (updates.data) {
-      toast.data = { ...toast.data, ...updates.data };
+      patch.data = { ...toast.data, ...updates.data };
     }
 
     if (updates.type) {
-      toast.type = updates.type;
+      patch.type = updates.type;
     }
 
     if (updates.duration !== undefined) {
-      this.resetTimer(id, updates.duration);
+      this.resetTimer(id, updates.duration, patch);
     }
 
-    toast.updatedAt = Date.now();
-    toast.options = this.mergeOptions(toast.options, updates);
+    patch.updatedAt = Date.now();
+    patch.options = this.mergeOptions(toast.options, updates);
 
+    this.patchToast(id, patch);
     this.notify();
   }
 
@@ -270,13 +274,15 @@ class Store<
       return;
     }
 
-    toast.paused = true;
-
-    toast.remaining = this.timerManager.getRemainingTime(id);
+    const remaining = this.timerManager.getRemainingTime(id);
 
     this.timerManager.clearAutoclose(id);
 
-    toast.updatedAt = Date.now();
+    this.patchToast(id, {
+      paused: true,
+      remaining,
+      updatedAt: Date.now(),
+    });
 
     this.notify();
   }
@@ -293,8 +299,10 @@ class Store<
       return;
     }
 
-    toast.paused = false;
-    toast.updatedAt = Date.now();
+    this.patchToast(id, {
+      paused: false,
+      updatedAt: Date.now(),
+    });
 
     const remaining = toast.remaining;
 
@@ -317,7 +325,7 @@ class Store<
     const loadingOptions = this.createTypedOptions(
       TOAST_TYPE.LOADING,
       opts.loading,
-      mergeObjects(baseOptions, { duration: 0 }),
+      { ...baseOptions, duration: 0 },
     );
     const handle = this.add(loadingOptions);
 
@@ -372,7 +380,7 @@ class Store<
 
     this.timerManager.clearSafetyTimeout(id);
 
-    toast.status = TOAST_STATUS.VISIBLE;
+    this.patchToast(id, { status: TOAST_STATUS.VISIBLE });
 
     this.startAutocloseTimer(id);
     this.notify();
@@ -402,12 +410,30 @@ class Store<
     return this.getOrCreateClosePromise(id).promise;
   }
 
+  public destroy() {
+    this.timerManager.destroyAll();
+    this.subscribers.clear();
+    this.toasts.clear();
+    this.closePromises.clear();
+    this.closeReasons.clear();
+  }
+
   private generateId() {
     return `toast-${this.nextId++}`;
   }
 
   private getId(reference: ToastReference<TData, TCustom>) {
     return typeof reference === "string" ? reference : reference.id;
+  }
+
+  private patchToast(id: string, patch: Partial<ToastState<TData, TCustom>>) {
+    const toast = this.toasts.get(id);
+
+    if (!toast) {
+      return;
+    }
+
+    this.toasts.set(id, Object.freeze({ ...toast, ...patch }));
   }
 
   private createHandle(id: string): ToastHandle<TData, TCustom> {
@@ -577,7 +603,11 @@ class Store<
     });
   }
 
-  private resetTimer(id: string, newDuration: number) {
+  private resetTimer(
+    id: string,
+    newDuration: number,
+    patch: Partial<ToastState<TData, TCustom>>,
+  ) {
     const toast = this.toasts.get(id);
 
     if (!toast) {
@@ -586,18 +616,20 @@ class Store<
 
     this.timerManager.clearAutoclose(id);
 
-    toast.remaining = newDuration;
-    toast.progress = 0;
+    patch.remaining = newDuration;
+    patch.progress = 0;
 
     if (newDuration === 0) {
       return;
     }
 
-    if (toast.paused) {
+    const isPaused = patch.paused ?? toast.paused;
+    if (isPaused) {
       return;
     }
 
-    if (toast.status !== TOAST_STATUS.VISIBLE) {
+    const status = patch.status ?? toast.status;
+    if (status !== TOAST_STATUS.VISIBLE) {
       return;
     }
 
@@ -633,8 +665,6 @@ class Store<
     }
 
     const reason = this.closeReasons.get(id) ?? CLOSE_REASON.PROGRAMMATIC;
-
-    toast.status = TOAST_STATUS.REMOVED;
 
     this.timerManager.clearAll(id);
     this.closeReasons.delete(id);

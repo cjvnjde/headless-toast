@@ -1,6 +1,5 @@
 import { TOAST_STATUS } from "@headless-toast/core";
 import {
-  useContext,
   useRef,
   useEffect,
   useCallback,
@@ -8,7 +7,7 @@ import {
   type TransitionEvent,
 } from "react";
 import type { AnimationResult } from "./types";
-import { ToastCtx, useToast } from "./useToast";
+import { useToastContext, useToast } from "./useToast";
 import { getAnimationDuration } from "./utils";
 
 type UseToastAnimationOptions = {
@@ -19,15 +18,9 @@ type UseToastAnimationOptions = {
 function useToastAnimation<TElement extends HTMLElement = HTMLDivElement>(
   options?: UseToastAnimationOptions,
 ): AnimationResult<TElement> {
-  const ctx = useContext(ToastCtx);
+  const { store } = useToastContext();
   const { toast, markEntered, markExited } = useToast();
   const ref = useRef<TElement>(null);
-
-  if (!ctx) {
-    throw new Error(
-      "useToastAnimation() must be used inside a toast component rendered by <Toaster>.",
-    );
-  }
 
   const completeCurrentPhase = useCallback(() => {
     if (toast.status === TOAST_STATUS.ENTERING) {
@@ -50,10 +43,15 @@ function useToastAnimation<TElement extends HTMLElement = HTMLDivElement>(
     ) {
       const phase = toast.status === TOAST_STATUS.ENTERING ? "enter" : "exit";
 
+      if (typeof requestAnimationFrame === "undefined") {
+        completeCurrentPhase();
+        return;
+      }
+
       const rafId = requestAnimationFrame(() => {
         const duration = getAnimationDuration(el);
         if (duration > 0) {
-          ctx.store.setAnimationDuration(toast.id, phase, duration);
+          store.setAnimationDuration(toast.id, phase, duration);
           return;
         }
 
@@ -62,7 +60,7 @@ function useToastAnimation<TElement extends HTMLElement = HTMLDivElement>(
 
       return () => cancelAnimationFrame(rafId);
     }
-  }, [toast.status, toast.id, ctx, completeCurrentPhase]);
+  }, [toast.status, toast.id, store, completeCurrentPhase]);
 
   const handlePhaseEnd = useCallback(() => {
     completeCurrentPhase();

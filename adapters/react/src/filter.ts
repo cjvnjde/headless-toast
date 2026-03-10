@@ -5,9 +5,11 @@ function filterByContainer<
   TData extends ToastData = ToastData,
   TCustom extends ToastCustomOptions = {},
 >(toasts: ReactToastState<TData, TCustom>[], containerId?: string) {
-  return toasts.filter(
-    (toast) => (toast.options.containerId ?? undefined) === containerId,
-  );
+  return toasts.filter((toast) => {
+    const toastContainer = toast.options.containerId ?? undefined;
+
+    return toastContainer === containerId;
+  });
 }
 
 export { filterByContainer };

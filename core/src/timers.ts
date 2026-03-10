@@ -91,6 +91,20 @@ class TimerManager {
     this.clearSafetyTimeout(id);
   }
 
+  public destroyAll() {
+    for (const id of this.timers.keys()) {
+      this.clearAutoclose(id);
+    }
+
+    for (const id of this.safetyTimeouts.keys()) {
+      this.clearSafetyTimeout(id);
+    }
+
+    for (const id of this.progressIntervals.keys()) {
+      this.clearProgressInterval(id);
+    }
+  }
+
   private startProgressTick(
     id: string,
     duration: number,

@@ -335,6 +335,8 @@ interface ToastStore<
   markExited(id: ToastReference<TData, TCustom>): void;
 
   waitForClose(id: ToastReference<TData, TCustom>): Promise<CloseReason>;
+
+  destroy(): void;
 }
 
 export {

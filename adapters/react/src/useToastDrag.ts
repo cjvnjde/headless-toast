@@ -4,19 +4,24 @@ import {
   useCallback,
   type PointerEvent,
   type CSSProperties,
+  type RefObject,
 } from "react";
 import { CLOSE_REASON, computeDragState } from "@headless-toast/core";
 import { resolveDraggableConfig } from "./drag";
 import { useToast } from "./useToast";
 
-function useToastDrag() {
+function useToastDrag(elementRef?: RefObject<HTMLElement | null>) {
   const { toast, pause, resume, dismiss } = useToast();
   const [isDragging, setIsDragging] = useState(false);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-
   const [swipeDismissed, setSwipeDismissed] = useState(false);
+  const [styleOffset, setStyleOffset] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
 
   const isDraggingRef = useRef(false);
+  const swipeDismissedRef = useRef(false);
+  const offsetRef = useRef({ x: 0, y: 0 });
 
   const startPos = useRef({ x: 0, y: 0 });
   const lastPos = useRef({ x: 0, y: 0 });
@@ -24,6 +29,26 @@ function useToastDrag() {
   const pointerIdRef = useRef<number | null>(null);
 
   const config = resolveDraggableConfig(toast.options.draggable);
+
+  const applyOffset = useCallback(
+    (offset: { x: number; y: number }) => {
+      offsetRef.current = offset;
+
+      const el = elementRef?.current;
+
+      if (el) {
+        const { x, y } = offset;
+
+        el.style.transform =
+          x === 0 && y === 0 ? "" : `translate(${x}px, ${y}px)`;
+        el.style.transition = isDraggingRef.current ? "none" : "";
+        el.style.cursor = isDraggingRef.current ? "grabbing" : "";
+      } else {
+        setStyleOffset({ ...offset });
+      }
+    },
+    [elementRef],
+  );
 
   const stopDragging = useCallback(
     (shouldResume: boolean) => {
@@ -33,15 +58,25 @@ function useToastDrag() {
       pointerIdRef.current = null;
       setIsDragging(false);
 
-      if (!swipeDismissed) {
-        setOffset({ x: 0, y: 0 });
+      if (!swipeDismissedRef.current) {
+        offsetRef.current = { x: 0, y: 0 };
+
+        const el = elementRef?.current;
+
+        if (el) {
+          el.style.transition = "transform 200ms ease-out";
+          el.style.transform = "";
+          el.style.cursor = "";
+        } else {
+          setStyleOffset(null);
+        }
       }
 
       if (shouldResume) {
         resume();
       }
     },
-    [resume, swipeDismissed],
+    [resume, elementRef],
   );
 
   const onPointerDown = useCallback(
@@ -60,8 +95,11 @@ function useToastDrag() {
       lastPos.current = { x: e.clientX, y: e.clientY };
       lastTime.current = Date.now();
       isDraggingRef.current = true;
+      swipeDismissedRef.current = false;
+      offsetRef.current = { x: 0, y: 0 };
       setIsDragging(true);
       setSwipeDismissed(false);
+      setStyleOffset(null);
 
       pause();
     },
@@ -91,11 +129,12 @@ function useToastDrag() {
 
       const dragState = computeDragState(config, { dx, dy, vx, vy });
 
-      setOffset({ x: dragState.offsetX, y: dragState.offsetY });
+      applyOffset({ x: dragState.offsetX, y: dragState.offsetY });
 
       if (dragState.dismissed) {
         isDraggingRef.current = false;
         pointerIdRef.current = null;
+        swipeDismissedRef.current = true;
         setIsDragging(false);
         setSwipeDismissed(true);
 
@@ -106,7 +145,7 @@ function useToastDrag() {
         dismiss(CLOSE_REASON.SWIPE);
       }
     },
-    [config, dismiss],
+    [config, dismiss, applyOffset],
   );
 
   const onPointerUp = useCallback(
@@ -145,15 +184,17 @@ function useToastDrag() {
   let style: CSSProperties;
 
   if (swipeDismissed) {
+    const { x, y } = offsetRef.current;
+
     style = {
-      transform: `translate(${offset.x}px, ${offset.y}px)`,
+      transform: `translate(${x}px, ${y}px)`,
       transition: "none",
     };
-  } else if (isDragging || offset.x !== 0 || offset.y !== 0) {
+  } else if (styleOffset && isDragging) {
     style = {
-      transform: `translate(${offset.x}px, ${offset.y}px)`,
-      transition: isDragging ? "none" : "transform 200ms ease-out",
-      cursor: isDragging ? "grabbing" : undefined,
+      transform: `translate(${styleOffset.x}px, ${styleOffset.y}px)`,
+      transition: "none",
+      cursor: "grabbing",
     };
   } else {
     style = {};

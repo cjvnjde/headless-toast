@@ -29,10 +29,7 @@ function ToastProvider<
   );
 }
 
-function useToast<
-  TData extends ToastData = ToastData,
-  TCustom extends ToastCustomOptions = {},
->() {
+function useToastContext() {
   const ctx = useContext(ToastCtx);
 
   if (!ctx) {
@@ -41,7 +38,14 @@ function useToast<
     );
   }
 
-  const { toast, store } = ctx;
+  return ctx;
+}
+
+function useToast<
+  TData extends ToastData = ToastData,
+  TCustom extends ToastCustomOptions = {},
+>() {
+  const { toast, store } = useToastContext();
 
   const dismiss = useCallback(
     (reason?: Exclude<CloseReason, "timeout">) => {
@@ -105,4 +109,4 @@ function useToast<
   };
 }
 
-export { ToastCtx, ToastProvider, useToast };
+export { ToastCtx, ToastProvider, useToastContext, useToast };
