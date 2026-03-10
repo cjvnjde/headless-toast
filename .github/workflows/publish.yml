@@ -10,11 +10,22 @@ permissions:
   id-token: write
 
 jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
   publish:
+    needs: ci
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Environment
+        uses: ./.github/actions/setup-env
+
       - name: Parse tag
         id: parse
+        shell: bash
         run: |
           TAG="${GITHUB_REF#refs/tags/}"
           PACKAGE_NAME="${TAG%@*}"
@@ -27,7 +38,6 @@ jobs:
             PACKAGE_DIR="adapters/$PACKAGE_SCOPE"
           fi
 
-          # Detect prerelease (alpha, beta, rc)
           IS_PRERELEASE="false"
           DIST_TAG="latest"
           if echo "$VERSION" | grep -qE '\-(alpha|beta|rc)'; then
@@ -42,18 +52,6 @@ jobs:
           echo "package_dir=$PACKAGE_DIR" >> "$GITHUB_OUTPUT"
           echo "is_prerelease=$IS_PRERELEASE" >> "$GITHUB_OUTPUT"
           echo "dist_tag=$DIST_TAG" >> "$GITHUB_OUTPUT"
-
-          echo "--- Parsed tag ---"
-          echo "Tag:           $TAG"
-          echo "Package name:  $PACKAGE_NAME"
-          echo "Version:       $VERSION"
-          echo "Package scope: $PACKAGE_SCOPE"
-          echo "Package dir:   $PACKAGE_DIR"
-          echo "Prerelease:    $IS_PRERELEASE"
-          echo "Dist tag:      $DIST_TAG"
-
-      - name: Checkout
-        uses: actions/checkout@v6
 
       - name: Validate package directory
         run: |
@@ -95,8 +93,6 @@ jobs:
         working-directory: ${{ steps.parse.outputs.package_dir }}
         run: |
           VERSION="${{ steps.parse.outputs.version }}"
-          # Extract the section between this version's heading and the next heading.
-          # Matches "## <version>" or "## <scope>@<version>" patterns.
           NOTES=$(awk -v ver="$VERSION" '
             /^## / {
               if (found) exit
@@ -105,20 +101,10 @@ jobs:
             found { print }
           ' CHANGELOG.md)
 
-          # Write multiline output using delimiter
           EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
           echo "content<<$EOF" >> "$GITHUB_OUTPUT"
           echo "$NOTES" >> "$GITHUB_OUTPUT"
           echo "$EOF" >> "$GITHUB_OUTPUT"
-
-      - name: Setup Environment
-        uses: ./.github/actions/setup-env
-
-      - name: Lint
-        run: pnpm --filter "${{ steps.parse.outputs.package_name }}" lint
-
-      - name: Test
-        run: pnpm --filter "${{ steps.parse.outputs.package_name }}" test
 
       - name: Build
         run: pnpm --filter "${{ steps.parse.outputs.package_name }}..." build

@@ -1,21 +1,10 @@
 name: Publish Storybook
 
 on:
-  push:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
     branches: [main]
-    paths:
-      - ".github/workflows/storybook-pages.yml"
-      - "package.json"
-      - "pnpm-lock.yaml"
-      - "pnpm-workspace.yaml"
-      - "core/src/**"
-      - "core/package.json"
-      - "adapters/react/src/**"
-      - "adapters/react/package.json"
-      - "examples/react/.storybook/**"
-      - "examples/react/src/**"
-      - "examples/react/package.json"
-      - "examples/react/tsconfig.json"
   workflow_dispatch:
 
 permissions:
@@ -28,8 +17,41 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  check-paths:
+    name: Check changed paths
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      should_deploy: ${{ github.event_name == 'workflow_dispatch' || steps.filter.outputs.storybook == 'true' }}
+    steps:
+      - name: Checkout
+        if: github.event_name != 'workflow_dispatch'
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+
+      - name: Detect storybook-related changes
+        if: github.event_name != 'workflow_dispatch'
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          base: HEAD~1
+          filters: |
+            storybook:
+              - ".github/workflows/storybook-pages.yml"
+              - "core/package.json"
+              - "adapters/react/package.json"
+              - "examples/react/.storybook/**"
+              - "examples/react/src/**"
+              - "examples/react/package.json"
+              - "examples/react/tsconfig.json"
+
   build:
     name: Build Storybook
+    needs: check-paths
+    if: needs.check-paths.outputs.should_deploy == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
