@@ -22,7 +22,7 @@ import type {
   TypedToastOptions,
 } from "./types";
 import { CLOSE_REASON, TOAST_PHASE, TOAST_STATUS, TOAST_TYPE } from "./types";
-import { TimerManager } from "./timers";
+import { TimerManager, createDefaultTickScheduler } from "./timers";
 import {
   normalizeData,
   resolvePromiseData,
@@ -42,7 +42,7 @@ const DEFAULT_STORE_CONFIG = {
     promiseSuccessDuration: 3000,
     promiseErrorDuration: 5000,
   },
-} satisfies Required<StoreConfig>;
+} satisfies Required<Omit<StoreConfig, "tickScheduler">>;
 
 class Store<
   TData extends ToastData = ToastData,
@@ -72,34 +72,40 @@ class Store<
       ...(config.timing ?? {}),
     };
 
-    this.timerManager = new TimerManager({
-      onAutoclose: (id) => {
-        this.dismiss(id, CLOSE_REASON.TIMEOUT);
+    const tickScheduler = config.tickScheduler ?? createDefaultTickScheduler();
+
+    this.timerManager = new TimerManager(
+      {
+        onAutoclose: (id) => {
+          this.dismiss(id, CLOSE_REASON.TIMEOUT);
+        },
+        onSafetyTimeout: (id) => {
+          const toast = this.toasts.get(id);
+
+          if (!toast) {
+            return;
+          }
+
+          if (toast.status === TOAST_STATUS.ENTERING) {
+            this.markEntered(id);
+          } else if (toast.status === TOAST_STATUS.EXITING) {
+            this.markExited(id);
+          }
+        },
+        onProgressTick: (id, progress) => {
+          const toast = this.toasts.get(id);
+
+          if (!toast || toast.paused) {
+            this.timerManager.clearProgressInterval(id);
+            return;
+          }
+
+          this.patchToast(id, { progress });
+          this.notify();
+        },
       },
-      onSafetyTimeout: (id) => {
-        const toast = this.toasts.get(id);
-
-        if (!toast) {
-          return;
-        }
-
-        if (toast.status === TOAST_STATUS.ENTERING) {
-          this.markEntered(id);
-        } else if (toast.status === TOAST_STATUS.EXITING) {
-          this.markExited(id);
-        }
-      },
-      onProgressTick: (id, progress) => {
-        const toast = this.toasts.get(id);
-
-        if (!toast || toast.paused) {
-          return;
-        }
-
-        this.patchToast(id, { progress });
-        this.notify();
-      },
-    });
+      tickScheduler,
+    );
   }
 
   public subscribe(listener: Subscriber<TData, TCustom>) {

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { TimerManager } from "../src/timers";
-import type { TimerCallbacks } from "../src/types";
+import { TimerManager, createDefaultTickScheduler } from "../src/timers";
+import type { TimerCallbacks, TickScheduler } from "../src/types";
 
 describe("TimerManager", () => {
   let callbacks: TimerCallbacks;
@@ -13,7 +13,7 @@ describe("TimerManager", () => {
       onSafetyTimeout: vi.fn(),
       onProgressTick: vi.fn(),
     };
-    manager = new TimerManager(callbacks);
+    manager = new TimerManager(callbacks, createDefaultTickScheduler());
   });
 
   afterEach(() => {
@@ -284,7 +284,7 @@ describe("TimerManager", () => {
       expect(lastCall[1]).toBeCloseTo(0.5, 1);
     });
 
-    it("ticks every 50ms", () => {
+    it("ticks at the default scheduler interval", () => {
       manager.startAutoclose("t1", 1000, { enabled: true, startValue: 0 });
 
       vi.advanceTimersByTime(200);
@@ -306,5 +306,156 @@ describe("TimerManager", () => {
       const lastCall = calls[calls.length - 1];
       expect(lastCall[1]).toBeCloseTo(1, 1);
     });
+  });
+});
+
+describe("createDefaultTickScheduler (rAF path)", () => {
+  let originalRAF: typeof globalThis.requestAnimationFrame;
+  let originalCAF: typeof globalThis.cancelAnimationFrame;
+  let pendingFrames: Map<number, () => void>;
+  let nextFrameId: number;
+
+  beforeEach(() => {
+    originalRAF = globalThis.requestAnimationFrame;
+    originalCAF = globalThis.cancelAnimationFrame;
+
+    pendingFrames = new Map();
+    nextFrameId = 1;
+
+    globalThis.requestAnimationFrame = (cb: FrameRequestCallback) => {
+      const id = nextFrameId++;
+      pendingFrames.set(id, () => cb(id));
+      return id;
+    };
+    globalThis.cancelAnimationFrame = (id: number) => {
+      pendingFrames.delete(id);
+    };
+  });
+
+  afterEach(() => {
+    if (originalRAF) {
+      globalThis.requestAnimationFrame = originalRAF;
+    } else {
+      delete (globalThis as Record<string, unknown>).requestAnimationFrame;
+    }
+    if (originalCAF) {
+      globalThis.cancelAnimationFrame = originalCAF;
+    } else {
+      delete (globalThis as Record<string, unknown>).cancelAnimationFrame;
+    }
+  });
+
+  function flushFrames(maxIterations = 100) {
+    let iterations = 0;
+    while (pendingFrames.size > 0 && iterations < maxIterations) {
+      // Snapshot current frames — callbacks may schedule new ones
+      const frames = [...pendingFrames.entries()];
+      pendingFrames.clear();
+      for (const [, cb] of frames) {
+        cb();
+      }
+      iterations++;
+    }
+    return iterations;
+  }
+
+  function flushOneFrame() {
+    const frame = pendingFrames.entries().next();
+    if (frame.done) return false;
+    const [id, cb] = frame.value;
+    pendingFrames.delete(id);
+    cb();
+    return true;
+  }
+
+  it("uses rAF when available", () => {
+    const scheduler = createDefaultTickScheduler();
+    const callback = vi.fn();
+
+    const cancel = scheduler(callback);
+    expect(pendingFrames.size).toBe(1);
+
+    flushOneFrame();
+    expect(callback).toHaveBeenCalledTimes(1);
+    // Should have scheduled the next frame
+    expect(pendingFrames.size).toBe(1);
+
+    cancel();
+    expect(pendingFrames.size).toBe(0);
+  });
+
+  it("stops ticking after cancel is called", () => {
+    const scheduler = createDefaultTickScheduler();
+    const callback = vi.fn();
+
+    const cancel = scheduler(callback);
+
+    // Flush a few frames
+    flushOneFrame();
+    flushOneFrame();
+    flushOneFrame();
+    expect(callback).toHaveBeenCalledTimes(3);
+
+    cancel();
+    const countAfterCancel = callback.mock.calls.length;
+
+    // No more frames should fire
+    flushFrames();
+    expect(callback).toHaveBeenCalledTimes(countAfterCancel);
+  });
+
+  it("stops when the callback itself triggers cancellation", () => {
+    const scheduler = createDefaultTickScheduler();
+    let cancel: () => void;
+    let callCount = 0;
+
+    cancel = scheduler(() => {
+      callCount++;
+      if (callCount >= 3) {
+        cancel();
+      }
+    });
+
+    // Flush frames — the callback cancels itself on the 3rd call
+    const iterations = flushFrames();
+
+    expect(callCount).toBe(3);
+    expect(pendingFrames.size).toBe(0);
+    // Should have stopped quickly, not hit the 100-iteration limit
+    expect(iterations).toBeLessThan(10);
+  });
+
+  it("does not leak frames when progress reaches 1 (TimerManager integration)", () => {
+    vi.useFakeTimers();
+
+    const scheduler = createDefaultTickScheduler();
+    const callbacks: TimerCallbacks = {
+      onAutoclose: vi.fn(),
+      onSafetyTimeout: vi.fn(),
+      onProgressTick: vi.fn(),
+    };
+    const manager = new TimerManager(callbacks, scheduler);
+
+    manager.startAutoclose("t1", 1000, { enabled: true, startValue: 0 });
+
+    // Simulate time passing beyond the duration so progress exceeds 1
+    vi.advanceTimersByTime(1100);
+    // Flush all pending rAF frames — this triggers the progress >= 1 path
+    const iterations = flushFrames();
+
+    const tickCount = (callbacks.onProgressTick as ReturnType<typeof vi.fn>)
+      .mock.calls.length;
+
+    // Flush again — no more ticks should happen
+    flushFrames();
+    expect(
+      (callbacks.onProgressTick as ReturnType<typeof vi.fn>).mock.calls.length,
+    ).toBe(tickCount);
+    expect(pendingFrames.size).toBe(0);
+
+    // Should not have run endlessly
+    expect(iterations).toBeLessThan(10);
+
+    vi.useRealTimers();
   });
 });

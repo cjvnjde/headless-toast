@@ -1,17 +1,47 @@
-import type { TimerCallbacks, ProgressConfig } from "./types";
+import type { TimerCallbacks, ProgressConfig, TickScheduler } from "./types";
+
+function createDefaultTickScheduler(): TickScheduler {
+  if (
+    typeof requestAnimationFrame !== "undefined" &&
+    typeof cancelAnimationFrame !== "undefined"
+  ) {
+    return (callback) => {
+      let id: number;
+      let stopped = false;
+      const tick = () => {
+        if (stopped) return;
+        callback();
+        if (!stopped) {
+          id = requestAnimationFrame(tick);
+        }
+      };
+      id = requestAnimationFrame(tick);
+      return () => {
+        stopped = true;
+        cancelAnimationFrame(id);
+      };
+    };
+  }
+
+  return (callback) => {
+    const id = setInterval(callback, 50);
+    return () => clearInterval(id);
+  };
+}
 
 class TimerManager {
   private callbacks: TimerCallbacks;
+  private readonly tickScheduler: TickScheduler;
   private timers: Map<string, ReturnType<typeof setTimeout>> = new Map();
   private timerStarts: Map<string, number> = new Map();
   private timerDurations: Map<string, number> = new Map();
   private safetyTimeouts: Map<string, ReturnType<typeof setTimeout>> =
     new Map();
-  private progressIntervals: Map<string, ReturnType<typeof setInterval>> =
-    new Map();
+  private progressIntervals: Map<string, () => void> = new Map();
 
-  constructor(callbacks: TimerCallbacks) {
+  constructor(callbacks: TimerCallbacks, tickScheduler: TickScheduler) {
     this.callbacks = callbacks;
+    this.tickScheduler = tickScheduler;
   }
 
   public startAutoclose(
@@ -115,7 +145,7 @@ class TimerManager {
     const startTime = Date.now();
     const remainingProgress = 1 - startProgress;
 
-    const interval = setInterval(() => {
+    const cancel = this.tickScheduler(() => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(
         startProgress + (elapsed / duration) * remainingProgress,
@@ -124,23 +154,22 @@ class TimerManager {
       this.callbacks.onProgressTick(id, progress);
 
       if (progress >= 1) {
-        clearInterval(interval);
-        this.progressIntervals.delete(id);
+        this.clearProgressInterval(id);
       }
-    }, 50);
+    });
 
-    this.progressIntervals.set(id, interval);
+    this.progressIntervals.set(id, cancel);
   }
 
-  private clearProgressInterval(id: string) {
-    const interval = this.progressIntervals.get(id);
+  public clearProgressInterval(id: string) {
+    const cancel = this.progressIntervals.get(id);
 
-    if (interval) {
-      clearInterval(interval);
+    if (cancel) {
+      cancel();
 
       this.progressIntervals.delete(id);
     }
   }
 }
 
-export { TimerManager };
+export { TimerManager, createDefaultTickScheduler };

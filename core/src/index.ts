@@ -1,4 +1,5 @@
 export { createToastStore } from "./store.ts";
+export { createDefaultTickScheduler } from "./timers.ts";
 export { computeDragState } from "./drag.ts";
 
 export type {
@@ -19,6 +20,7 @@ export type {
   GestureInput,
   StackConfig,
   StoreConfig,
+  TickScheduler,
   ToastDefaults,
   StoreTimingConfig,
   BaseToastOptions,

@@ -141,6 +141,8 @@ type ProgressConfig = {
   startValue: number;
 };
 
+type TickScheduler = (callback: () => void) => () => void;
+
 type SharedToastOptionFields = {
   id?: string;
   duration?: number;
@@ -275,6 +277,7 @@ type StoreConfig<
   defaults?: ToastDefaults<TData, TCustom>;
   maxToasts?: number;
   timing?: StoreTimingConfig;
+  tickScheduler?: TickScheduler;
 };
 
 type Subscriber<
@@ -375,6 +378,7 @@ export type {
   StackConfig,
   TimerCallbacks,
   ProgressConfig,
+  TickScheduler,
   BaseToastOptions,
   ToastOptions,
   ResolvedToastOptions,
