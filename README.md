@@ -14,10 +14,10 @@ Core is the brain. Adapters are the body.
 
 ## Packages
 
-| Package                          | Path              | Purpose                                      |
-| -------------------------------- | ----------------- | -------------------------------------------- |
-| `@headless-toast/core`           | `core/`           | Framework-free toast store and types         |
-| `@headless-toast/react`          | `adapters/react/` | React hooks, components, and adapter helpers |
+| Package                 | Path              | Purpose                                      |
+| ----------------------- | ----------------- | -------------------------------------------- |
+| `@headless-toast/core`  | `core/`           | Framework-free toast store and types         |
+| `@headless-toast/react` | `adapters/react/` | React hooks, components, and adapter helpers |
 
 ## Highlights
 

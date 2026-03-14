@@ -8,4 +8,4 @@ allowBuilds:
 minimumReleaseAge: 1440
 
 overrides:
-  minimatch@>=10.0.0 <10.2.3: '>=10.2.3'
+  minimatch@>=10.0.0 <10.2.3: ">=10.2.3"
