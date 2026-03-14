@@ -1,11 +1,10 @@
 import { describe, expectTypeOf, it } from "vitest";
 import { createToastStore } from "../src";
-import { normalizeData, resolvePromiseData } from "../src/utils";
+import { resolveData, resolvePromiseData } from "../src/utils";
 import type {
   AnimationConfig,
   CloseReason,
   LoadingToastOptions,
-  NormalizedToastData,
   PromiseToastOptions,
   ResolvedToastOptions,
   StoreConfig,
@@ -32,16 +31,13 @@ type CustomOptions = {
 };
 
 describe("type ergonomics", () => {
-  it("normalizes optional toast data without widening required shapes", () => {
-    expectTypeOf<
-      NormalizedToastData<MessageData>
-    >().toEqualTypeOf<MessageData>();
+  it("resolves optional toast data without widening required shapes", () => {
     expectTypeOf(
-      normalizeData<MessageData>({ title: "Hello" }),
+      resolveData<MessageData>({ title: "Hello" }),
     ).toEqualTypeOf<MessageData>();
-    expectTypeOf(
-      normalizeData<Record<string, unknown>>(undefined),
-    ).toMatchTypeOf<Record<string, unknown>>();
+    expectTypeOf(resolveData<Record<string, unknown>>(undefined)).toMatchTypeOf<
+      Record<string, unknown>
+    >();
   });
 
   it("keeps reserved keys out of custom option surfaces", () => {

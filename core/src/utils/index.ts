@@ -1,4 +1,4 @@
-export * from "./normalizeData";
+export * from "./resolveData";
 export * from "./isActiveToast";
 export * from "./resolveAnimationHintDuration";
 export * from "./isPhaseStatus";

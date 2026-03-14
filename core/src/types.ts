@@ -42,8 +42,6 @@ type AnimationEasing = ValueOf<typeof ANIMATION_EASING>;
 
 type ToastData = Record<string, unknown>;
 
-type EmptyToastData = Record<string, never>;
-
 type ToastReservedOptionKey =
   | "id"
   | "type"
@@ -58,10 +56,6 @@ type ToastReservedOptionKey =
 
 type ReservedCustomToastOptionKeys<TCustom extends ToastCustomOptions = {}> =
   Extract<keyof TCustom, ToastReservedOptionKey>;
-
-type NormalizedToastData<TData extends ToastData = ToastData> = {} extends TData
-  ? TData | EmptyToastData
-  : TData;
 
 type ToastDataField<TData extends ToastData = ToastData> = {} extends TData
   ? { data?: TData }
@@ -169,14 +163,14 @@ type ResolvedToastOptions<
   TCustom extends ToastCustomOptions = {},
 > = SharedToastOptionFields &
   CustomToastFields<TCustom> & {
-    data: NormalizedToastData<TData>;
+    data: TData;
     type: ToastType;
   };
 
 type BaseToastUpdate<TData extends ToastData = ToastData> =
   SharedToastOptionFields & {
     type?: ToastType;
-    data?: Partial<TData> | NormalizedToastData<TData>;
+    data?: Partial<TData> | TData;
   };
 
 type ToastUpdate<
@@ -259,7 +253,7 @@ type ToastState<
   remaining?: number;
   paused: boolean;
   progress: number;
-  data: NormalizedToastData<TData>;
+  data: TData;
   options: ResolvedToastOptions<TData, TCustom>;
 };
 
@@ -365,8 +359,6 @@ export type {
   ToastStatus,
   ToastPhase,
   ToastData,
-  EmptyToastData,
-  NormalizedToastData,
   ToastReservedOptionKey,
   ReservedCustomToastOptionKeys,
   ToastCustomOptions,

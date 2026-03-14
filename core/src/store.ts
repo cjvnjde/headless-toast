@@ -1,6 +1,5 @@
 import type {
   LoadingToastOptions,
-  NormalizedToastData,
   PromiseToastOptions,
   ToastDefaults,
   ToastMethodOptions,
@@ -24,7 +23,7 @@ import type {
 import { CLOSE_REASON, TOAST_PHASE, TOAST_STATUS, TOAST_TYPE } from "./types";
 import { TimerManager, createDefaultTickScheduler } from "./timers";
 import {
-  normalizeData,
+  resolveData,
   resolvePromiseData,
   isActiveToast,
   isPhaseStatus,
@@ -119,10 +118,14 @@ class Store<
   }
 
   public add(options: ToastOptions<TData, TCustom>) {
-    const toastOptions = this.resolveOptions({
+    const merged = {
       ...this.defaults,
       ...options,
-    });
+    };
+    const type: ToastType =
+      merged.type ?? this.defaults.type ?? DEFAULT_STORE_CONFIG.defaults.type;
+    const data = resolveData<TData>(merged.data);
+    const toastOptions = this.resolveOptions(merged, data, type);
     const id = toastOptions.id ?? this.generateId();
 
     const existing = this.toasts.get(id);
@@ -510,13 +513,13 @@ class Store<
     return {
       ...options,
       type,
-      data: normalizeData(data),
+      data,
     };
   }
 
   private createUpdate(
     type: ToastType,
-    data: Partial<TData> | NormalizedToastData<TData>,
+    data: Partial<TData> | TData,
     duration: number,
   ) {
     return {
@@ -528,21 +531,20 @@ class Store<
 
   private resolveOptions(
     options: ToastOptions<TData, TCustom>,
+    data: TData,
+    type: ToastType,
   ): ResolvedToastOptions<TData, TCustom> {
     return {
       ...options,
-      type:
-        options.type ??
-        this.defaults.type ??
-        DEFAULT_STORE_CONFIG.defaults.type,
-      data: normalizeData(options.data),
+      data,
+      type,
     };
   }
 
   private mergeOptions(
     current: ResolvedToastOptions<TData, TCustom>,
     updates: ToastUpdate<TData, TCustom>,
-  ): ResolvedToastOptions<TData, TCustom> {
+  ) {
     const data =
       updates.data === undefined
         ? current.data

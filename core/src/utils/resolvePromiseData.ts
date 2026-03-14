@@ -1,22 +1,12 @@
-import type {
-  NormalizedToastData,
-  PromiseToastData,
-  ToastData,
-} from "../types";
-import { normalizeData } from "./normalizeData";
+import type { PromiseToastData, ToastData } from "../types";
 
 export function resolvePromiseData<T, TData extends ToastData>(
   value: PromiseToastData<T, TData>,
   input: T,
-): NormalizedToastData<TData>;
-
-export function resolvePromiseData<T, TData extends ToastData>(
-  value: PromiseToastData<T, TData>,
-  input: T,
-): ToastData {
+): TData {
   if (typeof value === "function") {
-    return normalizeData(value(input));
+    return value(input);
   }
 
-  return normalizeData(value);
+  return value;
 }

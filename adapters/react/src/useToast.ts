@@ -29,7 +29,10 @@ function ToastProvider<
   );
 }
 
-function useToastContext() {
+function useToastContext<
+  TData extends ToastData = ToastData,
+  TCustom extends ToastCustomOptions = {},
+>() {
   const ctx = useContext(ToastCtx);
 
   if (!ctx) {
@@ -38,14 +41,17 @@ function useToastContext() {
     );
   }
 
-  return ctx;
+  return ctx as {
+    toast: ReactToastState<TData, TCustom>;
+    store: ReactToastStore<TData, TCustom>;
+  };
 }
 
 function useToast<
   TData extends ToastData = ToastData,
   TCustom extends ToastCustomOptions = {},
 >() {
-  const { toast, store } = useToastContext();
+  const { toast, store } = useToastContext<TData, TCustom>();
 
   const dismiss = useCallback(
     (reason?: Exclude<CloseReason, "timeout">) => {
