@@ -6,7 +6,6 @@ on:
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
-  workflow_call:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -19,6 +18,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Setup Environment
         uses: ./.github/actions/setup-env
@@ -36,30 +37,6 @@ jobs:
         if: github.event_name == 'pull_request'
         run: pnpm dlx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
-  lint:
+  quality:
     if: github.event.pull_request.draft != true
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Environment
-        uses: ./.github/actions/setup-env
-
-      - name: Type-check
-        run: pnpm lint
-
-  test:
-    if: github.event.pull_request.draft != true
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Environment
-        uses: ./.github/actions/setup-env
-
-      - name: Run tests
-        run: pnpm test
+    uses: ./.github/workflows/quality.yml

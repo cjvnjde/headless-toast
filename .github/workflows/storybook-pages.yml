@@ -1,10 +1,16 @@
 name: Publish Storybook
 
 on:
-  workflow_run:
-    workflows: ["CI"]
-    types: [completed]
+  push:
     branches: [main]
+    paths:
+      - ".github/workflows/storybook-pages.yml"
+      - "core/package.json"
+      - "adapters/react/package.json"
+      - "examples/react-storybook/.storybook/**"
+      - "examples/react-storybook/src/**"
+      - "examples/react-storybook/package.json"
+      - "examples/react-storybook/tsconfig.json"
   workflow_dispatch:
 
 permissions:
@@ -17,46 +23,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  check-paths:
-    name: Check changed paths
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.conclusion == 'success'
-    runs-on: ubuntu-latest
-    outputs:
-      should_deploy: ${{ github.event_name == 'workflow_dispatch' || steps.filter.outputs.storybook == 'true' }}
-    steps:
-      - name: Checkout
-        if: github.event_name != 'workflow_dispatch'
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 2
-
-      - name: Resolve base commit
-        if: github.event_name != 'workflow_dispatch'
-        id: base
-        run: echo "sha=$(git rev-parse HEAD~1)" >> "$GITHUB_OUTPUT"
-
-      - name: Detect storybook-related changes
-        if: github.event_name != 'workflow_dispatch'
-        id: filter
-        uses: dorny/paths-filter@v3
-        with:
-          base: ${{ steps.base.outputs.sha }}
-          filters: |
-            storybook:
-              - ".github/workflows/storybook-pages.yml"
-              - "core/package.json"
-              - "adapters/react/package.json"
-              - "examples/react-storybook/.storybook/**"
-              - "examples/react-storybook/src/**"
-              - "examples/react-storybook/package.json"
-              - "examples/react-storybook/tsconfig.json"
+  quality:
+    uses: ./.github/workflows/quality.yml
 
   build:
     name: Build Storybook
-    needs: check-paths
-    if: needs.check-paths.outputs.should_deploy == 'true'
+    needs: quality
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
