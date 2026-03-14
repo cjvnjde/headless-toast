@@ -70,7 +70,7 @@
 }
 
 @utility toast-progress-bar {
-  @apply absolute inset-x-0 bottom-0 h-1 origin-left bg-[var(--toast-accent)]/30;
+  @apply absolute inset-x-0 bottom-0 h-1 origin-left bg-(--toast-accent)/30;
 }
 
 .toast-shell {
