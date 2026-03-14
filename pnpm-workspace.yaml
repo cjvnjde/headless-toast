@@ -2,6 +2,7 @@ packages:
   - core
   - adapters/*
   - examples/*
+
 allowBuilds:
   esbuild: true
 
