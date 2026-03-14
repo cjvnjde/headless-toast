@@ -1,6 +1,6 @@
 {
   "name": "@headless-toast/react",
-  "version": "0.0.1-alpha.6",
+  "version": "0.0.1",
   "description": "React adapter for headless-toast with hooks and headless rendering primitives",
   "type": "module",
   "homepage": "https://cjvnjde.github.io/headless-toast",
