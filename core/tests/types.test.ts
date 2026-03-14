@@ -32,19 +32,16 @@ type CustomOptions = {
 };
 
 describe("type ergonomics", () => {
-  it("models normalized data for empty and required data shapes", () => {
+  it("normalizes optional toast data without widening required shapes", () => {
     expectTypeOf<
       NormalizedToastData<MessageData>
     >().toEqualTypeOf<MessageData>();
-    expectTypeOf<NormalizedToastData<Record<string, unknown>>>().toMatchTypeOf<
-      Record<string, unknown>
-    >();
-
-    const normalized = normalizeData<MessageData>({ title: "Hello" });
-    const normalizedEmpty = normalizeData<Record<string, unknown>>(undefined);
-
-    expectTypeOf(normalized).toEqualTypeOf<MessageData>();
-    expectTypeOf(normalizedEmpty).toMatchTypeOf<Record<string, unknown>>();
+    expectTypeOf(
+      normalizeData<MessageData>({ title: "Hello" }),
+    ).toEqualTypeOf<MessageData>();
+    expectTypeOf(
+      normalizeData<Record<string, unknown>>(undefined),
+    ).toMatchTypeOf<Record<string, unknown>>();
   });
 
   it("keeps reserved keys out of custom option surfaces", () => {
@@ -65,25 +62,41 @@ describe("type ergonomics", () => {
     expectTypeOf<
       keyof LoadingToastOptions<CustomOptions>
     >().not.toEqualTypeOf<"duration">();
+    expectTypeOf<PromiseToastOptions<CustomOptions>>().toEqualTypeOf<
+      ToastMethodOptions<CustomOptions>
+    >();
   });
 
-  it("separates public options from resolved internal options", () => {
-    expectTypeOf<ToastOptions<MessageData, CustomOptions>>().toMatchTypeOf<{
-      data: MessageData;
-      type?: string;
-      placement?: "top-right" | "bottom-center";
-    }>();
+  it("preserves the public store API types", () => {
+    const store = createToastStore<MessageData, CustomOptions>({
+      defaults: {
+        placement: "top-right",
+        pauseOnHover: true,
+      },
+    });
 
-    expectTypeOf<
+    const handle = store.success(
+      { title: "Saved" },
+      { placement: "bottom-center", theme: "warm" },
+    );
+
+    store.update(handle, {
+      data: { body: "Done" },
+      pauseOnHover: false,
+      theme: "cool",
+    });
+
+    expectTypeOf(store).toEqualTypeOf<ToastStore<MessageData, CustomOptions>>();
+    expectTypeOf(store.getToasts()[0]).toEqualTypeOf<
+      ToastState<MessageData, CustomOptions>
+    >();
+    expectTypeOf(store.getToasts()[0].options).toEqualTypeOf<
       ResolvedToastOptions<MessageData, CustomOptions>
-    >().toMatchTypeOf<{
-      data: MessageData;
-      type: string;
-      placement?: "top-right" | "bottom-center";
-    }>();
+    >();
+    expectTypeOf(handle.closed).toEqualTypeOf<Promise<CloseReason>>();
   });
 
-  it("provides ergonomic aliases for store config and promise config", () => {
+  it("models promise and update payloads the same way the store consumes them", () => {
     expectTypeOf<ToastDefaults<MessageData, CustomOptions>>().toEqualTypeOf<
       Partial<ToastOptions<MessageData, CustomOptions>>
     >();
@@ -102,58 +115,13 @@ describe("type ergonomics", () => {
       error: MessageData | ((error: unknown) => MessageData);
     }>();
 
-    expectTypeOf<PromiseToastOptions<CustomOptions>>().toEqualTypeOf<
-      ToastMethodOptions<CustomOptions>
-    >();
-  });
+    expectTypeOf(
+      resolvePromiseData<string, MessageData>(
+        (result) => ({ title: result }),
+        "done",
+      ),
+    ).toEqualTypeOf<MessageData>();
 
-  it("preserves typed store APIs for custom options and updates", () => {
-    const store = createToastStore<MessageData, CustomOptions>({
-      defaults: {
-        placement: "top-right",
-        pauseOnHover: true,
-      },
-    });
-
-    const handle = store.success(
-      { title: "Saved" },
-      { theme: "warm", placement: "bottom-center" },
-    );
-
-    store.update(handle, {
-      data: { body: "Done" },
-      pauseOnHover: false,
-      theme: "cool",
-    });
-
-    expectTypeOf(store).toEqualTypeOf<ToastStore<MessageData, CustomOptions>>();
-    expectTypeOf(handle.closed).toEqualTypeOf<Promise<CloseReason>>();
-    expectTypeOf(store.getToasts()[0]).toEqualTypeOf<
-      ToastState<MessageData, CustomOptions>
-    >();
-    expectTypeOf(store.getToasts()[0].options).toEqualTypeOf<
-      ResolvedToastOptions<MessageData, CustomOptions>
-    >();
-    expectTypeOf(store.getToasts()[0].options.type).toMatchTypeOf<
-      ResolvedToastOptions<MessageData, CustomOptions>["type"]
-    >();
-  });
-
-  it("resolves promise data to normalized toast data", () => {
-    const successData = resolvePromiseData<string, MessageData>(
-      (result) => ({ title: result }),
-      "done",
-    );
-    const errorData = resolvePromiseData<unknown, Record<string, unknown>>(
-      () => ({ message: "fail" }),
-      new Error("fail"),
-    );
-
-    expectTypeOf(successData).toEqualTypeOf<MessageData>();
-    expectTypeOf(errorData).toMatchTypeOf<Record<string, unknown>>();
-  });
-
-  it("keeps update payloads partial while allowing normalized promise results", () => {
     expectTypeOf<ToastUpdate<MessageData, CustomOptions>>().toMatchTypeOf<{
       data?: Partial<MessageData> | MessageData;
       theme?: "warm" | "cool";

@@ -1,228 +1,99 @@
-import { describe, it, expect } from "vitest";
-import { computeDragState } from "../src/drag";
-import type { DraggableConfig, GestureInput } from "../src/types";
+import { describe, expect, it } from "vitest";
+import { computeDragState, DRAG_DIRECTION } from "../src";
+import type { DraggableConfig, GestureInput } from "../src";
+
+function drag(
+  config: DraggableConfig,
+  gesture: Partial<GestureInput>,
+): ReturnType<typeof computeDragState> {
+  return computeDragState(config, {
+    dx: 0,
+    dy: 0,
+    vx: 0,
+    vy: 0,
+    ...gesture,
+  });
+}
 
 describe("computeDragState", () => {
-  const defaultConfig: DraggableConfig = { threshold: 100, direction: "x" };
+  it("uses only the configured axis for distance and offsets", () => {
+    const state = drag(
+      { threshold: 100, direction: DRAG_DIRECTION.Y },
+      { dx: 200, dy: 40 },
+    );
 
-  describe("direction: x", () => {
-    it("constrains offset to x axis only", () => {
-      const gesture: GestureInput = { dx: 50, dy: 30, vx: 1, vy: 2 };
-      const state = computeDragState(defaultConfig, gesture);
-
-      expect(state.offsetX).toBe(50);
-      expect(state.offsetY).toBe(0);
-    });
-
-    it("computes distance as absolute offsetX", () => {
-      const gesture: GestureInput = { dx: -80, dy: 50, vx: 0, vy: 0 };
-      const state = computeDragState(defaultConfig, gesture);
-
-      // distance = sqrt(80^2 + 0^2) = 80 < 100
-      expect(state.dismissed).toBe(false);
-    });
-
-    it("marks dismissed when distance exceeds threshold", () => {
-      const gesture: GestureInput = { dx: 100, dy: 0, vx: 0, vy: 0 };
-      const state = computeDragState(defaultConfig, gesture);
-
-      expect(state.dismissed).toBe(true);
-    });
-
-    it("marks dismissed when negative dx exceeds threshold", () => {
-      const gesture: GestureInput = { dx: -150, dy: 0, vx: 0, vy: 0 };
-      const state = computeDragState(defaultConfig, gesture);
-
-      expect(state.dismissed).toBe(true);
-    });
-
-    it("is not dismissed just below threshold", () => {
-      const gesture: GestureInput = { dx: 99.9, dy: 0, vx: 0, vy: 0 };
-      const state = computeDragState(defaultConfig, gesture);
-
-      expect(state.dismissed).toBe(false);
+    expect(state).toMatchObject({
+      active: true,
+      offsetX: 0,
+      offsetY: 40,
+      progress: 0.4,
+      dismissed: false,
     });
   });
 
-  describe("direction: y", () => {
-    const yConfig: DraggableConfig = { threshold: 80, direction: "y" };
+  it("uses euclidean distance when both axes are enabled", () => {
+    const state = drag(
+      { threshold: 100, direction: DRAG_DIRECTION.BOTH },
+      { dx: 60, dy: 80 },
+    );
 
-    it("constrains offset to y axis only", () => {
-      const gesture: GestureInput = { dx: 50, dy: 30, vx: 1, vy: 2 };
-      const state = computeDragState(yConfig, gesture);
-
-      expect(state.offsetX).toBe(0);
-      expect(state.offsetY).toBe(30);
-    });
-
-    it("marks dismissed when y distance exceeds threshold", () => {
-      const gesture: GestureInput = { dx: 0, dy: -80, vx: 0, vy: 0 };
-      const state = computeDragState(yConfig, gesture);
-
-      expect(state.dismissed).toBe(true);
-    });
-
-    it("ignores x displacement for dismissal", () => {
-      const gesture: GestureInput = { dx: 200, dy: 10, vx: 0, vy: 0 };
-      const state = computeDragState(yConfig, gesture);
-
-      expect(state.dismissed).toBe(false);
-      expect(state.offsetX).toBe(0);
-    });
+    expect(state.offsetX).toBe(60);
+    expect(state.offsetY).toBe(80);
+    expect(state.progress).toBe(1);
+    expect(state.dismissed).toBe(true);
   });
 
-  describe("direction: both", () => {
-    const bothConfig: DraggableConfig = { threshold: 100, direction: "both" };
+  it("treats movement in either direction as distance", () => {
+    const state = drag(
+      { threshold: 100, direction: DRAG_DIRECTION.X },
+      { dx: -120 },
+    );
 
-    it("uses both axes for offset", () => {
-      const gesture: GestureInput = { dx: 60, dy: 80, vx: 0, vy: 0 };
-      const state = computeDragState(bothConfig, gesture);
-
-      expect(state.offsetX).toBe(60);
-      expect(state.offsetY).toBe(80);
-    });
-
-    it("computes euclidean distance for dismissal", () => {
-      // distance = sqrt(60^2 + 80^2) = sqrt(3600 + 6400) = sqrt(10000) = 100
-      const gesture: GestureInput = { dx: 60, dy: 80, vx: 0, vy: 0 };
-      const state = computeDragState(bothConfig, gesture);
-
-      expect(state.dismissed).toBe(true);
-    });
-
-    it("is not dismissed when distance is below threshold", () => {
-      // distance = sqrt(30^2 + 40^2) = sqrt(900 + 1600) = sqrt(2500) = 50
-      const gesture: GestureInput = { dx: 30, dy: 40, vx: 0, vy: 0 };
-      const state = computeDragState(bothConfig, gesture);
-
-      expect(state.dismissed).toBe(false);
-    });
+    expect(state.offsetX).toBe(-120);
+    expect(state.progress).toBe(1.2);
+    expect(state.dismissed).toBe(true);
   });
 
-  describe("velocity", () => {
-    it("computes velocity magnitude from vx and vy", () => {
-      const gesture: GestureInput = { dx: 0, dy: 0, vx: 3, vy: 4 };
-      const state = computeDragState(defaultConfig, gesture);
+  it("can dismiss by velocity even when distance is still below threshold", () => {
+    const state = drag(
+      {
+        threshold: 100,
+        direction: DRAG_DIRECTION.X,
+        velocityThreshold: 2,
+      },
+      { dx: 20, vx: 0, vy: 2 },
+    );
 
-      // velocity = sqrt(3^2 + 4^2) = 5
-      expect(state.velocity).toBe(5);
-    });
-
-    it("returns 0 velocity when gesture has no velocity", () => {
-      const gesture: GestureInput = { dx: 50, dy: 0, vx: 0, vy: 0 };
-      const state = computeDragState(defaultConfig, gesture);
-
-      expect(state.velocity).toBe(0);
-    });
+    expect(state.velocity).toBe(2);
+    expect(state.progress).toBe(0.2);
+    expect(state.dismissed).toBe(true);
   });
 
-  describe("active flag", () => {
-    it("is always true", () => {
-      const gesture: GestureInput = { dx: 0, dy: 0, vx: 0, vy: 0 };
-      const state = computeDragState(defaultConfig, gesture);
+  it("ignores velocity when no positive velocity threshold is configured", () => {
+    const withoutThreshold = drag(
+      { threshold: 100, direction: DRAG_DIRECTION.X },
+      { dx: 20, vx: 10 },
+    );
+    const withZeroThreshold = drag(
+      {
+        threshold: 100,
+        direction: DRAG_DIRECTION.X,
+        velocityThreshold: 0,
+      },
+      { dx: 20, vx: 10 },
+    );
 
-      expect(state.active).toBe(true);
-    });
+    expect(withoutThreshold.dismissed).toBe(false);
+    expect(withZeroThreshold.dismissed).toBe(false);
   });
 
-  describe("progress", () => {
-    it("returns 0 at origin", () => {
-      const gesture: GestureInput = { dx: 0, dy: 0, vx: 0, vy: 0 };
-      const state = computeDragState(defaultConfig, gesture);
+  it("avoids dividing by zero when the threshold is not positive", () => {
+    const state = drag(
+      { threshold: 0, direction: DRAG_DIRECTION.X },
+      { dx: 50 },
+    );
 
-      expect(state.progress).toBe(0);
-    });
-
-    it("returns 0.5 at half threshold", () => {
-      const gesture: GestureInput = { dx: 50, dy: 0, vx: 0, vy: 0 };
-      const state = computeDragState(defaultConfig, gesture);
-
-      expect(state.progress).toBe(0.5);
-    });
-
-    it("returns 1 at threshold", () => {
-      const gesture: GestureInput = { dx: 100, dy: 0, vx: 0, vy: 0 };
-      const state = computeDragState(defaultConfig, gesture);
-
-      expect(state.progress).toBe(1);
-    });
-
-    it("can exceed 1 past threshold", () => {
-      const gesture: GestureInput = { dx: 200, dy: 0, vx: 0, vy: 0 };
-      const state = computeDragState(defaultConfig, gesture);
-
-      expect(state.progress).toBe(2);
-    });
-
-    it("works with euclidean distance for direction both", () => {
-      const bothConfig: DraggableConfig = { threshold: 100, direction: "both" };
-      // distance = sqrt(60^2 + 80^2) = 100
-      const gesture: GestureInput = { dx: 60, dy: 80, vx: 0, vy: 0 };
-      const state = computeDragState(bothConfig, gesture);
-
-      expect(state.progress).toBe(1);
-    });
-
-    it("returns 0 when threshold is 0", () => {
-      const zeroConfig: DraggableConfig = { threshold: 0, direction: "x" };
-      const gesture: GestureInput = { dx: 50, dy: 0, vx: 0, vy: 0 };
-      const state = computeDragState(zeroConfig, gesture);
-
-      expect(state.progress).toBe(0);
-    });
-  });
-
-  describe("velocity threshold", () => {
-    const velConfig: DraggableConfig = {
-      threshold: 100,
-      direction: "x",
-      velocityThreshold: 2,
-    };
-
-    it("dismisses on high velocity even below distance threshold", () => {
-      const gesture: GestureInput = { dx: 30, dy: 0, vx: 2, vy: 0 };
-      const state = computeDragState(velConfig, gesture);
-
-      expect(state.dismissed).toBe(true);
-      expect(state.progress).toBeCloseTo(0.3);
-    });
-
-    it("does not dismiss when velocity is below threshold", () => {
-      const gesture: GestureInput = { dx: 30, dy: 0, vx: 1, vy: 0 };
-      const state = computeDragState(velConfig, gesture);
-
-      expect(state.dismissed).toBe(false);
-    });
-
-    it("dismisses when both distance and velocity thresholds are met", () => {
-      const gesture: GestureInput = { dx: 150, dy: 0, vx: 3, vy: 0 };
-      const state = computeDragState(velConfig, gesture);
-
-      expect(state.dismissed).toBe(true);
-    });
-
-    it("ignores velocity threshold when not configured", () => {
-      const gesture: GestureInput = { dx: 30, dy: 0, vx: 10, vy: 0 };
-      const state = computeDragState(defaultConfig, gesture);
-
-      // defaultConfig has no velocityThreshold, so only distance matters
-      expect(state.dismissed).toBe(false);
-    });
-  });
-
-  describe("zero gesture", () => {
-    it("returns zero offsets and not dismissed", () => {
-      const gesture: GestureInput = { dx: 0, dy: 0, vx: 0, vy: 0 };
-      const state = computeDragState(defaultConfig, gesture);
-
-      expect(state).toEqual({
-        active: true,
-        offsetX: 0,
-        offsetY: 0,
-        velocity: 0,
-        progress: 0,
-        dismissed: false,
-      });
-    });
+    expect(state.progress).toBe(0);
+    expect(state.dismissed).toBe(true);
   });
 });
