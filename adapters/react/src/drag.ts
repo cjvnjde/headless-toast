@@ -1,8 +1,8 @@
-import type { DraggableConfig } from "@headless-toast/core";
+import { DRAG_DIRECTION, type DraggableConfig } from "@headless-toast/core";
 
 const DEFAULT_DRAGGABLE_CONFIG: DraggableConfig = {
   threshold: 100,
-  direction: "x",
+  direction: DRAG_DIRECTION.X,
 };
 
 function resolveDraggableConfig(
