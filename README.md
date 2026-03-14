@@ -18,7 +18,6 @@ Core is the brain. Adapters are the body.
 | -------------------------------- | ----------------- | -------------------------------------------- |
 | `@headless-toast/core`           | `core/`           | Framework-free toast store and types         |
 | `@headless-toast/react`          | `adapters/react/` | React hooks, components, and adapter helpers |
-| `@headless-toast/examples-react` | `examples/react/` | Storybook playground and usage docs          |
 
 ## Highlights
 
@@ -652,15 +651,11 @@ Notes:
 
 ## Docs
 
-- Architecture: `docs/TOAST_LIBRARY_DESIGN.md`
-- Implementation map: `docs/CORE_REACT_IMPLEMENTATION_MAP.md`
 - Core package guide: `core/README.md`
 - React adapter guide: `adapters/react/README.md`
-- Storybook/examples guide: `examples/react/README.md`
 
 ## Development Notes
 
 - Package manager: `pnpm`
 - Bundler: `vite`
 - Tests: `vitest`
-- Storybook lives in `examples/react/`

@@ -640,12 +640,3 @@ pnpm exec vitest run
 pnpm exec tsc --noEmit
 pnpm exec vite build
 ```
-
-For interactive examples, run the Storybook app in `examples/react/`.
-
-## Related Docs
-
-- Core package: `../../core/README.md`
-- Architecture: `../../docs/TOAST_LIBRARY_DESIGN.md`
-- Implementation map: `../../docs/CORE_REACT_IMPLEMENTATION_MAP.md`
-- Storybook examples: `../../examples/react/README.md`

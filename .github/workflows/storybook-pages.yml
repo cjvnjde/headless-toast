@@ -48,10 +48,10 @@ jobs:
               - ".github/workflows/storybook-pages.yml"
               - "core/package.json"
               - "adapters/react/package.json"
-              - "examples/react/.storybook/**"
-              - "examples/react/src/**"
-              - "examples/react/package.json"
-              - "examples/react/tsconfig.json"
+              - "examples/react-storybook/.storybook/**"
+              - "examples/react-storybook/src/**"
+              - "examples/react-storybook/package.json"
+              - "examples/react-storybook/tsconfig.json"
 
   build:
     name: Build Storybook
@@ -77,7 +77,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: examples/react/storybook-static
+          path: examples/react-storybook/storybook-static
 
   deploy:
     name: Deploy Storybook

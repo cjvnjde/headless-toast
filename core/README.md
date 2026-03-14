@@ -153,10 +153,3 @@ pnpm exec vitest run
 pnpm exec tsc --noEmit
 pnpm exec vite build
 ```
-
-## Related Docs
-
-- Package source: `core/src/index.ts`
-- Architecture: `../docs/TOAST_LIBRARY_DESIGN.md`
-- Implementation details: `../docs/CORE_REACT_IMPLEMENTATION_MAP.md`
-- React adapter: `../adapters/react/README.md`
