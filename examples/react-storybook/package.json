@@ -1,5 +1,5 @@
 {
-  "name": "@headless-toast/examples-react",
+  "name": "@headless-toast/examples-react-storybook",
   "private": true,
   "description": "React Storybook examples for headless-toast",
   "type": "module",
