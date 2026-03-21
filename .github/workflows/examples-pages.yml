@@ -1,16 +1,17 @@
-name: Publish Storybook
+name: Deploy React Router Examples to GitHub Pages
 
 on:
   push:
     branches: [main]
     paths:
-      - ".github/workflows/storybook-pages.yml"
       - "core/package.json"
       - "adapters/react/package.json"
-      - "examples/react-storybook/.storybook/**"
-      - "examples/react-storybook/src/**"
-      - "examples/react-storybook/package.json"
-      - "examples/react-storybook/tsconfig.json"
+      - "examples/react-tanstack-router/index.html"
+      - "examples/react-tanstack-router/public/**"
+      - "examples/react-tanstack-router/src/**"
+      - "examples/react-tanstack-router/package.json"
+      - "examples/react-tanstack-router/tsconfig.json"
+      - "examples/react-tanstack-router/vite.config.ts"
   workflow_dispatch:
 
 permissions:
@@ -19,7 +20,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: storybook-pages
+  group: examples-pages
   cancel-in-progress: true
 
 jobs:
@@ -27,10 +28,10 @@ jobs:
     uses: ./.github/workflows/quality.yml
 
   build:
-    name: Build Storybook
+    name: Build React Router Examples
     needs: quality
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -42,25 +43,28 @@ jobs:
       - name: Setup Environment
         uses: ./.github/actions/setup-env
 
-      - name: Build Storybook
-        run: pnpm storybook:build
+      - name: Type-check examples app
+        run: pnpm --filter '@headless-toast/examples-react-router' typecheck
+
+      - name: Build examples app
+        run: pnpm --filter '@headless-toast/examples-react-router' build
         env:
-          STORYBOOK_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          VITE_BASE_PATH: ${{ steps.pages.outputs.base_path }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
-          path: examples/react-storybook/storybook-static
+          path: examples/react-tanstack-router/dist
 
   deploy:
-    name: Deploy Storybook
+    name: Deploy to GitHub Pages
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy Pages artifact
         id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5

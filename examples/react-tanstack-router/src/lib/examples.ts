@@ -1,0 +1,205 @@
+type ExampleMeta = {
+  path: string;
+  title: string;
+  summary: string;
+  category: "Fundamentals" | "Rendering" | "State" | "Inline" | "Advanced";
+  tags: string[];
+  featured?: boolean;
+};
+
+const examples = [
+  {
+    path: "/examples/basic-variants",
+    title: "Basic variants",
+    summary:
+      "Success, error, warning, info, and loading toasts with one toast component.",
+    category: "Fundamentals",
+    tags: ["createToast", "useToast", "Toaster"],
+    featured: true,
+  },
+  {
+    path: "/examples/placements",
+    title: "Placements",
+    summary: "Trigger the same toast in every built-in placement.",
+    category: "Fundamentals",
+    tags: ["placement", "layout"],
+  },
+  {
+    path: "/examples/countdown-progress",
+    title: "Countdown progress",
+    summary: "Progress bars and pause-on-hover for readable auto-close toasts.",
+    category: "Fundamentals",
+    tags: ["progress", "pauseOnHover"],
+    featured: true,
+  },
+  {
+    path: "/examples/persistent-toast",
+    title: "Persistent toast",
+    summary:
+      "A non-dismissible toast that stays until your app updates or dismisses it.",
+    category: "Fundamentals",
+    tags: ["dismissible", "duration"],
+  },
+  {
+    path: "/examples/promise-lifecycle",
+    title: "Promise lifecycle",
+    summary:
+      "Map loading, success, and error states to one promise-driven toast.",
+    category: "Fundamentals",
+    tags: ["promise", "async"],
+    featured: true,
+  },
+  {
+    path: "/examples/custom-component",
+    title: "Custom component",
+    summary:
+      "Swap in your own toast markup and styling while keeping the same store.",
+    category: "Rendering",
+    tags: ["useToast", "custom UI"],
+  },
+  {
+    path: "/examples/animation-wrapper",
+    title: "AnimationWrapper",
+    summary:
+      "Use the convenience wrapper when one animated outer element is enough.",
+    category: "Rendering",
+    tags: ["AnimationWrapper", "CSS animations"],
+  },
+  {
+    path: "/examples/tailwind-styled",
+    title: "Tailwind styled",
+    summary:
+      "A fully Tailwind v4 toast implementation using emitted data attributes.",
+    category: "Rendering",
+    tags: ["Tailwind", "data attributes"],
+    featured: true,
+  },
+  {
+    path: "/examples/duplicate-id",
+    title: "Duplicate id updates",
+    summary:
+      "Reuse a stable id to update an existing toast instead of creating duplicates.",
+    category: "State",
+    tags: ["id", "update"],
+  },
+  {
+    path: "/examples/store-inspector",
+    title: "Store inspector",
+    summary:
+      "Use useStore() to render live toast state and compare multiple stores.",
+    category: "State",
+    tags: ["useStore", "multiple stores"],
+  },
+  {
+    path: "/examples/outside-react",
+    title: "Outside React",
+    summary:
+      "Trigger toasts from timers, interceptors, and any module outside the React tree.",
+    category: "State",
+    tags: ["service layer", "plain JS"],
+  },
+  {
+    path: "/examples/max-toasts",
+    title: "Max toasts",
+    summary:
+      "Cap visible notifications and stress-test the queue with rapid bursts.",
+    category: "State",
+    tags: ["maxToasts", "stress test"],
+  },
+  {
+    path: "/examples/stacked-deck",
+    title: "Stacked deck",
+    summary: "Render a hover-expandable deck of toast cards with useStore().",
+    category: "State",
+    tags: ["custom layout", "stacked"],
+  },
+  {
+    path: "/examples/scrollable-tray",
+    title: "Scrollable tray",
+    summary:
+      "Build a scrollable toast surface for notification-heavy workflows.",
+    category: "State",
+    tags: ["custom layout", "scroll"],
+  },
+  {
+    path: "/examples/inline-sidebar",
+    title: "Inline sidebar",
+    summary:
+      "Route form feedback into a local sidebar container while keeping global toasts.",
+    category: "Inline",
+    tags: ["containerId", "inline"],
+  },
+  {
+    path: "/examples/multiple-containers",
+    title: "Multiple containers",
+    summary:
+      "Let different panels own independent toast streams from the same store.",
+    category: "Inline",
+    tags: ["containerId", "panels"],
+  },
+  {
+    path: "/examples/form-validation",
+    title: "Form validation",
+    summary:
+      "Keep validation feedback next to the form instead of the viewport edge.",
+    category: "Inline",
+    tags: ["forms", "inline"],
+  },
+  {
+    path: "/examples/drag-to-dismiss",
+    title: "Drag to dismiss",
+    summary: "Built-in pointer dragging with swipe-aware exit animations.",
+    category: "Advanced",
+    tags: ["useToastDrag", "gesture"],
+  },
+  {
+    path: "/examples/drag-reposition",
+    title: "Drag to reposition",
+    summary:
+      "Treat placement as state and drop toasts into a different viewport zone.",
+    category: "Advanced",
+    tags: ["placement", "drag"],
+  },
+  {
+    path: "/examples/floating-anchor",
+    title: "Floating anchor",
+    summary: "Attach a toast stack to another element with Floating UI.",
+    category: "Advanced",
+    tags: ["Floating UI", "anchored"],
+  },
+  {
+    path: "/examples/framer-motion",
+    title: "Framer Motion",
+    summary:
+      "Replace CSS transitions with motion-powered enter and exit animations.",
+    category: "Advanced",
+    tags: ["Framer Motion", "custom animation"],
+  },
+  {
+    path: "/examples/swipe-pin-dismiss",
+    title: "Swipe to pin or dismiss",
+    summary:
+      "Swipe left to pin a toast or right to dismiss it with custom gesture logic.",
+    category: "Advanced",
+    tags: ["gesture", "update"],
+    featured: true,
+  },
+] satisfies ExampleMeta[];
+
+const categories = [
+  "Fundamentals",
+  "Rendering",
+  "State",
+  "Inline",
+  "Advanced",
+] as const;
+
+function groupExamples() {
+  return categories.map((category) => ({
+    category,
+    items: examples.filter((example) => example.category === category),
+  }));
+}
+
+export { categories, examples, groupExamples };
+export type { ExampleMeta };

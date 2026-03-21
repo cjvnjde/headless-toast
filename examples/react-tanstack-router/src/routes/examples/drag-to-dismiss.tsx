@@ -1,0 +1,223 @@
+import { useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
+import { createPortal } from "react-dom";
+import { createFileRoute } from "@tanstack/react-router";
+import { useDrag } from "@use-gesture/react";
+import {
+  AnimatePresence,
+  animate,
+  motion,
+  useMotionValue,
+  useTransform,
+} from "framer-motion";
+import {
+  ToastCtx,
+  createToast,
+  useStore,
+  useToast,
+} from "@headless-toast/react";
+import type { ReactToastStore } from "@headless-toast/react";
+import { ExamplePage } from "../../components/ExamplePage";
+import { extractRouteExampleSource } from "../../lib/exampleSource";
+import rawSource from "./drag-to-dismiss.tsx?raw";
+
+function ViewportLayer({ children }: { children: ReactNode }) {
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  return createPortal(children, document.body);
+}
+
+export const Route = createFileRoute("/examples/drag-to-dismiss")({
+  component: DragToDismissPage,
+});
+
+const DISMISS_THRESHOLD = 110;
+
+function stripGestureHandlers(handlers: Record<string, unknown>) {
+  const {
+    onDrag: _onDrag,
+    onDragStart: _onDragStart,
+    onDragEnd: _onDragEnd,
+    onDragOver: _onDragOver,
+    onDragEnter: _onDragEnter,
+    onDragLeave: _onDragLeave,
+    ...rest
+  } = handlers;
+
+  return rest;
+}
+
+function DraggableToast() {
+  const {
+    toast,
+    dismiss,
+    pause,
+    resume,
+    pauseOnHoverHandlers,
+    markEntered,
+    markExited,
+  } = useToast<{ title: string; body: string }>();
+  const x = useMotionValue(0);
+  const opacity = useTransform(x, [-180, 0, 180], [0.45, 1, 0.45]);
+  const rotate = useTransform(x, [-180, 180], [-4, 4]);
+  const [dismissDirection, setDismissDirection] = useState<1 | -1 | null>(null);
+
+  useEffect(() => {
+    if (toast.status !== "entering") return;
+
+    const timer = window.setTimeout(() => markEntered(), 220);
+    return () => window.clearTimeout(timer);
+  }, [toast.id, toast.status, markEntered]);
+
+  useEffect(() => {
+    if (toast.status !== "exiting" || dismissDirection !== null) return;
+
+    const controls = animate(x, 0, {
+      type: "spring",
+      stiffness: 420,
+      damping: 32,
+    });
+    return () => controls.stop();
+  }, [dismissDirection, toast.status, x]);
+
+  const bind = useDrag(
+    ({ active, movement: [mx], last, direction: [dx], velocity: [vx] }) => {
+      if (dismissDirection !== null) return;
+
+      if (active) {
+        pause();
+        x.set(mx);
+      }
+
+      if (!last) return;
+
+      const shouldDismiss =
+        Math.abs(mx) > DISMISS_THRESHOLD ||
+        (Math.abs(mx) > 36 && Math.abs(vx) > 0.55);
+      if (shouldDismiss) {
+        const direction = (mx === 0 ? dx : Math.sign(mx)) >= 0 ? 1 : -1;
+        setDismissDirection(direction);
+        const targetX = direction * (window.innerWidth * 0.35 + 180);
+        animate(x, targetX, { duration: 0.18, ease: "easeOut" });
+        window.setTimeout(() => dismiss("swipe"), 180);
+        return;
+      }
+
+      resume();
+      animate(x, 0, { type: "spring", stiffness: 420, damping: 32 });
+    },
+    { from: () => [x.get(), 0] },
+  );
+
+  return (
+    <motion.article
+      style={{ x, opacity, rotate }}
+      className="pointer-events-auto relative select-none touch-none rounded-3xl border border-[var(--line)] bg-[var(--surface-strong)] p-4 pr-12 shadow-[0_18px_36px_rgba(15,23,42,0.12)]"
+      initial={{ opacity: 0, scale: 0.94, y: -12 }}
+      animate={
+        toast.status === "exiting"
+          ? { opacity: 0 }
+          : { opacity: 1, scale: 1, y: 0 }
+      }
+      exit={{ opacity: 0 }}
+      transition={{ type: "spring", stiffness: 420, damping: 30 }}
+      onAnimationComplete={() => {
+        if (toast.status === "exiting") {
+          markExited();
+        }
+      }}
+      {...stripGestureHandlers(bind())}
+      onMouseEnter={pauseOnHoverHandlers.onMouseEnter}
+      onMouseLeave={pauseOnHoverHandlers.onMouseLeave}
+    >
+      <p className="text-sm font-semibold text-[var(--ink)]">
+        {toast.data.title}
+      </p>
+      <p className="mt-1 text-sm text-[var(--ink-soft)]">{toast.data.body}</p>
+      <p className="mt-3 text-[11px] font-medium text-[var(--ink-soft)]">
+        Drag left or right, then release to dismiss from that final position.
+      </p>
+      <button
+        type="button"
+        className="absolute right-3 top-3 text-xs text-[var(--ink-soft)]"
+        onClick={() => dismiss("user")}
+      >
+        Close
+      </button>
+    </motion.article>
+  );
+}
+
+function DragDismissToaster({
+  store,
+}: {
+  store: ReactToastStore<{ title: string; body: string }>;
+}) {
+  const toasts = useStore(store);
+
+  return (
+    <ViewportLayer>
+      <div className="pointer-events-none fixed right-4 top-4 z-[9999] flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3">
+        <AnimatePresence initial={false} mode="popLayout">
+          {toasts.map((toast) => (
+            <motion.div key={toast.id} layout="position">
+              <ToastCtx.Provider value={{ toast, store }}>
+                <DraggableToast />
+              </ToastCtx.Provider>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+    </ViewportLayer>
+  );
+}
+
+function DragToDismissPreview() {
+  const storeRef = useRef<ReactToastStore<{
+    title: string;
+    body: string;
+  }> | null>(null);
+
+  if (!storeRef.current) {
+    storeRef.current = createToast<{ title: string; body: string }>().toast;
+  }
+
+  const toast = storeRef.current;
+
+  return (
+    <div className="space-y-4">
+      <button
+        type="button"
+        className="doc-button"
+        onClick={() =>
+          toast.info(
+            {
+              title: "Drag me",
+              body: "Release after dragging and the toast exits from the last dragged position.",
+            },
+            { duration: 0, pauseOnHover: true },
+          )
+        }
+      >
+        Show draggable toast
+      </button>
+      <DragDismissToaster store={toast} />
+    </div>
+  );
+}
+
+const code = extractRouteExampleSource(rawSource);
+
+function DragToDismissPage() {
+  return (
+    <ExamplePage
+      category="Advanced"
+      title="Drag to dismiss"
+      summary="A custom drag interaction can keep the toast exactly where the user releases it, then dismiss from that final position instead of snapping back first."
+      files={[{ filename: "drag-to-dismiss.tsx", language: "tsx", code }]}
+      preview={<DragToDismissPreview />}
+    />
+  );
+}
