@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StateUndoWindowRouteImport } from './routes/state/undo-window'
 import { Route as StateStoreInspectorRouteImport } from './routes/state/store-inspector'
 import { Route as StateStackedDeckRouteImport } from './routes/state/stacked-deck'
 import { Route as StateScrollableTrayRouteImport } from './routes/state/scrollable-tray'
@@ -22,6 +23,7 @@ import { Route as RenderingAnimationWrapperRouteImport } from './routes/renderin
 import { Route as InlineMultipleContainersRouteImport } from './routes/inline/multiple-containers'
 import { Route as InlineInlineSidebarRouteImport } from './routes/inline/inline-sidebar'
 import { Route as InlineFormValidationRouteImport } from './routes/inline/form-validation'
+import { Route as FundamentalsWaitForCloseRouteImport } from './routes/fundamentals/wait-for-close'
 import { Route as FundamentalsPromiseLifecycleRouteImport } from './routes/fundamentals/promise-lifecycle'
 import { Route as FundamentalsPlacementsRouteImport } from './routes/fundamentals/placements'
 import { Route as FundamentalsPersistentToastRouteImport } from './routes/fundamentals/persistent-toast'
@@ -36,6 +38,11 @@ import { Route as AdvancedDragRepositionRouteImport } from './routes/advanced/dr
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StateUndoWindowRoute = StateUndoWindowRouteImport.update({
+  id: '/state/undo-window',
+  path: '/state/undo-window',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StateStoreInspectorRoute = StateStoreInspectorRouteImport.update({
@@ -101,6 +108,12 @@ const InlineFormValidationRoute = InlineFormValidationRouteImport.update({
   path: '/inline/form-validation',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FundamentalsWaitForCloseRoute =
+  FundamentalsWaitForCloseRouteImport.update({
+    id: '/fundamentals/wait-for-close',
+    path: '/fundamentals/wait-for-close',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const FundamentalsPromiseLifecycleRoute =
   FundamentalsPromiseLifecycleRouteImport.update({
     id: '/fundamentals/promise-lifecycle',
@@ -168,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/fundamentals/persistent-toast': typeof FundamentalsPersistentToastRoute
   '/fundamentals/placements': typeof FundamentalsPlacementsRoute
   '/fundamentals/promise-lifecycle': typeof FundamentalsPromiseLifecycleRoute
+  '/fundamentals/wait-for-close': typeof FundamentalsWaitForCloseRoute
   '/inline/form-validation': typeof InlineFormValidationRoute
   '/inline/inline-sidebar': typeof InlineInlineSidebarRoute
   '/inline/multiple-containers': typeof InlineMultipleContainersRoute
@@ -180,6 +194,7 @@ export interface FileRoutesByFullPath {
   '/state/scrollable-tray': typeof StateScrollableTrayRoute
   '/state/stacked-deck': typeof StateStackedDeckRoute
   '/state/store-inspector': typeof StateStoreInspectorRoute
+  '/state/undo-window': typeof StateUndoWindowRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -193,6 +208,7 @@ export interface FileRoutesByTo {
   '/fundamentals/persistent-toast': typeof FundamentalsPersistentToastRoute
   '/fundamentals/placements': typeof FundamentalsPlacementsRoute
   '/fundamentals/promise-lifecycle': typeof FundamentalsPromiseLifecycleRoute
+  '/fundamentals/wait-for-close': typeof FundamentalsWaitForCloseRoute
   '/inline/form-validation': typeof InlineFormValidationRoute
   '/inline/inline-sidebar': typeof InlineInlineSidebarRoute
   '/inline/multiple-containers': typeof InlineMultipleContainersRoute
@@ -205,6 +221,7 @@ export interface FileRoutesByTo {
   '/state/scrollable-tray': typeof StateScrollableTrayRoute
   '/state/stacked-deck': typeof StateStackedDeckRoute
   '/state/store-inspector': typeof StateStoreInspectorRoute
+  '/state/undo-window': typeof StateUndoWindowRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -219,6 +236,7 @@ export interface FileRoutesById {
   '/fundamentals/persistent-toast': typeof FundamentalsPersistentToastRoute
   '/fundamentals/placements': typeof FundamentalsPlacementsRoute
   '/fundamentals/promise-lifecycle': typeof FundamentalsPromiseLifecycleRoute
+  '/fundamentals/wait-for-close': typeof FundamentalsWaitForCloseRoute
   '/inline/form-validation': typeof InlineFormValidationRoute
   '/inline/inline-sidebar': typeof InlineInlineSidebarRoute
   '/inline/multiple-containers': typeof InlineMultipleContainersRoute
@@ -231,6 +249,7 @@ export interface FileRoutesById {
   '/state/scrollable-tray': typeof StateScrollableTrayRoute
   '/state/stacked-deck': typeof StateStackedDeckRoute
   '/state/store-inspector': typeof StateStoreInspectorRoute
+  '/state/undo-window': typeof StateUndoWindowRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -246,6 +265,7 @@ export interface FileRouteTypes {
     | '/fundamentals/persistent-toast'
     | '/fundamentals/placements'
     | '/fundamentals/promise-lifecycle'
+    | '/fundamentals/wait-for-close'
     | '/inline/form-validation'
     | '/inline/inline-sidebar'
     | '/inline/multiple-containers'
@@ -258,6 +278,7 @@ export interface FileRouteTypes {
     | '/state/scrollable-tray'
     | '/state/stacked-deck'
     | '/state/store-inspector'
+    | '/state/undo-window'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -271,6 +292,7 @@ export interface FileRouteTypes {
     | '/fundamentals/persistent-toast'
     | '/fundamentals/placements'
     | '/fundamentals/promise-lifecycle'
+    | '/fundamentals/wait-for-close'
     | '/inline/form-validation'
     | '/inline/inline-sidebar'
     | '/inline/multiple-containers'
@@ -283,6 +305,7 @@ export interface FileRouteTypes {
     | '/state/scrollable-tray'
     | '/state/stacked-deck'
     | '/state/store-inspector'
+    | '/state/undo-window'
   id:
     | '__root__'
     | '/'
@@ -296,6 +319,7 @@ export interface FileRouteTypes {
     | '/fundamentals/persistent-toast'
     | '/fundamentals/placements'
     | '/fundamentals/promise-lifecycle'
+    | '/fundamentals/wait-for-close'
     | '/inline/form-validation'
     | '/inline/inline-sidebar'
     | '/inline/multiple-containers'
@@ -308,6 +332,7 @@ export interface FileRouteTypes {
     | '/state/scrollable-tray'
     | '/state/stacked-deck'
     | '/state/store-inspector'
+    | '/state/undo-window'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -322,6 +347,7 @@ export interface RootRouteChildren {
   FundamentalsPersistentToastRoute: typeof FundamentalsPersistentToastRoute
   FundamentalsPlacementsRoute: typeof FundamentalsPlacementsRoute
   FundamentalsPromiseLifecycleRoute: typeof FundamentalsPromiseLifecycleRoute
+  FundamentalsWaitForCloseRoute: typeof FundamentalsWaitForCloseRoute
   InlineFormValidationRoute: typeof InlineFormValidationRoute
   InlineInlineSidebarRoute: typeof InlineInlineSidebarRoute
   InlineMultipleContainersRoute: typeof InlineMultipleContainersRoute
@@ -334,6 +360,7 @@ export interface RootRouteChildren {
   StateScrollableTrayRoute: typeof StateScrollableTrayRoute
   StateStackedDeckRoute: typeof StateStackedDeckRoute
   StateStoreInspectorRoute: typeof StateStoreInspectorRoute
+  StateUndoWindowRoute: typeof StateUndoWindowRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -343,6 +370,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/state/undo-window': {
+      id: '/state/undo-window'
+      path: '/state/undo-window'
+      fullPath: '/state/undo-window'
+      preLoaderRoute: typeof StateUndoWindowRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/state/store-inspector': {
@@ -427,6 +461,13 @@ declare module '@tanstack/react-router' {
       path: '/inline/form-validation'
       fullPath: '/inline/form-validation'
       preLoaderRoute: typeof InlineFormValidationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fundamentals/wait-for-close': {
+      id: '/fundamentals/wait-for-close'
+      path: '/fundamentals/wait-for-close'
+      fullPath: '/fundamentals/wait-for-close'
+      preLoaderRoute: typeof FundamentalsWaitForCloseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fundamentals/promise-lifecycle': {
@@ -514,6 +555,7 @@ const rootRouteChildren: RootRouteChildren = {
   FundamentalsPersistentToastRoute: FundamentalsPersistentToastRoute,
   FundamentalsPlacementsRoute: FundamentalsPlacementsRoute,
   FundamentalsPromiseLifecycleRoute: FundamentalsPromiseLifecycleRoute,
+  FundamentalsWaitForCloseRoute: FundamentalsWaitForCloseRoute,
   InlineFormValidationRoute: InlineFormValidationRoute,
   InlineInlineSidebarRoute: InlineInlineSidebarRoute,
   InlineMultipleContainersRoute: InlineMultipleContainersRoute,
@@ -526,6 +568,7 @@ const rootRouteChildren: RootRouteChildren = {
   StateScrollableTrayRoute: StateScrollableTrayRoute,
   StateStackedDeckRoute: StateStackedDeckRoute,
   StateStoreInspectorRoute: StateStoreInspectorRoute,
+  StateUndoWindowRoute: StateUndoWindowRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

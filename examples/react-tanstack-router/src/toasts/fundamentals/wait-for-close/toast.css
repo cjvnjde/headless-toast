@@ -1,0 +1,42 @@
+/* Copy this file next to wait-for-close.tsx */
+
+.wait-for-close-toast[data-toast] {
+  transform-origin: top right;
+  will-change: transform, opacity;
+}
+
+.wait-for-close-toast[data-toast][data-toast-status="entering"] {
+  animation: wait-for-close-toast-enter 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.wait-for-close-toast[data-toast][data-toast-status="exiting"] {
+  animation: wait-for-close-toast-exit 180ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.wait-for-close-toast[data-toast][data-toast-placement^="bottom"] {
+  transform-origin: bottom right;
+}
+
+@keyframes wait-for-close-toast-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -16px, 0) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes wait-for-close-toast-exit {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(0, -14px, 0) scale(0.98);
+  }
+}

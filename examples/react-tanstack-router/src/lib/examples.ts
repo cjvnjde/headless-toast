@@ -50,6 +50,15 @@ const examples = [
     featured: true,
   },
   {
+    path: "/fundamentals/wait-for-close",
+    title: "Wait for close",
+    summary:
+      "Use handle.closed when follow-up work should wait until a toast fully leaves.",
+    category: "Fundamentals",
+    tags: ["handle.closed", "close reason"],
+    featured: true,
+  },
+  {
     path: "/rendering/custom-component",
     title: "Custom component",
     summary:
@@ -81,6 +90,15 @@ const examples = [
       "Reuse a stable id to update an existing toast instead of creating duplicates.",
     category: "State",
     tags: ["id", "update"],
+  },
+  {
+    path: "/state/undo-window",
+    title: "Undo window",
+    summary:
+      "Delay destructive work until the toast closes and branch on the close reason.",
+    category: "State",
+    tags: ["handle.closed", "undo"],
+    featured: true,
   },
   {
     path: "/state/store-inspector",
@@ -148,9 +166,10 @@ const examples = [
   {
     path: "/advanced/drag-to-dismiss",
     title: "Drag to dismiss",
-    summary: "Built-in pointer dragging with swipe-aware exit animations.",
+    summary:
+      "Use custom gesture logic to keep a toast at its released position while it exits.",
     category: "Advanced",
-    tags: ["useToastDrag", "gesture"],
+    tags: ["gesture", "custom motion"],
   },
   {
     path: "/advanced/drag-reposition",

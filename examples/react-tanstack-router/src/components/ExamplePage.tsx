@@ -18,6 +18,7 @@ function ExamplePage({
   category,
   title,
   summary,
+  notes,
   files,
   preview,
 }: ExamplePageProps) {
@@ -39,6 +40,25 @@ function ExamplePage({
           </p>
         </div>
       </section>
+
+      {notes && notes.length > 0 ? (
+        <section className="doc-card px-5 py-5">
+          <div className="border-b border-(--line) pb-4">
+            <p className="doc-eyebrow">Why this pattern</p>
+            <h2 className="mt-1 text-lg font-semibold text-(--ink)">
+              Key takeaways
+            </h2>
+          </div>
+          <ul className="space-y-3 pt-5">
+            {notes.map((note) => (
+              <li key={note} className="flex gap-3">
+                <span className="mt-2 h-2.5 w-2.5 flex-none rounded-full bg-(--accent)" />
+                <p className="text-sm leading-7 text-(--ink-soft)">{note}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <section className="doc-card doc-preview-card px-5 py-5">
         <div className="border-b border-(--line) pb-4">
