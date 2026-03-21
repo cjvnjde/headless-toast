@@ -27,6 +27,9 @@ conventional_commits = true
 filter_unconventional = true
 split_commits = false
 commit_parsers = [
+    { footer = "(?i)skip-changelog:\\s*true", skip = true },
+    { message = "^chore\\(release\\)!?:", skip = true },
+    { message = "^chore\\(deps.*\\)!?:", skip = true },
     { message = "^feat", group = "<!-- 0 -->Features" },
     { message = "^fix", group = "<!-- 1 -->Bug Fixes" },
     { message = "^refactor", group = "<!-- 2 -->Refactoring" },
@@ -35,8 +38,6 @@ commit_parsers = [
     { message = "^style", group = "<!-- 5 -->Styling" },
     { message = "^test", group = "<!-- 6 -->Testing" },
     { body = ".*security", group = "<!-- 7 -->Security" },
-    { message = "^chore\\(release\\)", skip = true },
-    { message = "^chore\\(deps.*\\)", skip = true },
     { message = "^chore|^ci", group = "<!-- 8 -->Miscellaneous" },
 ]
 protect_breaking_commits = false

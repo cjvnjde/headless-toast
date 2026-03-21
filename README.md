@@ -638,9 +638,24 @@ Recommended release commit flow:
 # update version first
 pnpm changelog:core
 git add core/package.json core/CHANGELOG.md
-git commit -m "chore(release): release @headless-toast/core 0.2.0"
+git commit -m "chore(release): release @headless-toast/core 0.2.0" -m "skip-changelog: true"
 git tag "@headless-toast/core@0.2.0"
 git push origin main --tags
+```
+
+Universal changelog opt-out rule:
+
+If you want any commit to pass the current conventional commitlint checks but stay out of the generated changelog, add this footer to the commit message:
+
+```text
+skip-changelog: true
+```
+
+Examples:
+
+```bash
+git commit -m "chore: bump @headless-toast/core to 0.2.0" -m "skip-changelog: true"
+git commit -m "docs(core): internal release docs update" -m "skip-changelog: true"
 ```
 
 Notes:
