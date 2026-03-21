@@ -1,0 +1,114 @@
+import {
+  Toaster,
+  createToast,
+  useToast,
+  useToastAnimation,
+} from "@headless-toast/react";
+import { ExamplePage } from "#/components/ExamplePage";
+import { extractExampleSource } from "#/lib/exampleSource";
+import "./toast.css";
+import rawSource from "./outside-react.tsx?raw";
+import toastCss from "./toast.css?raw";
+
+const externalToastStore = createToast<{ title: string; body: string }>({
+  defaults: { placement: "top-right", duration: 4200 },
+}).toast;
+
+function triggerExternalSuccess() {
+  externalToastStore.success({
+    title: "Service layer",
+    body: "This toast was triggered by a plain function outside React.",
+  });
+}
+
+function simulateApiInterceptor() {
+  window.setTimeout(() => {
+    externalToastStore.error({
+      title: "API error",
+      body: "The server returned 500 from an interceptor callback.",
+    });
+  }, 500);
+}
+
+function OutsideToast() {
+  const { toast, dismiss } = useToast<{ title: string; body: string }>();
+  const { ref, className, handlers, attributes } = useToastAnimation({
+    className:
+      "outside-react-toast pointer-events-auto relative w-full rounded-3xl border border-(--line) bg-(--surface-strong) p-4 pr-12 shadow-[0_18px_36px_rgba(15,23,42,0.12)]",
+  });
+
+  return (
+    <article
+      ref={ref}
+      className={className}
+      {...handlers}
+      {...attributes}
+      data-toast-placement={toast.options.placement ?? "top-right"}
+    >
+      <p className="text-sm font-semibold text-(--ink)">{toast.data.title}</p>
+      <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
+      <button
+        type="button"
+        className="absolute right-3 top-3 text-xs text-(--ink-soft)"
+        onClick={() => dismiss("user")}
+      >
+        Close
+      </button>
+    </article>
+  );
+}
+
+function OutsideReactPreview() {
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-3">
+        <button
+          type="button"
+          className="doc-button"
+          onClick={triggerExternalSuccess}
+        >
+          Trigger external call
+        </button>
+        <button
+          type="button"
+          className="doc-button doc-button-secondary"
+          onClick={simulateApiInterceptor}
+        >
+          Simulate interceptor error
+        </button>
+      </div>
+      <Toaster
+        store={externalToastStore}
+        className="pointer-events-none fixed inset-0 z-[9999]"
+      >
+        <Toaster.List className="fixed right-4 top-4 flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3">
+          <OutsideToast />
+        </Toaster.List>
+      </Toaster>
+    </div>
+  );
+}
+
+const code = extractExampleSource(rawSource);
+
+function OutsideReactPage() {
+  return (
+    <ExamplePage
+      category="State"
+      title="Outside React"
+      summary="The store is plain JavaScript, so you can keep it in a module or service layer and trigger toasts from interceptors, workers, or utility functions."
+      notes={[
+        "Only the renderer needs React. Triggering a toast does not.",
+        "This keeps toast orchestration close to the code that knows what happened.",
+        "A shared notifications module is useful for API clients, auth flows, and background tasks.",
+      ]}
+      files={[
+        { filename: "outside-react.tsx", language: "tsx", code },
+        { filename: "toast.css", language: "css", code: toastCss },
+      ]}
+      preview={<OutsideReactPreview />}
+    />
+  );
+}
+
+export { OutsideReactPage };

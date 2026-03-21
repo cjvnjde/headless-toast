@@ -1,0 +1,42 @@
+/* Copy this file next to basic-variants.tsx */
+
+.basic-variants-toast[data-toast] {
+  transform-origin: top right;
+  will-change: transform, opacity;
+}
+
+.basic-variants-toast[data-toast][data-toast-status="entering"] {
+  animation: basic-variants-toast-enter 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.basic-variants-toast[data-toast][data-toast-status="exiting"] {
+  animation: basic-variants-toast-exit 180ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.basic-variants-toast[data-toast][data-toast-placement^="bottom"] {
+  transform-origin: bottom right;
+}
+
+@keyframes basic-variants-toast-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -14px, 0) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes basic-variants-toast-exit {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(0, -10px, 0) scale(0.96);
+  }
+}

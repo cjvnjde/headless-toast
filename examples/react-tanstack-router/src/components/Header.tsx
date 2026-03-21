@@ -5,7 +5,7 @@ import { ThemeToggle } from "./ThemeToggle";
 
 function Header() {
   return (
-    <header className="sticky top-0 z-20 border-b border-[var(--line)] bg-[var(--header-bg)]/96 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-(--line) bg-(--header-bg)/96 backdrop-blur">
       <div className="site-shell px-4 py-3">
         <div className="flex flex-wrap items-center gap-3 justify-between">
           <div className="flex items-center gap-3 min-w-0">

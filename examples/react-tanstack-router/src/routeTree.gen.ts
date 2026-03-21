@@ -8,522 +8,525 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as IndexRouteImport } from "./routes/index";
-import { Route as ExamplesTailwindStyledRouteImport } from "./routes/examples/tailwind-styled";
-import { Route as ExamplesSwipePinDismissRouteImport } from "./routes/examples/swipe-pin-dismiss";
-import { Route as ExamplesStoreInspectorRouteImport } from "./routes/examples/store-inspector";
-import { Route as ExamplesStackedDeckRouteImport } from "./routes/examples/stacked-deck";
-import { Route as ExamplesScrollableTrayRouteImport } from "./routes/examples/scrollable-tray";
-import { Route as ExamplesPromiseLifecycleRouteImport } from "./routes/examples/promise-lifecycle";
-import { Route as ExamplesPlacementsRouteImport } from "./routes/examples/placements";
-import { Route as ExamplesPersistentToastRouteImport } from "./routes/examples/persistent-toast";
-import { Route as ExamplesOutsideReactRouteImport } from "./routes/examples/outside-react";
-import { Route as ExamplesMultipleContainersRouteImport } from "./routes/examples/multiple-containers";
-import { Route as ExamplesMaxToastsRouteImport } from "./routes/examples/max-toasts";
-import { Route as ExamplesInlineSidebarRouteImport } from "./routes/examples/inline-sidebar";
-import { Route as ExamplesFramerMotionRouteImport } from "./routes/examples/framer-motion";
-import { Route as ExamplesFormValidationRouteImport } from "./routes/examples/form-validation";
-import { Route as ExamplesFloatingAnchorRouteImport } from "./routes/examples/floating-anchor";
-import { Route as ExamplesDuplicateIdRouteImport } from "./routes/examples/duplicate-id";
-import { Route as ExamplesDragToDismissRouteImport } from "./routes/examples/drag-to-dismiss";
-import { Route as ExamplesDragRepositionRouteImport } from "./routes/examples/drag-reposition";
-import { Route as ExamplesCustomComponentRouteImport } from "./routes/examples/custom-component";
-import { Route as ExamplesCountdownProgressRouteImport } from "./routes/examples/countdown-progress";
-import { Route as ExamplesBasicVariantsRouteImport } from "./routes/examples/basic-variants";
-import { Route as ExamplesAnimationWrapperRouteImport } from "./routes/examples/animation-wrapper";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as StateStoreInspectorRouteImport } from './routes/state/store-inspector'
+import { Route as StateStackedDeckRouteImport } from './routes/state/stacked-deck'
+import { Route as StateScrollableTrayRouteImport } from './routes/state/scrollable-tray'
+import { Route as StateOutsideReactRouteImport } from './routes/state/outside-react'
+import { Route as StateMaxToastsRouteImport } from './routes/state/max-toasts'
+import { Route as StateDuplicateIdRouteImport } from './routes/state/duplicate-id'
+import { Route as RenderingTailwindStyledRouteImport } from './routes/rendering/tailwind-styled'
+import { Route as RenderingCustomComponentRouteImport } from './routes/rendering/custom-component'
+import { Route as RenderingAnimationWrapperRouteImport } from './routes/rendering/animation-wrapper'
+import { Route as InlineMultipleContainersRouteImport } from './routes/inline/multiple-containers'
+import { Route as InlineInlineSidebarRouteImport } from './routes/inline/inline-sidebar'
+import { Route as InlineFormValidationRouteImport } from './routes/inline/form-validation'
+import { Route as FundamentalsPromiseLifecycleRouteImport } from './routes/fundamentals/promise-lifecycle'
+import { Route as FundamentalsPlacementsRouteImport } from './routes/fundamentals/placements'
+import { Route as FundamentalsPersistentToastRouteImport } from './routes/fundamentals/persistent-toast'
+import { Route as FundamentalsCountdownProgressRouteImport } from './routes/fundamentals/countdown-progress'
+import { Route as FundamentalsBasicVariantsRouteImport } from './routes/fundamentals/basic-variants'
+import { Route as AdvancedSwipePinDismissRouteImport } from './routes/advanced/swipe-pin-dismiss'
+import { Route as AdvancedFramerMotionRouteImport } from './routes/advanced/framer-motion'
+import { Route as AdvancedFloatingAnchorRouteImport } from './routes/advanced/floating-anchor'
+import { Route as AdvancedDragToDismissRouteImport } from './routes/advanced/drag-to-dismiss'
+import { Route as AdvancedDragRepositionRouteImport } from './routes/advanced/drag-reposition'
 
 const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
-} as any);
-const ExamplesTailwindStyledRoute = ExamplesTailwindStyledRouteImport.update({
-  id: "/examples/tailwind-styled",
-  path: "/examples/tailwind-styled",
+} as any)
+const StateStoreInspectorRoute = StateStoreInspectorRouteImport.update({
+  id: '/state/store-inspector',
+  path: '/state/store-inspector',
   getParentRoute: () => rootRouteImport,
-} as any);
-const ExamplesSwipePinDismissRoute = ExamplesSwipePinDismissRouteImport.update({
-  id: "/examples/swipe-pin-dismiss",
-  path: "/examples/swipe-pin-dismiss",
+} as any)
+const StateStackedDeckRoute = StateStackedDeckRouteImport.update({
+  id: '/state/stacked-deck',
+  path: '/state/stacked-deck',
   getParentRoute: () => rootRouteImport,
-} as any);
-const ExamplesStoreInspectorRoute = ExamplesStoreInspectorRouteImport.update({
-  id: "/examples/store-inspector",
-  path: "/examples/store-inspector",
+} as any)
+const StateScrollableTrayRoute = StateScrollableTrayRouteImport.update({
+  id: '/state/scrollable-tray',
+  path: '/state/scrollable-tray',
   getParentRoute: () => rootRouteImport,
-} as any);
-const ExamplesStackedDeckRoute = ExamplesStackedDeckRouteImport.update({
-  id: "/examples/stacked-deck",
-  path: "/examples/stacked-deck",
+} as any)
+const StateOutsideReactRoute = StateOutsideReactRouteImport.update({
+  id: '/state/outside-react',
+  path: '/state/outside-react',
   getParentRoute: () => rootRouteImport,
-} as any);
-const ExamplesScrollableTrayRoute = ExamplesScrollableTrayRouteImport.update({
-  id: "/examples/scrollable-tray",
-  path: "/examples/scrollable-tray",
+} as any)
+const StateMaxToastsRoute = StateMaxToastsRouteImport.update({
+  id: '/state/max-toasts',
+  path: '/state/max-toasts',
   getParentRoute: () => rootRouteImport,
-} as any);
-const ExamplesPromiseLifecycleRoute =
-  ExamplesPromiseLifecycleRouteImport.update({
-    id: "/examples/promise-lifecycle",
-    path: "/examples/promise-lifecycle",
+} as any)
+const StateDuplicateIdRoute = StateDuplicateIdRouteImport.update({
+  id: '/state/duplicate-id',
+  path: '/state/duplicate-id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RenderingTailwindStyledRoute = RenderingTailwindStyledRouteImport.update({
+  id: '/rendering/tailwind-styled',
+  path: '/rendering/tailwind-styled',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RenderingCustomComponentRoute =
+  RenderingCustomComponentRouteImport.update({
+    id: '/rendering/custom-component',
+    path: '/rendering/custom-component',
     getParentRoute: () => rootRouteImport,
-  } as any);
-const ExamplesPlacementsRoute = ExamplesPlacementsRouteImport.update({
-  id: "/examples/placements",
-  path: "/examples/placements",
-  getParentRoute: () => rootRouteImport,
-} as any);
-const ExamplesPersistentToastRoute = ExamplesPersistentToastRouteImport.update({
-  id: "/examples/persistent-toast",
-  path: "/examples/persistent-toast",
-  getParentRoute: () => rootRouteImport,
-} as any);
-const ExamplesOutsideReactRoute = ExamplesOutsideReactRouteImport.update({
-  id: "/examples/outside-react",
-  path: "/examples/outside-react",
-  getParentRoute: () => rootRouteImport,
-} as any);
-const ExamplesMultipleContainersRoute =
-  ExamplesMultipleContainersRouteImport.update({
-    id: "/examples/multiple-containers",
-    path: "/examples/multiple-containers",
+  } as any)
+const RenderingAnimationWrapperRoute =
+  RenderingAnimationWrapperRouteImport.update({
+    id: '/rendering/animation-wrapper',
+    path: '/rendering/animation-wrapper',
     getParentRoute: () => rootRouteImport,
-  } as any);
-const ExamplesMaxToastsRoute = ExamplesMaxToastsRouteImport.update({
-  id: "/examples/max-toasts",
-  path: "/examples/max-toasts",
-  getParentRoute: () => rootRouteImport,
-} as any);
-const ExamplesInlineSidebarRoute = ExamplesInlineSidebarRouteImport.update({
-  id: "/examples/inline-sidebar",
-  path: "/examples/inline-sidebar",
-  getParentRoute: () => rootRouteImport,
-} as any);
-const ExamplesFramerMotionRoute = ExamplesFramerMotionRouteImport.update({
-  id: "/examples/framer-motion",
-  path: "/examples/framer-motion",
-  getParentRoute: () => rootRouteImport,
-} as any);
-const ExamplesFormValidationRoute = ExamplesFormValidationRouteImport.update({
-  id: "/examples/form-validation",
-  path: "/examples/form-validation",
-  getParentRoute: () => rootRouteImport,
-} as any);
-const ExamplesFloatingAnchorRoute = ExamplesFloatingAnchorRouteImport.update({
-  id: "/examples/floating-anchor",
-  path: "/examples/floating-anchor",
-  getParentRoute: () => rootRouteImport,
-} as any);
-const ExamplesDuplicateIdRoute = ExamplesDuplicateIdRouteImport.update({
-  id: "/examples/duplicate-id",
-  path: "/examples/duplicate-id",
-  getParentRoute: () => rootRouteImport,
-} as any);
-const ExamplesDragToDismissRoute = ExamplesDragToDismissRouteImport.update({
-  id: "/examples/drag-to-dismiss",
-  path: "/examples/drag-to-dismiss",
-  getParentRoute: () => rootRouteImport,
-} as any);
-const ExamplesDragRepositionRoute = ExamplesDragRepositionRouteImport.update({
-  id: "/examples/drag-reposition",
-  path: "/examples/drag-reposition",
-  getParentRoute: () => rootRouteImport,
-} as any);
-const ExamplesCustomComponentRoute = ExamplesCustomComponentRouteImport.update({
-  id: "/examples/custom-component",
-  path: "/examples/custom-component",
-  getParentRoute: () => rootRouteImport,
-} as any);
-const ExamplesCountdownProgressRoute =
-  ExamplesCountdownProgressRouteImport.update({
-    id: "/examples/countdown-progress",
-    path: "/examples/countdown-progress",
+  } as any)
+const InlineMultipleContainersRoute =
+  InlineMultipleContainersRouteImport.update({
+    id: '/inline/multiple-containers',
+    path: '/inline/multiple-containers',
     getParentRoute: () => rootRouteImport,
-  } as any);
-const ExamplesBasicVariantsRoute = ExamplesBasicVariantsRouteImport.update({
-  id: "/examples/basic-variants",
-  path: "/examples/basic-variants",
+  } as any)
+const InlineInlineSidebarRoute = InlineInlineSidebarRouteImport.update({
+  id: '/inline/inline-sidebar',
+  path: '/inline/inline-sidebar',
   getParentRoute: () => rootRouteImport,
-} as any);
-const ExamplesAnimationWrapperRoute =
-  ExamplesAnimationWrapperRouteImport.update({
-    id: "/examples/animation-wrapper",
-    path: "/examples/animation-wrapper",
+} as any)
+const InlineFormValidationRoute = InlineFormValidationRouteImport.update({
+  id: '/inline/form-validation',
+  path: '/inline/form-validation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FundamentalsPromiseLifecycleRoute =
+  FundamentalsPromiseLifecycleRouteImport.update({
+    id: '/fundamentals/promise-lifecycle',
+    path: '/fundamentals/promise-lifecycle',
     getParentRoute: () => rootRouteImport,
-  } as any);
+  } as any)
+const FundamentalsPlacementsRoute = FundamentalsPlacementsRouteImport.update({
+  id: '/fundamentals/placements',
+  path: '/fundamentals/placements',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FundamentalsPersistentToastRoute =
+  FundamentalsPersistentToastRouteImport.update({
+    id: '/fundamentals/persistent-toast',
+    path: '/fundamentals/persistent-toast',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const FundamentalsCountdownProgressRoute =
+  FundamentalsCountdownProgressRouteImport.update({
+    id: '/fundamentals/countdown-progress',
+    path: '/fundamentals/countdown-progress',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const FundamentalsBasicVariantsRoute =
+  FundamentalsBasicVariantsRouteImport.update({
+    id: '/fundamentals/basic-variants',
+    path: '/fundamentals/basic-variants',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdvancedSwipePinDismissRoute = AdvancedSwipePinDismissRouteImport.update({
+  id: '/advanced/swipe-pin-dismiss',
+  path: '/advanced/swipe-pin-dismiss',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdvancedFramerMotionRoute = AdvancedFramerMotionRouteImport.update({
+  id: '/advanced/framer-motion',
+  path: '/advanced/framer-motion',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdvancedFloatingAnchorRoute = AdvancedFloatingAnchorRouteImport.update({
+  id: '/advanced/floating-anchor',
+  path: '/advanced/floating-anchor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdvancedDragToDismissRoute = AdvancedDragToDismissRouteImport.update({
+  id: '/advanced/drag-to-dismiss',
+  path: '/advanced/drag-to-dismiss',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdvancedDragRepositionRoute = AdvancedDragRepositionRouteImport.update({
+  id: '/advanced/drag-reposition',
+  path: '/advanced/drag-reposition',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "/examples/animation-wrapper": typeof ExamplesAnimationWrapperRoute;
-  "/examples/basic-variants": typeof ExamplesBasicVariantsRoute;
-  "/examples/countdown-progress": typeof ExamplesCountdownProgressRoute;
-  "/examples/custom-component": typeof ExamplesCustomComponentRoute;
-  "/examples/drag-reposition": typeof ExamplesDragRepositionRoute;
-  "/examples/drag-to-dismiss": typeof ExamplesDragToDismissRoute;
-  "/examples/duplicate-id": typeof ExamplesDuplicateIdRoute;
-  "/examples/floating-anchor": typeof ExamplesFloatingAnchorRoute;
-  "/examples/form-validation": typeof ExamplesFormValidationRoute;
-  "/examples/framer-motion": typeof ExamplesFramerMotionRoute;
-  "/examples/inline-sidebar": typeof ExamplesInlineSidebarRoute;
-  "/examples/max-toasts": typeof ExamplesMaxToastsRoute;
-  "/examples/multiple-containers": typeof ExamplesMultipleContainersRoute;
-  "/examples/outside-react": typeof ExamplesOutsideReactRoute;
-  "/examples/persistent-toast": typeof ExamplesPersistentToastRoute;
-  "/examples/placements": typeof ExamplesPlacementsRoute;
-  "/examples/promise-lifecycle": typeof ExamplesPromiseLifecycleRoute;
-  "/examples/scrollable-tray": typeof ExamplesScrollableTrayRoute;
-  "/examples/stacked-deck": typeof ExamplesStackedDeckRoute;
-  "/examples/store-inspector": typeof ExamplesStoreInspectorRoute;
-  "/examples/swipe-pin-dismiss": typeof ExamplesSwipePinDismissRoute;
-  "/examples/tailwind-styled": typeof ExamplesTailwindStyledRoute;
+  '/': typeof IndexRoute
+  '/advanced/drag-reposition': typeof AdvancedDragRepositionRoute
+  '/advanced/drag-to-dismiss': typeof AdvancedDragToDismissRoute
+  '/advanced/floating-anchor': typeof AdvancedFloatingAnchorRoute
+  '/advanced/framer-motion': typeof AdvancedFramerMotionRoute
+  '/advanced/swipe-pin-dismiss': typeof AdvancedSwipePinDismissRoute
+  '/fundamentals/basic-variants': typeof FundamentalsBasicVariantsRoute
+  '/fundamentals/countdown-progress': typeof FundamentalsCountdownProgressRoute
+  '/fundamentals/persistent-toast': typeof FundamentalsPersistentToastRoute
+  '/fundamentals/placements': typeof FundamentalsPlacementsRoute
+  '/fundamentals/promise-lifecycle': typeof FundamentalsPromiseLifecycleRoute
+  '/inline/form-validation': typeof InlineFormValidationRoute
+  '/inline/inline-sidebar': typeof InlineInlineSidebarRoute
+  '/inline/multiple-containers': typeof InlineMultipleContainersRoute
+  '/rendering/animation-wrapper': typeof RenderingAnimationWrapperRoute
+  '/rendering/custom-component': typeof RenderingCustomComponentRoute
+  '/rendering/tailwind-styled': typeof RenderingTailwindStyledRoute
+  '/state/duplicate-id': typeof StateDuplicateIdRoute
+  '/state/max-toasts': typeof StateMaxToastsRoute
+  '/state/outside-react': typeof StateOutsideReactRoute
+  '/state/scrollable-tray': typeof StateScrollableTrayRoute
+  '/state/stacked-deck': typeof StateStackedDeckRoute
+  '/state/store-inspector': typeof StateStoreInspectorRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "/examples/animation-wrapper": typeof ExamplesAnimationWrapperRoute;
-  "/examples/basic-variants": typeof ExamplesBasicVariantsRoute;
-  "/examples/countdown-progress": typeof ExamplesCountdownProgressRoute;
-  "/examples/custom-component": typeof ExamplesCustomComponentRoute;
-  "/examples/drag-reposition": typeof ExamplesDragRepositionRoute;
-  "/examples/drag-to-dismiss": typeof ExamplesDragToDismissRoute;
-  "/examples/duplicate-id": typeof ExamplesDuplicateIdRoute;
-  "/examples/floating-anchor": typeof ExamplesFloatingAnchorRoute;
-  "/examples/form-validation": typeof ExamplesFormValidationRoute;
-  "/examples/framer-motion": typeof ExamplesFramerMotionRoute;
-  "/examples/inline-sidebar": typeof ExamplesInlineSidebarRoute;
-  "/examples/max-toasts": typeof ExamplesMaxToastsRoute;
-  "/examples/multiple-containers": typeof ExamplesMultipleContainersRoute;
-  "/examples/outside-react": typeof ExamplesOutsideReactRoute;
-  "/examples/persistent-toast": typeof ExamplesPersistentToastRoute;
-  "/examples/placements": typeof ExamplesPlacementsRoute;
-  "/examples/promise-lifecycle": typeof ExamplesPromiseLifecycleRoute;
-  "/examples/scrollable-tray": typeof ExamplesScrollableTrayRoute;
-  "/examples/stacked-deck": typeof ExamplesStackedDeckRoute;
-  "/examples/store-inspector": typeof ExamplesStoreInspectorRoute;
-  "/examples/swipe-pin-dismiss": typeof ExamplesSwipePinDismissRoute;
-  "/examples/tailwind-styled": typeof ExamplesTailwindStyledRoute;
+  '/': typeof IndexRoute
+  '/advanced/drag-reposition': typeof AdvancedDragRepositionRoute
+  '/advanced/drag-to-dismiss': typeof AdvancedDragToDismissRoute
+  '/advanced/floating-anchor': typeof AdvancedFloatingAnchorRoute
+  '/advanced/framer-motion': typeof AdvancedFramerMotionRoute
+  '/advanced/swipe-pin-dismiss': typeof AdvancedSwipePinDismissRoute
+  '/fundamentals/basic-variants': typeof FundamentalsBasicVariantsRoute
+  '/fundamentals/countdown-progress': typeof FundamentalsCountdownProgressRoute
+  '/fundamentals/persistent-toast': typeof FundamentalsPersistentToastRoute
+  '/fundamentals/placements': typeof FundamentalsPlacementsRoute
+  '/fundamentals/promise-lifecycle': typeof FundamentalsPromiseLifecycleRoute
+  '/inline/form-validation': typeof InlineFormValidationRoute
+  '/inline/inline-sidebar': typeof InlineInlineSidebarRoute
+  '/inline/multiple-containers': typeof InlineMultipleContainersRoute
+  '/rendering/animation-wrapper': typeof RenderingAnimationWrapperRoute
+  '/rendering/custom-component': typeof RenderingCustomComponentRoute
+  '/rendering/tailwind-styled': typeof RenderingTailwindStyledRoute
+  '/state/duplicate-id': typeof StateDuplicateIdRoute
+  '/state/max-toasts': typeof StateMaxToastsRoute
+  '/state/outside-react': typeof StateOutsideReactRoute
+  '/state/scrollable-tray': typeof StateScrollableTrayRoute
+  '/state/stacked-deck': typeof StateStackedDeckRoute
+  '/state/store-inspector': typeof StateStoreInspectorRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/": typeof IndexRoute;
-  "/examples/animation-wrapper": typeof ExamplesAnimationWrapperRoute;
-  "/examples/basic-variants": typeof ExamplesBasicVariantsRoute;
-  "/examples/countdown-progress": typeof ExamplesCountdownProgressRoute;
-  "/examples/custom-component": typeof ExamplesCustomComponentRoute;
-  "/examples/drag-reposition": typeof ExamplesDragRepositionRoute;
-  "/examples/drag-to-dismiss": typeof ExamplesDragToDismissRoute;
-  "/examples/duplicate-id": typeof ExamplesDuplicateIdRoute;
-  "/examples/floating-anchor": typeof ExamplesFloatingAnchorRoute;
-  "/examples/form-validation": typeof ExamplesFormValidationRoute;
-  "/examples/framer-motion": typeof ExamplesFramerMotionRoute;
-  "/examples/inline-sidebar": typeof ExamplesInlineSidebarRoute;
-  "/examples/max-toasts": typeof ExamplesMaxToastsRoute;
-  "/examples/multiple-containers": typeof ExamplesMultipleContainersRoute;
-  "/examples/outside-react": typeof ExamplesOutsideReactRoute;
-  "/examples/persistent-toast": typeof ExamplesPersistentToastRoute;
-  "/examples/placements": typeof ExamplesPlacementsRoute;
-  "/examples/promise-lifecycle": typeof ExamplesPromiseLifecycleRoute;
-  "/examples/scrollable-tray": typeof ExamplesScrollableTrayRoute;
-  "/examples/stacked-deck": typeof ExamplesStackedDeckRoute;
-  "/examples/store-inspector": typeof ExamplesStoreInspectorRoute;
-  "/examples/swipe-pin-dismiss": typeof ExamplesSwipePinDismissRoute;
-  "/examples/tailwind-styled": typeof ExamplesTailwindStyledRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/advanced/drag-reposition': typeof AdvancedDragRepositionRoute
+  '/advanced/drag-to-dismiss': typeof AdvancedDragToDismissRoute
+  '/advanced/floating-anchor': typeof AdvancedFloatingAnchorRoute
+  '/advanced/framer-motion': typeof AdvancedFramerMotionRoute
+  '/advanced/swipe-pin-dismiss': typeof AdvancedSwipePinDismissRoute
+  '/fundamentals/basic-variants': typeof FundamentalsBasicVariantsRoute
+  '/fundamentals/countdown-progress': typeof FundamentalsCountdownProgressRoute
+  '/fundamentals/persistent-toast': typeof FundamentalsPersistentToastRoute
+  '/fundamentals/placements': typeof FundamentalsPlacementsRoute
+  '/fundamentals/promise-lifecycle': typeof FundamentalsPromiseLifecycleRoute
+  '/inline/form-validation': typeof InlineFormValidationRoute
+  '/inline/inline-sidebar': typeof InlineInlineSidebarRoute
+  '/inline/multiple-containers': typeof InlineMultipleContainersRoute
+  '/rendering/animation-wrapper': typeof RenderingAnimationWrapperRoute
+  '/rendering/custom-component': typeof RenderingCustomComponentRoute
+  '/rendering/tailwind-styled': typeof RenderingTailwindStyledRoute
+  '/state/duplicate-id': typeof StateDuplicateIdRoute
+  '/state/max-toasts': typeof StateMaxToastsRoute
+  '/state/outside-react': typeof StateOutsideReactRoute
+  '/state/scrollable-tray': typeof StateScrollableTrayRoute
+  '/state/stacked-deck': typeof StateStackedDeckRoute
+  '/state/store-inspector': typeof StateStoreInspectorRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | "/"
-    | "/examples/animation-wrapper"
-    | "/examples/basic-variants"
-    | "/examples/countdown-progress"
-    | "/examples/custom-component"
-    | "/examples/drag-reposition"
-    | "/examples/drag-to-dismiss"
-    | "/examples/duplicate-id"
-    | "/examples/floating-anchor"
-    | "/examples/form-validation"
-    | "/examples/framer-motion"
-    | "/examples/inline-sidebar"
-    | "/examples/max-toasts"
-    | "/examples/multiple-containers"
-    | "/examples/outside-react"
-    | "/examples/persistent-toast"
-    | "/examples/placements"
-    | "/examples/promise-lifecycle"
-    | "/examples/scrollable-tray"
-    | "/examples/stacked-deck"
-    | "/examples/store-inspector"
-    | "/examples/swipe-pin-dismiss"
-    | "/examples/tailwind-styled";
-  fileRoutesByTo: FileRoutesByTo;
+    | '/'
+    | '/advanced/drag-reposition'
+    | '/advanced/drag-to-dismiss'
+    | '/advanced/floating-anchor'
+    | '/advanced/framer-motion'
+    | '/advanced/swipe-pin-dismiss'
+    | '/fundamentals/basic-variants'
+    | '/fundamentals/countdown-progress'
+    | '/fundamentals/persistent-toast'
+    | '/fundamentals/placements'
+    | '/fundamentals/promise-lifecycle'
+    | '/inline/form-validation'
+    | '/inline/inline-sidebar'
+    | '/inline/multiple-containers'
+    | '/rendering/animation-wrapper'
+    | '/rendering/custom-component'
+    | '/rendering/tailwind-styled'
+    | '/state/duplicate-id'
+    | '/state/max-toasts'
+    | '/state/outside-react'
+    | '/state/scrollable-tray'
+    | '/state/stacked-deck'
+    | '/state/store-inspector'
+  fileRoutesByTo: FileRoutesByTo
   to:
-    | "/"
-    | "/examples/animation-wrapper"
-    | "/examples/basic-variants"
-    | "/examples/countdown-progress"
-    | "/examples/custom-component"
-    | "/examples/drag-reposition"
-    | "/examples/drag-to-dismiss"
-    | "/examples/duplicate-id"
-    | "/examples/floating-anchor"
-    | "/examples/form-validation"
-    | "/examples/framer-motion"
-    | "/examples/inline-sidebar"
-    | "/examples/max-toasts"
-    | "/examples/multiple-containers"
-    | "/examples/outside-react"
-    | "/examples/persistent-toast"
-    | "/examples/placements"
-    | "/examples/promise-lifecycle"
-    | "/examples/scrollable-tray"
-    | "/examples/stacked-deck"
-    | "/examples/store-inspector"
-    | "/examples/swipe-pin-dismiss"
-    | "/examples/tailwind-styled";
+    | '/'
+    | '/advanced/drag-reposition'
+    | '/advanced/drag-to-dismiss'
+    | '/advanced/floating-anchor'
+    | '/advanced/framer-motion'
+    | '/advanced/swipe-pin-dismiss'
+    | '/fundamentals/basic-variants'
+    | '/fundamentals/countdown-progress'
+    | '/fundamentals/persistent-toast'
+    | '/fundamentals/placements'
+    | '/fundamentals/promise-lifecycle'
+    | '/inline/form-validation'
+    | '/inline/inline-sidebar'
+    | '/inline/multiple-containers'
+    | '/rendering/animation-wrapper'
+    | '/rendering/custom-component'
+    | '/rendering/tailwind-styled'
+    | '/state/duplicate-id'
+    | '/state/max-toasts'
+    | '/state/outside-react'
+    | '/state/scrollable-tray'
+    | '/state/stacked-deck'
+    | '/state/store-inspector'
   id:
-    | "__root__"
-    | "/"
-    | "/examples/animation-wrapper"
-    | "/examples/basic-variants"
-    | "/examples/countdown-progress"
-    | "/examples/custom-component"
-    | "/examples/drag-reposition"
-    | "/examples/drag-to-dismiss"
-    | "/examples/duplicate-id"
-    | "/examples/floating-anchor"
-    | "/examples/form-validation"
-    | "/examples/framer-motion"
-    | "/examples/inline-sidebar"
-    | "/examples/max-toasts"
-    | "/examples/multiple-containers"
-    | "/examples/outside-react"
-    | "/examples/persistent-toast"
-    | "/examples/placements"
-    | "/examples/promise-lifecycle"
-    | "/examples/scrollable-tray"
-    | "/examples/stacked-deck"
-    | "/examples/store-inspector"
-    | "/examples/swipe-pin-dismiss"
-    | "/examples/tailwind-styled";
-  fileRoutesById: FileRoutesById;
+    | '__root__'
+    | '/'
+    | '/advanced/drag-reposition'
+    | '/advanced/drag-to-dismiss'
+    | '/advanced/floating-anchor'
+    | '/advanced/framer-motion'
+    | '/advanced/swipe-pin-dismiss'
+    | '/fundamentals/basic-variants'
+    | '/fundamentals/countdown-progress'
+    | '/fundamentals/persistent-toast'
+    | '/fundamentals/placements'
+    | '/fundamentals/promise-lifecycle'
+    | '/inline/form-validation'
+    | '/inline/inline-sidebar'
+    | '/inline/multiple-containers'
+    | '/rendering/animation-wrapper'
+    | '/rendering/custom-component'
+    | '/rendering/tailwind-styled'
+    | '/state/duplicate-id'
+    | '/state/max-toasts'
+    | '/state/outside-react'
+    | '/state/scrollable-tray'
+    | '/state/stacked-deck'
+    | '/state/store-inspector'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  ExamplesAnimationWrapperRoute: typeof ExamplesAnimationWrapperRoute;
-  ExamplesBasicVariantsRoute: typeof ExamplesBasicVariantsRoute;
-  ExamplesCountdownProgressRoute: typeof ExamplesCountdownProgressRoute;
-  ExamplesCustomComponentRoute: typeof ExamplesCustomComponentRoute;
-  ExamplesDragRepositionRoute: typeof ExamplesDragRepositionRoute;
-  ExamplesDragToDismissRoute: typeof ExamplesDragToDismissRoute;
-  ExamplesDuplicateIdRoute: typeof ExamplesDuplicateIdRoute;
-  ExamplesFloatingAnchorRoute: typeof ExamplesFloatingAnchorRoute;
-  ExamplesFormValidationRoute: typeof ExamplesFormValidationRoute;
-  ExamplesFramerMotionRoute: typeof ExamplesFramerMotionRoute;
-  ExamplesInlineSidebarRoute: typeof ExamplesInlineSidebarRoute;
-  ExamplesMaxToastsRoute: typeof ExamplesMaxToastsRoute;
-  ExamplesMultipleContainersRoute: typeof ExamplesMultipleContainersRoute;
-  ExamplesOutsideReactRoute: typeof ExamplesOutsideReactRoute;
-  ExamplesPersistentToastRoute: typeof ExamplesPersistentToastRoute;
-  ExamplesPlacementsRoute: typeof ExamplesPlacementsRoute;
-  ExamplesPromiseLifecycleRoute: typeof ExamplesPromiseLifecycleRoute;
-  ExamplesScrollableTrayRoute: typeof ExamplesScrollableTrayRoute;
-  ExamplesStackedDeckRoute: typeof ExamplesStackedDeckRoute;
-  ExamplesStoreInspectorRoute: typeof ExamplesStoreInspectorRoute;
-  ExamplesSwipePinDismissRoute: typeof ExamplesSwipePinDismissRoute;
-  ExamplesTailwindStyledRoute: typeof ExamplesTailwindStyledRoute;
+  IndexRoute: typeof IndexRoute
+  AdvancedDragRepositionRoute: typeof AdvancedDragRepositionRoute
+  AdvancedDragToDismissRoute: typeof AdvancedDragToDismissRoute
+  AdvancedFloatingAnchorRoute: typeof AdvancedFloatingAnchorRoute
+  AdvancedFramerMotionRoute: typeof AdvancedFramerMotionRoute
+  AdvancedSwipePinDismissRoute: typeof AdvancedSwipePinDismissRoute
+  FundamentalsBasicVariantsRoute: typeof FundamentalsBasicVariantsRoute
+  FundamentalsCountdownProgressRoute: typeof FundamentalsCountdownProgressRoute
+  FundamentalsPersistentToastRoute: typeof FundamentalsPersistentToastRoute
+  FundamentalsPlacementsRoute: typeof FundamentalsPlacementsRoute
+  FundamentalsPromiseLifecycleRoute: typeof FundamentalsPromiseLifecycleRoute
+  InlineFormValidationRoute: typeof InlineFormValidationRoute
+  InlineInlineSidebarRoute: typeof InlineInlineSidebarRoute
+  InlineMultipleContainersRoute: typeof InlineMultipleContainersRoute
+  RenderingAnimationWrapperRoute: typeof RenderingAnimationWrapperRoute
+  RenderingCustomComponentRoute: typeof RenderingCustomComponentRoute
+  RenderingTailwindStyledRoute: typeof RenderingTailwindStyledRoute
+  StateDuplicateIdRoute: typeof StateDuplicateIdRoute
+  StateMaxToastsRoute: typeof StateMaxToastsRoute
+  StateOutsideReactRoute: typeof StateOutsideReactRoute
+  StateScrollableTrayRoute: typeof StateScrollableTrayRoute
+  StateStackedDeckRoute: typeof StateStackedDeckRoute
+  StateStoreInspectorRoute: typeof StateStoreInspectorRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/tailwind-styled": {
-      id: "/examples/tailwind-styled";
-      path: "/examples/tailwind-styled";
-      fullPath: "/examples/tailwind-styled";
-      preLoaderRoute: typeof ExamplesTailwindStyledRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/swipe-pin-dismiss": {
-      id: "/examples/swipe-pin-dismiss";
-      path: "/examples/swipe-pin-dismiss";
-      fullPath: "/examples/swipe-pin-dismiss";
-      preLoaderRoute: typeof ExamplesSwipePinDismissRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/store-inspector": {
-      id: "/examples/store-inspector";
-      path: "/examples/store-inspector";
-      fullPath: "/examples/store-inspector";
-      preLoaderRoute: typeof ExamplesStoreInspectorRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/stacked-deck": {
-      id: "/examples/stacked-deck";
-      path: "/examples/stacked-deck";
-      fullPath: "/examples/stacked-deck";
-      preLoaderRoute: typeof ExamplesStackedDeckRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/scrollable-tray": {
-      id: "/examples/scrollable-tray";
-      path: "/examples/scrollable-tray";
-      fullPath: "/examples/scrollable-tray";
-      preLoaderRoute: typeof ExamplesScrollableTrayRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/promise-lifecycle": {
-      id: "/examples/promise-lifecycle";
-      path: "/examples/promise-lifecycle";
-      fullPath: "/examples/promise-lifecycle";
-      preLoaderRoute: typeof ExamplesPromiseLifecycleRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/placements": {
-      id: "/examples/placements";
-      path: "/examples/placements";
-      fullPath: "/examples/placements";
-      preLoaderRoute: typeof ExamplesPlacementsRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/persistent-toast": {
-      id: "/examples/persistent-toast";
-      path: "/examples/persistent-toast";
-      fullPath: "/examples/persistent-toast";
-      preLoaderRoute: typeof ExamplesPersistentToastRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/outside-react": {
-      id: "/examples/outside-react";
-      path: "/examples/outside-react";
-      fullPath: "/examples/outside-react";
-      preLoaderRoute: typeof ExamplesOutsideReactRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/multiple-containers": {
-      id: "/examples/multiple-containers";
-      path: "/examples/multiple-containers";
-      fullPath: "/examples/multiple-containers";
-      preLoaderRoute: typeof ExamplesMultipleContainersRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/max-toasts": {
-      id: "/examples/max-toasts";
-      path: "/examples/max-toasts";
-      fullPath: "/examples/max-toasts";
-      preLoaderRoute: typeof ExamplesMaxToastsRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/inline-sidebar": {
-      id: "/examples/inline-sidebar";
-      path: "/examples/inline-sidebar";
-      fullPath: "/examples/inline-sidebar";
-      preLoaderRoute: typeof ExamplesInlineSidebarRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/framer-motion": {
-      id: "/examples/framer-motion";
-      path: "/examples/framer-motion";
-      fullPath: "/examples/framer-motion";
-      preLoaderRoute: typeof ExamplesFramerMotionRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/form-validation": {
-      id: "/examples/form-validation";
-      path: "/examples/form-validation";
-      fullPath: "/examples/form-validation";
-      preLoaderRoute: typeof ExamplesFormValidationRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/floating-anchor": {
-      id: "/examples/floating-anchor";
-      path: "/examples/floating-anchor";
-      fullPath: "/examples/floating-anchor";
-      preLoaderRoute: typeof ExamplesFloatingAnchorRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/duplicate-id": {
-      id: "/examples/duplicate-id";
-      path: "/examples/duplicate-id";
-      fullPath: "/examples/duplicate-id";
-      preLoaderRoute: typeof ExamplesDuplicateIdRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/drag-to-dismiss": {
-      id: "/examples/drag-to-dismiss";
-      path: "/examples/drag-to-dismiss";
-      fullPath: "/examples/drag-to-dismiss";
-      preLoaderRoute: typeof ExamplesDragToDismissRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/drag-reposition": {
-      id: "/examples/drag-reposition";
-      path: "/examples/drag-reposition";
-      fullPath: "/examples/drag-reposition";
-      preLoaderRoute: typeof ExamplesDragRepositionRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/custom-component": {
-      id: "/examples/custom-component";
-      path: "/examples/custom-component";
-      fullPath: "/examples/custom-component";
-      preLoaderRoute: typeof ExamplesCustomComponentRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/countdown-progress": {
-      id: "/examples/countdown-progress";
-      path: "/examples/countdown-progress";
-      fullPath: "/examples/countdown-progress";
-      preLoaderRoute: typeof ExamplesCountdownProgressRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/basic-variants": {
-      id: "/examples/basic-variants";
-      path: "/examples/basic-variants";
-      fullPath: "/examples/basic-variants";
-      preLoaderRoute: typeof ExamplesBasicVariantsRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/examples/animation-wrapper": {
-      id: "/examples/animation-wrapper";
-      path: "/examples/animation-wrapper";
-      fullPath: "/examples/animation-wrapper";
-      preLoaderRoute: typeof ExamplesAnimationWrapperRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/state/store-inspector': {
+      id: '/state/store-inspector'
+      path: '/state/store-inspector'
+      fullPath: '/state/store-inspector'
+      preLoaderRoute: typeof StateStoreInspectorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/state/stacked-deck': {
+      id: '/state/stacked-deck'
+      path: '/state/stacked-deck'
+      fullPath: '/state/stacked-deck'
+      preLoaderRoute: typeof StateStackedDeckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/state/scrollable-tray': {
+      id: '/state/scrollable-tray'
+      path: '/state/scrollable-tray'
+      fullPath: '/state/scrollable-tray'
+      preLoaderRoute: typeof StateScrollableTrayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/state/outside-react': {
+      id: '/state/outside-react'
+      path: '/state/outside-react'
+      fullPath: '/state/outside-react'
+      preLoaderRoute: typeof StateOutsideReactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/state/max-toasts': {
+      id: '/state/max-toasts'
+      path: '/state/max-toasts'
+      fullPath: '/state/max-toasts'
+      preLoaderRoute: typeof StateMaxToastsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/state/duplicate-id': {
+      id: '/state/duplicate-id'
+      path: '/state/duplicate-id'
+      fullPath: '/state/duplicate-id'
+      preLoaderRoute: typeof StateDuplicateIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rendering/tailwind-styled': {
+      id: '/rendering/tailwind-styled'
+      path: '/rendering/tailwind-styled'
+      fullPath: '/rendering/tailwind-styled'
+      preLoaderRoute: typeof RenderingTailwindStyledRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rendering/custom-component': {
+      id: '/rendering/custom-component'
+      path: '/rendering/custom-component'
+      fullPath: '/rendering/custom-component'
+      preLoaderRoute: typeof RenderingCustomComponentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rendering/animation-wrapper': {
+      id: '/rendering/animation-wrapper'
+      path: '/rendering/animation-wrapper'
+      fullPath: '/rendering/animation-wrapper'
+      preLoaderRoute: typeof RenderingAnimationWrapperRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inline/multiple-containers': {
+      id: '/inline/multiple-containers'
+      path: '/inline/multiple-containers'
+      fullPath: '/inline/multiple-containers'
+      preLoaderRoute: typeof InlineMultipleContainersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inline/inline-sidebar': {
+      id: '/inline/inline-sidebar'
+      path: '/inline/inline-sidebar'
+      fullPath: '/inline/inline-sidebar'
+      preLoaderRoute: typeof InlineInlineSidebarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inline/form-validation': {
+      id: '/inline/form-validation'
+      path: '/inline/form-validation'
+      fullPath: '/inline/form-validation'
+      preLoaderRoute: typeof InlineFormValidationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fundamentals/promise-lifecycle': {
+      id: '/fundamentals/promise-lifecycle'
+      path: '/fundamentals/promise-lifecycle'
+      fullPath: '/fundamentals/promise-lifecycle'
+      preLoaderRoute: typeof FundamentalsPromiseLifecycleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fundamentals/placements': {
+      id: '/fundamentals/placements'
+      path: '/fundamentals/placements'
+      fullPath: '/fundamentals/placements'
+      preLoaderRoute: typeof FundamentalsPlacementsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fundamentals/persistent-toast': {
+      id: '/fundamentals/persistent-toast'
+      path: '/fundamentals/persistent-toast'
+      fullPath: '/fundamentals/persistent-toast'
+      preLoaderRoute: typeof FundamentalsPersistentToastRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fundamentals/countdown-progress': {
+      id: '/fundamentals/countdown-progress'
+      path: '/fundamentals/countdown-progress'
+      fullPath: '/fundamentals/countdown-progress'
+      preLoaderRoute: typeof FundamentalsCountdownProgressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fundamentals/basic-variants': {
+      id: '/fundamentals/basic-variants'
+      path: '/fundamentals/basic-variants'
+      fullPath: '/fundamentals/basic-variants'
+      preLoaderRoute: typeof FundamentalsBasicVariantsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/advanced/swipe-pin-dismiss': {
+      id: '/advanced/swipe-pin-dismiss'
+      path: '/advanced/swipe-pin-dismiss'
+      fullPath: '/advanced/swipe-pin-dismiss'
+      preLoaderRoute: typeof AdvancedSwipePinDismissRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/advanced/framer-motion': {
+      id: '/advanced/framer-motion'
+      path: '/advanced/framer-motion'
+      fullPath: '/advanced/framer-motion'
+      preLoaderRoute: typeof AdvancedFramerMotionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/advanced/floating-anchor': {
+      id: '/advanced/floating-anchor'
+      path: '/advanced/floating-anchor'
+      fullPath: '/advanced/floating-anchor'
+      preLoaderRoute: typeof AdvancedFloatingAnchorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/advanced/drag-to-dismiss': {
+      id: '/advanced/drag-to-dismiss'
+      path: '/advanced/drag-to-dismiss'
+      fullPath: '/advanced/drag-to-dismiss'
+      preLoaderRoute: typeof AdvancedDragToDismissRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/advanced/drag-reposition': {
+      id: '/advanced/drag-reposition'
+      path: '/advanced/drag-reposition'
+      fullPath: '/advanced/drag-reposition'
+      preLoaderRoute: typeof AdvancedDragRepositionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ExamplesAnimationWrapperRoute: ExamplesAnimationWrapperRoute,
-  ExamplesBasicVariantsRoute: ExamplesBasicVariantsRoute,
-  ExamplesCountdownProgressRoute: ExamplesCountdownProgressRoute,
-  ExamplesCustomComponentRoute: ExamplesCustomComponentRoute,
-  ExamplesDragRepositionRoute: ExamplesDragRepositionRoute,
-  ExamplesDragToDismissRoute: ExamplesDragToDismissRoute,
-  ExamplesDuplicateIdRoute: ExamplesDuplicateIdRoute,
-  ExamplesFloatingAnchorRoute: ExamplesFloatingAnchorRoute,
-  ExamplesFormValidationRoute: ExamplesFormValidationRoute,
-  ExamplesFramerMotionRoute: ExamplesFramerMotionRoute,
-  ExamplesInlineSidebarRoute: ExamplesInlineSidebarRoute,
-  ExamplesMaxToastsRoute: ExamplesMaxToastsRoute,
-  ExamplesMultipleContainersRoute: ExamplesMultipleContainersRoute,
-  ExamplesOutsideReactRoute: ExamplesOutsideReactRoute,
-  ExamplesPersistentToastRoute: ExamplesPersistentToastRoute,
-  ExamplesPlacementsRoute: ExamplesPlacementsRoute,
-  ExamplesPromiseLifecycleRoute: ExamplesPromiseLifecycleRoute,
-  ExamplesScrollableTrayRoute: ExamplesScrollableTrayRoute,
-  ExamplesStackedDeckRoute: ExamplesStackedDeckRoute,
-  ExamplesStoreInspectorRoute: ExamplesStoreInspectorRoute,
-  ExamplesSwipePinDismissRoute: ExamplesSwipePinDismissRoute,
-  ExamplesTailwindStyledRoute: ExamplesTailwindStyledRoute,
-};
+  AdvancedDragRepositionRoute: AdvancedDragRepositionRoute,
+  AdvancedDragToDismissRoute: AdvancedDragToDismissRoute,
+  AdvancedFloatingAnchorRoute: AdvancedFloatingAnchorRoute,
+  AdvancedFramerMotionRoute: AdvancedFramerMotionRoute,
+  AdvancedSwipePinDismissRoute: AdvancedSwipePinDismissRoute,
+  FundamentalsBasicVariantsRoute: FundamentalsBasicVariantsRoute,
+  FundamentalsCountdownProgressRoute: FundamentalsCountdownProgressRoute,
+  FundamentalsPersistentToastRoute: FundamentalsPersistentToastRoute,
+  FundamentalsPlacementsRoute: FundamentalsPlacementsRoute,
+  FundamentalsPromiseLifecycleRoute: FundamentalsPromiseLifecycleRoute,
+  InlineFormValidationRoute: InlineFormValidationRoute,
+  InlineInlineSidebarRoute: InlineInlineSidebarRoute,
+  InlineMultipleContainersRoute: InlineMultipleContainersRoute,
+  RenderingAnimationWrapperRoute: RenderingAnimationWrapperRoute,
+  RenderingCustomComponentRoute: RenderingCustomComponentRoute,
+  RenderingTailwindStyledRoute: RenderingTailwindStyledRoute,
+  StateDuplicateIdRoute: StateDuplicateIdRoute,
+  StateMaxToastsRoute: StateMaxToastsRoute,
+  StateOutsideReactRoute: StateOutsideReactRoute,
+  StateScrollableTrayRoute: StateScrollableTrayRoute,
+  StateStackedDeckRoute: StateStackedDeckRoute,
+  StateStoreInspectorRoute: StateStoreInspectorRoute,
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()

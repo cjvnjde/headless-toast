@@ -2,7 +2,7 @@ import { examples } from "../lib/examples";
 
 function Footer() {
   return (
-    <footer className="site-shell px-4 pb-12 pt-10 text-sm text-[var(--ink-soft)]">
+    <footer className="site-shell px-4 pb-12 pt-10 text-sm text-(--ink-soft)">
       <div className="doc-card grid gap-4 px-5 py-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
         <div>
           <p className="doc-eyebrow">Examples site</p>

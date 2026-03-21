@@ -193,10 +193,10 @@ function CodeBlock({ files }: CodeBlockProps) {
 
   return (
     <section className="doc-card overflow-hidden">
-      <div className="flex flex-col gap-4 border-b border-[var(--line)] px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-4 border-b border-(--line) px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p className="doc-eyebrow">Live source</p>
-          <h2 className="mt-1 text-lg font-semibold text-[var(--ink)]">
+          <h2 className="mt-1 text-lg font-semibold text-(--ink)">
             Same code as the running demo
           </h2>
         </div>
@@ -218,7 +218,7 @@ function CodeBlock({ files }: CodeBlockProps) {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 border-b border-[var(--line)] px-5 py-3">
+      <div className="flex flex-wrap gap-2 border-b border-(--line) px-5 py-3">
         {files.map((file, index) => (
           <button
             key={file.filename}

@@ -1,0 +1,43 @@
+/* Copy this file next to store-inspector.tsx */
+
+.store-inspector-toast[data-toast] {
+  transform-origin: top right;
+  will-change: transform, opacity;
+}
+
+.store-inspector-toast[data-toast][data-toast-status="entering"] {
+  animation: store-inspector-toast-enter 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.store-inspector-toast[data-toast][data-toast-status="exiting"] {
+  animation: store-inspector-toast-exit 180ms cubic-bezier(0.4, 0, 1, 1)
+    forwards;
+}
+
+.store-inspector-toast[data-toast][data-toast-placement^="bottom"] {
+  transform-origin: bottom right;
+}
+
+@keyframes store-inspector-toast-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -14px, 0) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes store-inspector-toast-exit {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(0, -10px, 0) scale(0.96);
+  }
+}

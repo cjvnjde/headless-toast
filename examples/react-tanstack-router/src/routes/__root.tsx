@@ -8,7 +8,7 @@ function NotFound() {
     <div className="doc-card px-6 py-10">
       <p className="doc-eyebrow">Not found</p>
       <h1 className="doc-title mt-2 text-3xl">That example does not exist.</h1>
-      <p className="mt-3 text-sm leading-7 text-[var(--ink-soft)]">
+      <p className="mt-3 text-sm leading-7 text-(--ink-soft)">
         Head back to the overview and pick another example.
       </p>
       <Link to="/" className="doc-button mt-5 inline-flex">

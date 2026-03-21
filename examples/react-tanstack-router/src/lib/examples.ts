@@ -9,7 +9,7 @@ type ExampleMeta = {
 
 const examples = [
   {
-    path: "/examples/basic-variants",
+    path: "/fundamentals/basic-variants",
     title: "Basic variants",
     summary:
       "Success, error, warning, info, and loading toasts with one toast component.",
@@ -18,14 +18,14 @@ const examples = [
     featured: true,
   },
   {
-    path: "/examples/placements",
+    path: "/fundamentals/placements",
     title: "Placements",
     summary: "Trigger the same toast in every built-in placement.",
     category: "Fundamentals",
     tags: ["placement", "layout"],
   },
   {
-    path: "/examples/countdown-progress",
+    path: "/fundamentals/countdown-progress",
     title: "Countdown progress",
     summary: "Progress bars and pause-on-hover for readable auto-close toasts.",
     category: "Fundamentals",
@@ -33,7 +33,7 @@ const examples = [
     featured: true,
   },
   {
-    path: "/examples/persistent-toast",
+    path: "/fundamentals/persistent-toast",
     title: "Persistent toast",
     summary:
       "A non-dismissible toast that stays until your app updates or dismisses it.",
@@ -41,7 +41,7 @@ const examples = [
     tags: ["dismissible", "duration"],
   },
   {
-    path: "/examples/promise-lifecycle",
+    path: "/fundamentals/promise-lifecycle",
     title: "Promise lifecycle",
     summary:
       "Map loading, success, and error states to one promise-driven toast.",
@@ -50,7 +50,7 @@ const examples = [
     featured: true,
   },
   {
-    path: "/examples/custom-component",
+    path: "/rendering/custom-component",
     title: "Custom component",
     summary:
       "Swap in your own toast markup and styling while keeping the same store.",
@@ -58,7 +58,7 @@ const examples = [
     tags: ["useToast", "custom UI"],
   },
   {
-    path: "/examples/animation-wrapper",
+    path: "/rendering/animation-wrapper",
     title: "AnimationWrapper",
     summary:
       "Use the convenience wrapper when one animated outer element is enough.",
@@ -66,7 +66,7 @@ const examples = [
     tags: ["AnimationWrapper", "CSS animations"],
   },
   {
-    path: "/examples/tailwind-styled",
+    path: "/rendering/tailwind-styled",
     title: "Tailwind styled",
     summary:
       "A fully Tailwind v4 toast implementation using emitted data attributes.",
@@ -75,7 +75,7 @@ const examples = [
     featured: true,
   },
   {
-    path: "/examples/duplicate-id",
+    path: "/state/duplicate-id",
     title: "Duplicate id updates",
     summary:
       "Reuse a stable id to update an existing toast instead of creating duplicates.",
@@ -83,7 +83,7 @@ const examples = [
     tags: ["id", "update"],
   },
   {
-    path: "/examples/store-inspector",
+    path: "/state/store-inspector",
     title: "Store inspector",
     summary:
       "Use useStore() to render live toast state and compare multiple stores.",
@@ -91,7 +91,7 @@ const examples = [
     tags: ["useStore", "multiple stores"],
   },
   {
-    path: "/examples/outside-react",
+    path: "/state/outside-react",
     title: "Outside React",
     summary:
       "Trigger toasts from timers, interceptors, and any module outside the React tree.",
@@ -99,7 +99,7 @@ const examples = [
     tags: ["service layer", "plain JS"],
   },
   {
-    path: "/examples/max-toasts",
+    path: "/state/max-toasts",
     title: "Max toasts",
     summary:
       "Cap visible notifications and stress-test the queue with rapid bursts.",
@@ -107,14 +107,14 @@ const examples = [
     tags: ["maxToasts", "stress test"],
   },
   {
-    path: "/examples/stacked-deck",
+    path: "/state/stacked-deck",
     title: "Stacked deck",
     summary: "Render a hover-expandable deck of toast cards with useStore().",
     category: "State",
     tags: ["custom layout", "stacked"],
   },
   {
-    path: "/examples/scrollable-tray",
+    path: "/state/scrollable-tray",
     title: "Scrollable tray",
     summary:
       "Build a scrollable toast surface for notification-heavy workflows.",
@@ -122,7 +122,7 @@ const examples = [
     tags: ["custom layout", "scroll"],
   },
   {
-    path: "/examples/inline-sidebar",
+    path: "/inline/inline-sidebar",
     title: "Inline sidebar",
     summary:
       "Route form feedback into a local sidebar container while keeping global toasts.",
@@ -130,7 +130,7 @@ const examples = [
     tags: ["containerId", "inline"],
   },
   {
-    path: "/examples/multiple-containers",
+    path: "/inline/multiple-containers",
     title: "Multiple containers",
     summary:
       "Let different panels own independent toast streams from the same store.",
@@ -138,7 +138,7 @@ const examples = [
     tags: ["containerId", "panels"],
   },
   {
-    path: "/examples/form-validation",
+    path: "/inline/form-validation",
     title: "Form validation",
     summary:
       "Keep validation feedback next to the form instead of the viewport edge.",
@@ -146,14 +146,14 @@ const examples = [
     tags: ["forms", "inline"],
   },
   {
-    path: "/examples/drag-to-dismiss",
+    path: "/advanced/drag-to-dismiss",
     title: "Drag to dismiss",
     summary: "Built-in pointer dragging with swipe-aware exit animations.",
     category: "Advanced",
     tags: ["useToastDrag", "gesture"],
   },
   {
-    path: "/examples/drag-reposition",
+    path: "/advanced/drag-reposition",
     title: "Drag to reposition",
     summary:
       "Treat placement as state and drop toasts into a different viewport zone.",
@@ -161,14 +161,14 @@ const examples = [
     tags: ["placement", "drag"],
   },
   {
-    path: "/examples/floating-anchor",
+    path: "/advanced/floating-anchor",
     title: "Floating anchor",
     summary: "Attach a toast stack to another element with Floating UI.",
     category: "Advanced",
     tags: ["Floating UI", "anchored"],
   },
   {
-    path: "/examples/framer-motion",
+    path: "/advanced/framer-motion",
     title: "Framer Motion",
     summary:
       "Replace CSS transitions with motion-powered enter and exit animations.",
@@ -176,7 +176,7 @@ const examples = [
     tags: ["Framer Motion", "custom animation"],
   },
   {
-    path: "/examples/swipe-pin-dismiss",
+    path: "/advanced/swipe-pin-dismiss",
     title: "Swipe to pin or dismiss",
     summary:
       "Swipe left to pin a toast or right to dismiss it with custom gesture logic.",
