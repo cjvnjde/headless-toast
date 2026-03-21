@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## unreleased
+## core@0.0.2 - 2026-03-21
 
 ### Refactoring
 
@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
 
 ### Miscellaneous
 
+- Bump package versions to 0.0.2 for core and react adapters
+- Update CHANGELOG with recent changes and refactor notes
 - Update dependencies in package.json and pnpm-workspace.yaml
 
 ## core@0.0.1 - 2026-03-14
