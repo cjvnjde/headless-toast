@@ -1,4 +1,4 @@
-name: Deploy React Router Examples to GitHub Pages
+name: Deploy React Examples to GitHub Pages
 
 on:
   push:
@@ -6,12 +6,12 @@ on:
     paths:
       - "core/package.json"
       - "adapters/react/package.json"
-      - "examples/react-tanstack-router/index.html"
-      - "examples/react-tanstack-router/public/**"
-      - "examples/react-tanstack-router/src/**"
-      - "examples/react-tanstack-router/package.json"
-      - "examples/react-tanstack-router/tsconfig.json"
-      - "examples/react-tanstack-router/vite.config.ts"
+      - "examples/react-patterns/index.html"
+      - "examples/react-patterns/public/**"
+      - "examples/react-patterns/src/**"
+      - "examples/react-patterns/package.json"
+      - "examples/react-patterns/tsconfig.json"
+      - "examples/react-patterns/vite.config.ts"
   workflow_dispatch:
 
 permissions:
@@ -44,17 +44,17 @@ jobs:
         uses: ./.github/actions/setup-env
 
       - name: Type-check examples app
-        run: pnpm --filter '@headless-toast/examples-react-router' typecheck
+        run: pnpm --filter '@headless-toast/examples-react-patterns' typecheck
 
       - name: Build examples app
-        run: pnpm --filter '@headless-toast/examples-react-router' build
+        run: pnpm --filter '@headless-toast/examples-react-patterns' build
         env:
           VITE_BASE_PATH: ${{ steps.pages.outputs.base_path }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
-          path: examples/react-tanstack-router/dist
+          path: examples/react-patterns/dist
 
   deploy:
     name: Deploy to GitHub Pages

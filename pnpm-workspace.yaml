@@ -7,11 +7,3 @@ allowBuilds:
   esbuild: true
 
 minimumReleaseAge: 1440
-
-overrides:
-  minimatch@>=10.0.0 <10.2.3: ">=10.2.3"
-
-packageExtensions:
-  "@joshwooding/vite-plugin-react-docgen-typescript@0.6.4":
-    peerDependencies:
-      vite: "^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0"
