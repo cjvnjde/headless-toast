@@ -9,7 +9,7 @@ import {
 } from "@headless-toast/react";
 import type {
   CloseReason,
-  ReactResolvedToastOptions,
+  ReactToastState,
   ReactToastStore,
 } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
@@ -30,7 +30,7 @@ function isCommitReason(reason: CloseReason) {
 }
 
 function UndoWindowProgressBar() {
-  const progress = useProgress<UndoWindowToastData>();
+  const progress = useProgress();
 
   return (
     <div
@@ -41,9 +41,11 @@ function UndoWindowProgressBar() {
 }
 
 function UndoWindowToast() {
-  const data = useToastSelector((toast) => toast.data as UndoWindowToastData);
+  const data = useToastSelector(
+    (toast: ReactToastState<UndoWindowToastData>) => toast.data,
+  );
   const options = useToastSelector(
-    (toast) => toast.options as ReactResolvedToastOptions<UndoWindowToastData>,
+    (toast: ReactToastState<UndoWindowToastData>) => toast.options,
   );
   const type = useToastSelector((toast) => toast.type);
   const { dismiss, pauseOnHoverHandlers } =

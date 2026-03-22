@@ -7,15 +7,14 @@ import {
   useToastAnimation,
   useToastSelector,
 } from "@headless-toast/react";
-import type {
-  ReactResolvedToastOptions,
-  ReactToastStore,
-} from "@headless-toast/react";
+import type { ReactToastState, ReactToastStore } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
 import rawSource from "./countdown-progress.tsx?raw";
 import toastCss from "./toast.css?raw";
+
+type CountdownToastData = { title: string; body: string };
 
 function ProgressBar() {
   const progress = useProgress();
@@ -30,19 +29,13 @@ function ProgressBar() {
 
 function ProgressToast() {
   const data = useToastSelector(
-    (toast) => toast.data as { title: string; body: string },
+    (toast: ReactToastState<CountdownToastData>) => toast.data,
   );
   const options = useToastSelector(
-    (toast) =>
-      toast.options as ReactResolvedToastOptions<{
-        title: string;
-        body: string;
-      }>,
+    (toast: ReactToastState<CountdownToastData>) => toast.options,
   );
-  const { dismiss, pauseOnHoverHandlers } = useToastActions<{
-    title: string;
-    body: string;
-  }>();
+  const { dismiss, pauseOnHoverHandlers } =
+    useToastActions<CountdownToastData>();
   const { ref, className, handlers, attributes } = useToastAnimation({
     className:
       "countdown-progress-toast pointer-events-auto relative w-full overflow-hidden rounded-3xl border border-(--line) bg-(--surface-strong) p-4 pr-12 shadow-[0_18px_36px_rgba(15,23,42,0.12)]",
@@ -74,13 +67,10 @@ function ProgressToast() {
 }
 
 function CountdownProgressPreview() {
-  const storeRef = useRef<ReactToastStore<{
-    title: string;
-    body: string;
-  }> | null>(null);
+  const storeRef = useRef<ReactToastStore<CountdownToastData> | null>(null);
 
   if (!storeRef.current) {
-    storeRef.current = createToast<{ title: string; body: string }>({
+    storeRef.current = createToast<CountdownToastData>({
       defaults: { placement: "top-right" },
     }).toast;
   }

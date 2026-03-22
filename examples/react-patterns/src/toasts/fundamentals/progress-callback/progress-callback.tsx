@@ -7,10 +7,7 @@ import {
   useToastAnimation,
   useToastSelector,
 } from "@headless-toast/react";
-import type {
-  ReactResolvedToastOptions,
-  ReactToastStore,
-} from "@headless-toast/react";
+import type { ReactToastState, ReactToastStore } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
@@ -26,7 +23,7 @@ function DomProgressBar() {
   const fillRef = useRef<HTMLDivElement | null>(null);
   const valueRef = useRef<HTMLSpanElement | null>(null);
 
-  useProgressEffect<ProgressCallbackToastData>((progress) => {
+  useProgressEffect((progress) => {
     const percent = Math.round(progress * 100);
 
     if (fillRef.current) {
@@ -60,11 +57,10 @@ function ProgressCallbackToast() {
   renderCountRef.current += 1;
 
   const data = useToastSelector(
-    (toast) => toast.data as ProgressCallbackToastData,
+    (toast: ReactToastState<ProgressCallbackToastData>) => toast.data,
   );
   const options = useToastSelector(
-    (toast) =>
-      toast.options as ReactResolvedToastOptions<ProgressCallbackToastData>,
+    (toast: ReactToastState<ProgressCallbackToastData>) => toast.options,
   );
   const { dismiss, pauseOnHoverHandlers } =
     useToastActions<ProgressCallbackToastData>();

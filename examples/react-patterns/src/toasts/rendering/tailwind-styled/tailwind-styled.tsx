@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import { useRef } from "react";
 import {
   Toaster,
@@ -8,15 +7,14 @@ import {
   useToastAnimation,
   useToastSelector,
 } from "@headless-toast/react";
-import type {
-  ReactResolvedToastOptions,
-  ReactToastStore,
-} from "@headless-toast/react";
+import type { ReactToastState, ReactToastStore } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
 import rawSource from "./tailwind-styled.tsx?raw";
 import toastCss from "./toast.css?raw";
+
+type TailwindToastData = { title: string; body: string };
 
 const placementListClassName = [
   "pointer-events-none fixed flex w-[min(26rem,calc(100vw-24px))] max-w-[calc(100vw-24px)] flex-col gap-3 p-4",
@@ -34,32 +32,24 @@ function TailwindProgressBar({ accent }: { accent: string }) {
   return (
     <div
       className="h-full bg-(--toast-accent)"
-      style={
-        {
-          "--toast-accent": accent,
-          width: `${progress * 100}%`,
-        } as CSSProperties
-      }
+      style={{
+        "--toast-accent": accent,
+        width: `${progress * 100}%`,
+      }}
     />
   );
 }
 
 function TailwindToast() {
   const data = useToastSelector(
-    (toast) => toast.data as { title: string; body: string },
+    (toast: ReactToastState<TailwindToastData>) => toast.data,
   );
   const options = useToastSelector(
-    (toast) =>
-      toast.options as ReactResolvedToastOptions<{
-        title: string;
-        body: string;
-      }>,
+    (toast: ReactToastState<TailwindToastData>) => toast.options,
   );
   const type = useToastSelector((toast) => toast.type);
-  const { dismiss, pauseOnHoverHandlers } = useToastActions<{
-    title: string;
-    body: string;
-  }>();
+  const { dismiss, pauseOnHoverHandlers } =
+    useToastActions<TailwindToastData>();
   const { ref, className, handlers, attributes } = useToastAnimation({
     className:
       "tailwind-styled-toast pointer-events-auto relative overflow-hidden rounded-[1.6rem] border border-white/60 bg-slate-950 text-slate-50 shadow-[0_24px_50px_rgba(15,23,42,0.35)] dark:border-white/10",
@@ -80,7 +70,7 @@ function TailwindToast() {
     <article
       ref={ref}
       className={className}
-      style={{ "--toast-accent": accent } as CSSProperties}
+      style={{ "--toast-accent": accent }}
       {...handlers}
       {...pauseOnHoverHandlers}
       {...attributes}
@@ -113,13 +103,10 @@ function TailwindToast() {
 }
 
 function TailwindStyledPreview() {
-  const storeRef = useRef<ReactToastStore<{
-    title: string;
-    body: string;
-  }> | null>(null);
+  const storeRef = useRef<ReactToastStore<TailwindToastData> | null>(null);
 
   if (!storeRef.current) {
-    storeRef.current = createToast<{ title: string; body: string }>({
+    storeRef.current = createToast<TailwindToastData>({
       defaults: { duration: 5000, pauseOnHover: true },
     }).toast;
   }

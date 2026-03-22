@@ -91,7 +91,7 @@ function zoneFromPosition(x: number, y: number): ToastPlacement {
         ? "right"
         : "center";
 
-  return `${row}-${col}` as ToastPlacement;
+  return `${row}-${col}`;
 }
 
 function resolveToastWidth(viewportWidth: number) {
@@ -135,9 +135,7 @@ function computeTargetPositions(
 
   for (const placement of placements) {
     const group = activeToasts.filter(
-      (toast) =>
-        ((toast.options.placement ?? "top-right") as ToastPlacement) ===
-        placement,
+      (toast) => (toast.options.placement ?? "top-right") === placement,
     );
     const baseX = resolveBaseX(placement, toastWidth, viewport.width);
 
@@ -183,7 +181,7 @@ function RepositionToast({
     markEntered,
     markExited,
   } = useToast<{ title: string; body: string }>();
-  const placement = (toast.options.placement ?? "top-right") as ToastPlacement;
+  const placement = toast.options.placement ?? "top-right";
   const ref = useRef<HTMLElement | null>(null);
   const draggingRef = useRef(false);
   const dragOriginRef = useRef({ x: targetPosition.x, y: targetPosition.y });

@@ -9,7 +9,7 @@ import {
 } from "@headless-toast/react";
 import type {
   CloseReason,
-  ReactResolvedToastOptions,
+  ReactToastState,
   ReactToastStore,
 } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
@@ -24,7 +24,7 @@ type AwaitCloseToastData = {
 };
 
 function AwaitCloseProgressBar() {
-  const progress = useProgress<AwaitCloseToastData>();
+  const progress = useProgress();
 
   return (
     <div
@@ -35,9 +35,11 @@ function AwaitCloseProgressBar() {
 }
 
 function AwaitCloseToast() {
-  const data = useToastSelector((toast) => toast.data as AwaitCloseToastData);
+  const data = useToastSelector(
+    (toast: ReactToastState<AwaitCloseToastData>) => toast.data,
+  );
   const options = useToastSelector(
-    (toast) => toast.options as ReactResolvedToastOptions<AwaitCloseToastData>,
+    (toast: ReactToastState<AwaitCloseToastData>) => toast.options,
   );
   const type = useToastSelector((toast) => toast.type);
   const { dismiss, pauseOnHoverHandlers } =
