@@ -3,10 +3,15 @@ import { useRef } from "react";
 import {
   Toaster,
   createToast,
-  useToast,
+  useProgress,
+  useToastActions,
   useToastAnimation,
+  useToastSelector,
 } from "@headless-toast/react";
-import type { ReactToastStore } from "@headless-toast/react";
+import type {
+  ReactResolvedToastOptions,
+  ReactToastStore,
+} from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
@@ -23,8 +28,35 @@ const placementListClassName = [
   "data-[placement=bottom-right]:bottom-0 data-[placement=bottom-right]:right-0",
 ].join(" ");
 
+function TailwindProgressBar({ accent }: { accent: string }) {
+  const progress = useProgress();
+
+  return (
+    <div
+      className="h-full bg-(--toast-accent)"
+      style={
+        {
+          "--toast-accent": accent,
+          width: `${progress * 100}%`,
+        } as CSSProperties
+      }
+    />
+  );
+}
+
 function TailwindToast() {
-  const { toast, dismiss, pauseOnHoverHandlers } = useToast<{
+  const data = useToastSelector(
+    (toast) => toast.data as { title: string; body: string },
+  );
+  const options = useToastSelector(
+    (toast) =>
+      toast.options as ReactResolvedToastOptions<{
+        title: string;
+        body: string;
+      }>,
+  );
+  const type = useToastSelector((toast) => toast.type);
+  const { dismiss, pauseOnHoverHandlers } = useToastActions<{
     title: string;
     body: string;
   }>();
@@ -34,13 +66,13 @@ function TailwindToast() {
   });
 
   const accent =
-    toast.type === "success"
+    type === "success"
       ? "#10b981"
-      : toast.type === "error"
+      : type === "error"
         ? "#ef4444"
-        : toast.type === "warning"
+        : type === "warning"
           ? "#f59e0b"
-          : toast.type === "loading"
+          : type === "loading"
             ? "#8b5cf6"
             : "#38bdf8";
 
@@ -52,20 +84,16 @@ function TailwindToast() {
       {...handlers}
       {...pauseOnHoverHandlers}
       {...attributes}
-      data-toast-placement={toast.options.placement ?? "top-right"}
+      data-toast-placement={options.placement ?? "top-right"}
     >
       <div className="absolute inset-x-0 top-0 h-1 bg-(--toast-accent)" />
       <div className="flex items-start gap-4 p-4 pr-12">
         <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-sm font-bold uppercase text-(--toast-accent)">
-          {(toast.type ?? "info").slice(0, 2)}
+          {(type ?? "info").slice(0, 2)}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold tracking-tight">
-            {toast.data.title}
-          </p>
-          <p className="mt-1 text-sm leading-6 text-slate-300">
-            {toast.data.body}
-          </p>
+          <p className="text-sm font-semibold tracking-tight">{data.title}</p>
+          <p className="mt-1 text-sm leading-6 text-slate-300">{data.body}</p>
         </div>
       </div>
       <button
@@ -75,12 +103,9 @@ function TailwindToast() {
       >
         Close
       </button>
-      {toast.options.progress ? (
+      {options.progress ? (
         <div className="h-1 bg-white/8">
-          <div
-            className="h-full bg-(--toast-accent)"
-            style={{ width: `${toast.progress * 100}%` }}
-          />
+          <TailwindProgressBar accent={accent} />
         </div>
       ) : null}
     </article>

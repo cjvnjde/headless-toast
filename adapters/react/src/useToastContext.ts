@@ -1,23 +1,23 @@
 import type { ToastCustomOptions, ToastData } from "@headless-toast/core";
-import { useToastActions } from "./useToastActions";
 import { useToastSelector } from "./useToastSelector";
+import { useToastSource } from "./useToastSource";
 import type { ReactToastState } from "./types";
 
-function useToast<
+function useToastContext<
   TData extends ToastData = ToastData,
   TCustom extends ToastCustomOptions = {},
 >() {
+  const { store } = useToastSource<TData, TCustom>();
   const toast = useToastSelector<
     TData,
     TCustom,
     ReactToastState<TData, TCustom>
   >((currentToast) => currentToast);
-  const actions = useToastActions<TData, TCustom>();
 
   return {
     toast,
-    ...actions,
+    store,
   };
 }
 
-export { useToast };
+export { useToastContext };

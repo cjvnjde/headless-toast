@@ -80,7 +80,7 @@ function MotionToaster({
                 }
               }}
             >
-              <ToastCtx.Provider value={{ toast, store }}>
+              <ToastCtx.Provider value={{ toastId: toast.id, store }}>
                 <MotionToast />
               </ToastCtx.Provider>
             </motion.div>

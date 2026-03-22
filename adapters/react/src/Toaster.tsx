@@ -12,13 +12,14 @@ import {
   STACK_MODE,
   TOAST_PLACEMENT,
   TOAST_STATUS,
+  type StackConfig,
   type ToastPlacement,
 } from "@headless-toast/core";
+import { ToastProvider } from "./ToastProvider";
 import { filterByContainer } from "./filter";
 import { computeStackLayout, groupByPlacement } from "./stack";
 import { toast as sharedToast } from "./toast";
-import { useStore } from "./useStore";
-import { ToastProvider } from "./useToast";
+import { useStoreSelector } from "./useStoreSelector";
 import type {
   ReactToastState,
   ReactToastStore,
@@ -37,16 +38,67 @@ type ToasterContextValue = {
 
 const ToasterCtx = createContext<ToasterContextValue | null>(null);
 
-function usePauseOnFocusLoss(
-  toasts: ReactToastState[],
-  store: ReactToastStore,
+function isStackConfigEqual(left?: StackConfig, right?: StackConfig) {
+  if (!left && !right) {
+    return true;
+  }
+
+  if (!left || !right) {
+    return false;
+  }
+
+  return (
+    left.mode === right.mode &&
+    left.expandOn === right.expandOn &&
+    left.maxVisible === right.maxVisible
+  );
+}
+
+function areToasterToastsEqual(
+  left: ReactToastState[],
+  right: ReactToastState[],
 ) {
+  if (left.length !== right.length) {
+    return false;
+  }
+
+  for (let index = 0; index < left.length; index += 1) {
+    const leftToast = left[index];
+    const rightToast = right[index];
+
+    if (leftToast.id !== rightToast.id) {
+      return false;
+    }
+
+    if (leftToast.options.containerId !== rightToast.options.containerId) {
+      return false;
+    }
+
+    if (leftToast.options.placement !== rightToast.options.placement) {
+      return false;
+    }
+
+    if (
+      !isStackConfigEqual(leftToast.options.stack, rightToast.options.stack)
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function usePauseOnFocusLoss(store: ReactToastStore, containerId?: string) {
   const focusPausedIdsRef = useRef<Set<string>>(new Set());
-  const toastsRef = useRef(toasts);
+  const toastsRef = useRef(filterByContainer(store.getToasts(), containerId));
 
   useEffect(() => {
-    toastsRef.current = toasts;
-  }, [toasts]);
+    toastsRef.current = filterByContainer(store.getToasts(), containerId);
+
+    return store.subscribe((toasts) => {
+      toastsRef.current = filterByContainer(toasts, containerId);
+    });
+  }, [containerId, store]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -110,6 +162,9 @@ function ToastListGroup({
   className?: string;
   children?: ReactNode;
 }) {
+  const cachedItemsRef = useRef<Map<string, ReactNode>>(new Map());
+  const childrenRef = useRef(children);
+  const storeRef = useRef(store);
   const stackConfig = toasts.find((toast) => toast.options.stack !== undefined)
     ?.options.stack;
   const [isHoverExpanded, setIsHoverExpanded] = useState(false);
@@ -127,6 +182,38 @@ function ToastListGroup({
   if (toasts.length === 0 || children === undefined) {
     return null;
   }
+
+  if (childrenRef.current !== children || storeRef.current !== store) {
+    childrenRef.current = children;
+    storeRef.current = store;
+    cachedItemsRef.current.clear();
+  }
+
+  const activeToastIds = new Set(toasts.map((toast) => toast.id));
+
+  for (const toastId of cachedItemsRef.current.keys()) {
+    if (!activeToastIds.has(toastId)) {
+      cachedItemsRef.current.delete(toastId);
+    }
+  }
+
+  const renderedToasts = visibleToasts.map((toast) => {
+    const cachedItem = cachedItemsRef.current.get(toast.id);
+
+    if (cachedItem) {
+      return cachedItem;
+    }
+
+    const item = (
+      <ToastProvider key={toast.id} toastId={toast.id} store={store}>
+        {children}
+      </ToastProvider>
+    );
+
+    cachedItemsRef.current.set(toast.id, item);
+
+    return item;
+  });
 
   const containerHandlers =
     stackConfig?.expandOn === STACK_EXPAND_ON.HOVER
@@ -149,23 +236,19 @@ function ToastListGroup({
       data-inline={inline ? "true" : "false"}
       {...containerHandlers}
     >
-      {visibleToasts.map((toast) => (
-        <ToastProvider key={toast.id} toast={toast} store={store}>
-          {children}
-        </ToastProvider>
-      ))}
+      {renderedToasts}
     </div>
   );
 }
 
 function ToasterList({ className, children }: ToasterListProps) {
-  const ctx = useContext(ToasterCtx);
+  const context = useContext(ToasterCtx);
 
-  if (!ctx) {
+  if (!context) {
     throw new Error("<Toaster.List> must be rendered inside <Toaster>.");
   }
 
-  const groups = groupByPlacement(ctx.toasts);
+  const groups = groupByPlacement(context.toasts);
 
   return (
     <>
@@ -174,8 +257,8 @@ function ToasterList({ className, children }: ToasterListProps) {
           key={placement}
           placement={placement}
           toasts={groups.get(placement) ?? []}
-          inline={ctx.inline}
-          store={ctx.store}
+          inline={context.inline}
+          store={context.store}
           className={className}
         >
           {children}
@@ -193,11 +276,14 @@ function Toaster({
   children,
 }: ToasterProps) {
   const resolvedStore = store ?? sharedToast;
-  const allToasts = useStore(resolvedStore);
-  const toasts = filterByContainer(allToasts, containerId);
+  const toasts = useStoreSelector(
+    resolvedStore,
+    (allToasts) => filterByContainer(allToasts, containerId),
+    areToasterToastsEqual,
+  );
   const [isMounted, setIsMounted] = useState(false);
 
-  usePauseOnFocusLoss(toasts, resolvedStore);
+  usePauseOnFocusLoss(resolvedStore, containerId);
 
   useEffect(() => {
     setIsMounted(true);

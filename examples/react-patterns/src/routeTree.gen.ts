@@ -25,6 +25,7 @@ import { Route as InlineInlineSidebarRouteImport } from './routes/inline/inline-
 import { Route as InlineFormValidationRouteImport } from './routes/inline/form-validation'
 import { Route as FundamentalsWaitForCloseRouteImport } from './routes/fundamentals/wait-for-close'
 import { Route as FundamentalsPromiseLifecycleRouteImport } from './routes/fundamentals/promise-lifecycle'
+import { Route as FundamentalsProgressCallbackRouteImport } from './routes/fundamentals/progress-callback'
 import { Route as FundamentalsPlacementsRouteImport } from './routes/fundamentals/placements'
 import { Route as FundamentalsPersistentToastRouteImport } from './routes/fundamentals/persistent-toast'
 import { Route as FundamentalsCountdownProgressRouteImport } from './routes/fundamentals/countdown-progress'
@@ -120,6 +121,12 @@ const FundamentalsPromiseLifecycleRoute =
     path: '/fundamentals/promise-lifecycle',
     getParentRoute: () => rootRouteImport,
   } as any)
+const FundamentalsProgressCallbackRoute =
+  FundamentalsProgressCallbackRouteImport.update({
+    id: '/fundamentals/progress-callback',
+    path: '/fundamentals/progress-callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const FundamentalsPlacementsRoute = FundamentalsPlacementsRouteImport.update({
   id: '/fundamentals/placements',
   path: '/fundamentals/placements',
@@ -180,6 +187,7 @@ export interface FileRoutesByFullPath {
   '/fundamentals/countdown-progress': typeof FundamentalsCountdownProgressRoute
   '/fundamentals/persistent-toast': typeof FundamentalsPersistentToastRoute
   '/fundamentals/placements': typeof FundamentalsPlacementsRoute
+  '/fundamentals/progress-callback': typeof FundamentalsProgressCallbackRoute
   '/fundamentals/promise-lifecycle': typeof FundamentalsPromiseLifecycleRoute
   '/fundamentals/wait-for-close': typeof FundamentalsWaitForCloseRoute
   '/inline/form-validation': typeof InlineFormValidationRoute
@@ -207,6 +215,7 @@ export interface FileRoutesByTo {
   '/fundamentals/countdown-progress': typeof FundamentalsCountdownProgressRoute
   '/fundamentals/persistent-toast': typeof FundamentalsPersistentToastRoute
   '/fundamentals/placements': typeof FundamentalsPlacementsRoute
+  '/fundamentals/progress-callback': typeof FundamentalsProgressCallbackRoute
   '/fundamentals/promise-lifecycle': typeof FundamentalsPromiseLifecycleRoute
   '/fundamentals/wait-for-close': typeof FundamentalsWaitForCloseRoute
   '/inline/form-validation': typeof InlineFormValidationRoute
@@ -235,6 +244,7 @@ export interface FileRoutesById {
   '/fundamentals/countdown-progress': typeof FundamentalsCountdownProgressRoute
   '/fundamentals/persistent-toast': typeof FundamentalsPersistentToastRoute
   '/fundamentals/placements': typeof FundamentalsPlacementsRoute
+  '/fundamentals/progress-callback': typeof FundamentalsProgressCallbackRoute
   '/fundamentals/promise-lifecycle': typeof FundamentalsPromiseLifecycleRoute
   '/fundamentals/wait-for-close': typeof FundamentalsWaitForCloseRoute
   '/inline/form-validation': typeof InlineFormValidationRoute
@@ -264,6 +274,7 @@ export interface FileRouteTypes {
     | '/fundamentals/countdown-progress'
     | '/fundamentals/persistent-toast'
     | '/fundamentals/placements'
+    | '/fundamentals/progress-callback'
     | '/fundamentals/promise-lifecycle'
     | '/fundamentals/wait-for-close'
     | '/inline/form-validation'
@@ -291,6 +302,7 @@ export interface FileRouteTypes {
     | '/fundamentals/countdown-progress'
     | '/fundamentals/persistent-toast'
     | '/fundamentals/placements'
+    | '/fundamentals/progress-callback'
     | '/fundamentals/promise-lifecycle'
     | '/fundamentals/wait-for-close'
     | '/inline/form-validation'
@@ -318,6 +330,7 @@ export interface FileRouteTypes {
     | '/fundamentals/countdown-progress'
     | '/fundamentals/persistent-toast'
     | '/fundamentals/placements'
+    | '/fundamentals/progress-callback'
     | '/fundamentals/promise-lifecycle'
     | '/fundamentals/wait-for-close'
     | '/inline/form-validation'
@@ -346,6 +359,7 @@ export interface RootRouteChildren {
   FundamentalsCountdownProgressRoute: typeof FundamentalsCountdownProgressRoute
   FundamentalsPersistentToastRoute: typeof FundamentalsPersistentToastRoute
   FundamentalsPlacementsRoute: typeof FundamentalsPlacementsRoute
+  FundamentalsProgressCallbackRoute: typeof FundamentalsProgressCallbackRoute
   FundamentalsPromiseLifecycleRoute: typeof FundamentalsPromiseLifecycleRoute
   FundamentalsWaitForCloseRoute: typeof FundamentalsWaitForCloseRoute
   InlineFormValidationRoute: typeof InlineFormValidationRoute
@@ -477,6 +491,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FundamentalsPromiseLifecycleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/fundamentals/progress-callback': {
+      id: '/fundamentals/progress-callback'
+      path: '/fundamentals/progress-callback'
+      fullPath: '/fundamentals/progress-callback'
+      preLoaderRoute: typeof FundamentalsProgressCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/fundamentals/placements': {
       id: '/fundamentals/placements'
       path: '/fundamentals/placements'
@@ -554,6 +575,7 @@ const rootRouteChildren: RootRouteChildren = {
   FundamentalsCountdownProgressRoute: FundamentalsCountdownProgressRoute,
   FundamentalsPersistentToastRoute: FundamentalsPersistentToastRoute,
   FundamentalsPlacementsRoute: FundamentalsPlacementsRoute,
+  FundamentalsProgressCallbackRoute: FundamentalsProgressCallbackRoute,
   FundamentalsPromiseLifecycleRoute: FundamentalsPromiseLifecycleRoute,
   FundamentalsWaitForCloseRoute: FundamentalsWaitForCloseRoute,
   InlineFormValidationRoute: InlineFormValidationRoute,

@@ -1,16 +1,18 @@
 import {
-  useState,
   useRef,
-  type PointerEvent,
+  useState,
   type CSSProperties,
+  type PointerEvent,
   type RefObject,
 } from "react";
 import { CLOSE_REASON, computeDragState } from "@headless-toast/core";
 import { resolveDraggableConfig } from "./drag";
-import { useToast } from "./useToast";
+import { useToastActions } from "./useToastActions";
+import { useToastSelector } from "./useToastSelector";
 
 function useToastDrag(elementRef?: RefObject<HTMLElement | null>) {
-  const { toast, pause, resume, dismiss } = useToast();
+  const draggable = useToastSelector((toast) => toast.options.draggable);
+  const { dismiss, pause, resume } = useToastActions();
   const [isDragging, setIsDragging] = useState(false);
   const [swipeDismissed, setSwipeDismissed] = useState(false);
   const [styleOffset, setStyleOffset] = useState<{
@@ -21,33 +23,35 @@ function useToastDrag(elementRef?: RefObject<HTMLElement | null>) {
   const isDraggingRef = useRef(false);
   const swipeDismissedRef = useRef(false);
   const offsetRef = useRef({ x: 0, y: 0 });
-
-  const startPos = useRef({ x: 0, y: 0 });
-  const lastPos = useRef({ x: 0, y: 0 });
-  const lastTime = useRef(0);
+  const startPositionRef = useRef({ x: 0, y: 0 });
+  const lastPositionRef = useRef({ x: 0, y: 0 });
+  const lastTimeRef = useRef(0);
   const pointerIdRef = useRef<number | null>(null);
 
-  const config = resolveDraggableConfig(toast.options.draggable);
+  const config = resolveDraggableConfig(draggable);
 
   const applyOffset = (offset: { x: number; y: number }) => {
     offsetRef.current = offset;
 
-    const el = elementRef?.current;
+    const element = elementRef?.current;
 
-    if (el) {
+    if (element) {
       const { x, y } = offset;
 
-      el.style.transform =
+      element.style.transform =
         x === 0 && y === 0 ? "" : `translate(${x}px, ${y}px)`;
-      el.style.transition = isDraggingRef.current ? "none" : "";
-      el.style.cursor = isDraggingRef.current ? "grabbing" : "";
-    } else {
-      setStyleOffset({ ...offset });
+      element.style.transition = isDraggingRef.current ? "none" : "";
+      element.style.cursor = isDraggingRef.current ? "grabbing" : "";
+      return;
     }
+
+    setStyleOffset({ ...offset });
   };
 
   const stopDragging = (shouldResume: boolean) => {
-    if (!isDraggingRef.current) return;
+    if (!isDraggingRef.current) {
+      return;
+    }
 
     isDraggingRef.current = false;
     pointerIdRef.current = null;
@@ -56,12 +60,12 @@ function useToastDrag(elementRef?: RefObject<HTMLElement | null>) {
     if (!swipeDismissedRef.current) {
       offsetRef.current = { x: 0, y: 0 };
 
-      const el = elementRef?.current;
+      const element = elementRef?.current;
 
-      if (el) {
-        el.style.transition = "transform 200ms ease-out";
-        el.style.transform = "";
-        el.style.cursor = "";
+      if (element) {
+        element.style.transition = "transform 200ms ease-out";
+        element.style.transform = "";
+        element.style.cursor = "";
       } else {
         setStyleOffset(null);
       }
@@ -72,7 +76,7 @@ function useToastDrag(elementRef?: RefObject<HTMLElement | null>) {
     }
   };
 
-  const onPointerDown = (e: PointerEvent) => {
+  const onPointerDown = (event: PointerEvent) => {
     if (!config) {
       return;
     }
@@ -81,11 +85,11 @@ function useToastDrag(elementRef?: RefObject<HTMLElement | null>) {
       return;
     }
 
-    e.currentTarget.setPointerCapture(e.pointerId);
-    pointerIdRef.current = e.pointerId;
-    startPos.current = { x: e.clientX, y: e.clientY };
-    lastPos.current = { x: e.clientX, y: e.clientY };
-    lastTime.current = Date.now();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    pointerIdRef.current = event.pointerId;
+    startPositionRef.current = { x: event.clientX, y: event.clientY };
+    lastPositionRef.current = { x: event.clientX, y: event.clientY };
+    lastTimeRef.current = Date.now();
     isDraggingRef.current = true;
     swipeDismissedRef.current = false;
     offsetRef.current = { x: 0, y: 0 };
@@ -96,63 +100,65 @@ function useToastDrag(elementRef?: RefObject<HTMLElement | null>) {
     pause();
   };
 
-  const onPointerMove = (e: PointerEvent) => {
+  const onPointerMove = (event: PointerEvent) => {
     if (!config || !isDraggingRef.current) {
       return;
     }
 
-    if (pointerIdRef.current !== e.pointerId) {
+    if (pointerIdRef.current !== event.pointerId) {
       return;
     }
 
     const now = Date.now();
-    const dt = Math.max(now - lastTime.current, 1);
+    const deltaTime = Math.max(now - lastTimeRef.current, 1);
 
-    const dx = e.clientX - startPos.current.x;
-    const dy = e.clientY - startPos.current.y;
-    const vx = (e.clientX - lastPos.current.x) / dt;
-    const vy = (e.clientY - lastPos.current.y) / dt;
+    const dx = event.clientX - startPositionRef.current.x;
+    const dy = event.clientY - startPositionRef.current.y;
+    const vx = (event.clientX - lastPositionRef.current.x) / deltaTime;
+    const vy = (event.clientY - lastPositionRef.current.y) / deltaTime;
 
-    lastPos.current = { x: e.clientX, y: e.clientY };
-    lastTime.current = now;
+    lastPositionRef.current = { x: event.clientX, y: event.clientY };
+    lastTimeRef.current = now;
 
     const dragState = computeDragState(config, { dx, dy, vx, vy });
 
     applyOffset({ x: dragState.offsetX, y: dragState.offsetY });
 
-    if (dragState.dismissed) {
-      isDraggingRef.current = false;
-      pointerIdRef.current = null;
-      swipeDismissedRef.current = true;
-      setIsDragging(false);
-      setSwipeDismissed(true);
-
-      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-        e.currentTarget.releasePointerCapture(e.pointerId);
-      }
-
-      dismiss(CLOSE_REASON.SWIPE);
+    if (!dragState.dismissed) {
+      return;
     }
+
+    isDraggingRef.current = false;
+    pointerIdRef.current = null;
+    swipeDismissedRef.current = true;
+    setIsDragging(false);
+    setSwipeDismissed(true);
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+
+    dismiss(CLOSE_REASON.SWIPE);
   };
 
-  const onPointerUp = (e: PointerEvent) => {
-    if (pointerIdRef.current !== e.pointerId) {
+  const onPointerUp = (event: PointerEvent) => {
+    if (pointerIdRef.current !== event.pointerId) {
       return;
     }
 
     stopDragging(true);
   };
 
-  const onPointerCancel = (e: PointerEvent) => {
-    if (pointerIdRef.current !== e.pointerId) {
+  const onPointerCancel = (event: PointerEvent) => {
+    if (pointerIdRef.current !== event.pointerId) {
       return;
     }
 
     stopDragging(true);
   };
 
-  const onLostPointerCapture = (e: PointerEvent) => {
-    if (pointerIdRef.current !== e.pointerId) {
+  const onLostPointerCapture = (event: PointerEvent) => {
+    if (pointerIdRef.current !== event.pointerId) {
       return;
     }
 

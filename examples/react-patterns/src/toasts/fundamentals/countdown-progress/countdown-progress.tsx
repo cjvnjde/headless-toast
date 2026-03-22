@@ -2,18 +2,44 @@ import { useRef } from "react";
 import {
   Toaster,
   createToast,
-  useToast,
+  useProgress,
+  useToastActions,
   useToastAnimation,
+  useToastSelector,
 } from "@headless-toast/react";
-import type { ReactToastStore } from "@headless-toast/react";
+import type {
+  ReactResolvedToastOptions,
+  ReactToastStore,
+} from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
 import rawSource from "./countdown-progress.tsx?raw";
 import toastCss from "./toast.css?raw";
 
+function ProgressBar() {
+  const progress = useProgress();
+
+  return (
+    <div
+      className="h-full rounded-full bg-[linear-gradient(90deg,var(--accent),#7ce6db)]"
+      style={{ width: `${progress * 100}%` }}
+    />
+  );
+}
+
 function ProgressToast() {
-  const { toast, dismiss, pauseOnHoverHandlers } = useToast<{
+  const data = useToastSelector(
+    (toast) => toast.data as { title: string; body: string },
+  );
+  const options = useToastSelector(
+    (toast) =>
+      toast.options as ReactResolvedToastOptions<{
+        title: string;
+        body: string;
+      }>,
+  );
+  const { dismiss, pauseOnHoverHandlers } = useToastActions<{
     title: string;
     body: string;
   }>();
@@ -29,10 +55,10 @@ function ProgressToast() {
       {...handlers}
       {...pauseOnHoverHandlers}
       {...attributes}
-      data-toast-placement={toast.options.placement ?? "top-right"}
+      data-toast-placement={options.placement ?? "top-right"}
     >
-      <p className="text-sm font-semibold text-(--ink)">{toast.data.title}</p>
-      <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
+      <p className="text-sm font-semibold text-(--ink)">{data.title}</p>
+      <p className="mt-1 text-sm text-(--ink-soft)">{data.body}</p>
       <button
         type="button"
         className="absolute right-3 top-3 text-xs text-(--ink-soft)"
@@ -41,10 +67,7 @@ function ProgressToast() {
         Close
       </button>
       <div className="mt-4 h-1.5 rounded-full bg-black/8 dark:bg-white/8">
-        <div
-          className="h-full rounded-full bg-[linear-gradient(90deg,var(--accent),#7ce6db)]"
-          style={{ width: `${toast.progress * 100}%` }}
-        />
+        <ProgressBar />
       </div>
     </article>
   );

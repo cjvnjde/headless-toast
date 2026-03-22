@@ -33,6 +33,14 @@ const examples = [
     featured: true,
   },
   {
+    path: "/fundamentals/progress-callback",
+    title: "Progress callback",
+    summary:
+      "Drive DOM updates and side effects from progress ticks without re-rendering the toast body.",
+    category: "Fundamentals",
+    tags: ["progress", "useProgressEffect"],
+  },
+  {
     path: "/fundamentals/persistent-toast",
     title: "Persistent toast",
     summary:

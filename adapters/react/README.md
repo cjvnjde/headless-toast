@@ -20,6 +20,9 @@ pnpm add @headless-toast/react react react-dom
 - `toast` for a shared singleton flow
 - `Toaster` and `Toaster.List` to declare where toast groups render
 - `useToast()` for per-toast state and actions
+- `useToastSelector()` for field-level toast subscriptions
+- `useToastActions()` for actions without subscribing to the full toast snapshot
+- `useProgress()` and `useProgressEffect()` for progress-heavy UIs
 - `useToastAnimation()` for DOM timing and phase completion
 - `useToastDrag()` for pointer-driven drag-to-dismiss
 - `useStore()` for custom reactive views over the toast array
@@ -555,6 +558,95 @@ function ToastDebugPanel() {
         </li>
       ))}
     </ul>
+  );
+}
+```
+
+### Fine-grained toast subscriptions
+
+For hot paths, subscribe only to the fields you actually render:
+
+```tsx
+import {
+  useProgress,
+  useToastActions,
+  useToastAnimation,
+  useToastSelector,
+} from "@headless-toast/react";
+import type { ReactResolvedToastOptions } from "@headless-toast/react";
+
+type AppToastData = {
+  title: string;
+  body?: string;
+};
+
+function ToastProgressBar() {
+  const progress = useProgress<AppToastData>();
+
+  return (
+    <div
+      className="app-toast__progress"
+      style={{ width: `${progress * 100}%` }}
+    />
+  );
+}
+
+function AppToast() {
+  const data = useToastSelector((toast) => toast.data as AppToastData);
+  const options = useToastSelector(
+    (toast) => toast.options as ReactResolvedToastOptions<AppToastData>,
+  );
+  const { dismiss, pauseOnHoverHandlers } = useToastActions<AppToastData>();
+  const { ref, className, attributes, handlers } = useToastAnimation({
+    className: "app-toast",
+  });
+
+  return (
+    <article
+      ref={ref}
+      className={className}
+      {...handlers}
+      {...pauseOnHoverHandlers}
+      {...attributes}
+      data-placement={options.placement ?? "top-right"}
+    >
+      <strong>{String(data.title)}</strong>
+      {data.body ? <p>{String(data.body)}</p> : null}
+      <button type="button" onClick={() => dismiss("user")}>
+        Dismiss
+      </button>
+      {options.progress ? <ToastProgressBar /> : null}
+    </article>
+  );
+}
+```
+
+Use `useProgressEffect()` when you want to react to progress changes without re-rendering the whole component:
+
+```tsx
+import { useRef } from "react";
+
+function DirectDomProgress() {
+  const fillRef = useRef<HTMLDivElement | null>(null);
+  const valueRef = useRef<HTMLSpanElement | null>(null);
+
+  useProgressEffect((progress) => {
+    const percent = Math.round(progress * 100);
+
+    if (fillRef.current) {
+      fillRef.current.style.width = `${progress * 100}%`;
+    }
+
+    if (valueRef.current) {
+      valueRef.current.textContent = `${percent}%`;
+    }
+  });
+
+  return (
+    <div>
+      <span ref={valueRef}>0%</span>
+      <div ref={fillRef} style={{ width: "0%" }} />
+    </div>
   );
 }
 ```

@@ -101,7 +101,7 @@ function AnchoredToaster({
                 }
               }}
             >
-              <ToastCtx.Provider value={{ toast, store }}>
+              <ToastCtx.Provider value={{ toastId: toast.id, store }}>
                 <AnchoredToast />
               </ToastCtx.Provider>
             </motion.div>

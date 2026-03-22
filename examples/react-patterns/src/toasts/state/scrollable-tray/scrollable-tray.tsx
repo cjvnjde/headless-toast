@@ -63,7 +63,10 @@ function ScrollableToaster({
       <div className="fixed right-4 top-4 z-[9999] max-h-[calc(100vh-2rem)] w-[min(24rem,calc(100vw-2rem))] overflow-y-auto pr-2">
         <div className="flex flex-col gap-3">
           {toasts.map((toast) => (
-            <ToastCtx.Provider key={toast.id} value={{ toast, store }}>
+            <ToastCtx.Provider
+              key={toast.id}
+              value={{ toastId: toast.id, store }}
+            >
               <TrayToast />
             </ToastCtx.Provider>
           ))}

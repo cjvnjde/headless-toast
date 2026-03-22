@@ -156,7 +156,7 @@ function DragDismissToaster({
         <AnimatePresence initial={false} mode="popLayout">
           {toasts.map((toast) => (
             <motion.div key={toast.id} layout="position">
-              <ToastCtx.Provider value={{ toast, store }}>
+              <ToastCtx.Provider value={{ toastId: toast.id, store }}>
                 <DraggableToast />
               </ToastCtx.Provider>
             </motion.div>

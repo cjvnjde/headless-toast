@@ -2,10 +2,16 @@ import { useRef, useState } from "react";
 import {
   Toaster,
   createToast,
-  useToast,
+  useProgress,
+  useToastActions,
   useToastAnimation,
+  useToastSelector,
 } from "@headless-toast/react";
-import type { CloseReason, ReactToastStore } from "@headless-toast/react";
+import type {
+  CloseReason,
+  ReactResolvedToastOptions,
+  ReactToastStore,
+} from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
@@ -17,9 +23,25 @@ type AwaitCloseToastData = {
   body: string;
 };
 
+function AwaitCloseProgressBar() {
+  const progress = useProgress<AwaitCloseToastData>();
+
+  return (
+    <div
+      className="h-full rounded-full bg-(--accent)"
+      style={{ width: `${progress * 100}%` }}
+    />
+  );
+}
+
 function AwaitCloseToast() {
-  const { toast, dismiss, pauseOnHoverHandlers } =
-    useToast<AwaitCloseToastData>();
+  const data = useToastSelector((toast) => toast.data as AwaitCloseToastData);
+  const options = useToastSelector(
+    (toast) => toast.options as ReactResolvedToastOptions<AwaitCloseToastData>,
+  );
+  const type = useToastSelector((toast) => toast.type);
+  const { dismiss, pauseOnHoverHandlers } =
+    useToastActions<AwaitCloseToastData>();
   const { ref, className, handlers, attributes } = useToastAnimation({
     className:
       "wait-for-close-toast pointer-events-auto relative w-full rounded-3xl border border-(--line) bg-(--surface-strong) p-4 pr-12 shadow-[0_18px_36px_rgba(15,23,42,0.12)]",
@@ -32,22 +54,17 @@ function AwaitCloseToast() {
       {...handlers}
       {...pauseOnHoverHandlers}
       {...attributes}
-      data-toast-placement={toast.options.placement ?? "top-right"}
+      data-toast-placement={options.placement ?? "top-right"}
     >
       <p className="text-xs font-bold tracking-[0.18em] uppercase text-(--accent-strong)">
-        {toast.type === "success" ? "Follow-up step" : "Awaiting close"}
+        {type === "success" ? "Follow-up step" : "Awaiting close"}
       </p>
-      <p className="mt-2 text-sm font-semibold text-(--ink)">
-        {toast.data.title}
-      </p>
-      <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
+      <p className="mt-2 text-sm font-semibold text-(--ink)">{data.title}</p>
+      <p className="mt-1 text-sm text-(--ink-soft)">{data.body}</p>
 
-      {toast.options.progress ? (
+      {options.progress ? (
         <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-black/8 dark:bg-white/10">
-          <div
-            className="h-full rounded-full bg-(--accent)"
-            style={{ width: `${toast.progress * 100}%` }}
-          />
+          <AwaitCloseProgressBar />
         </div>
       ) : null}
 

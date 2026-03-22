@@ -106,7 +106,7 @@ function DeckToaster({
                   zIndex: reversed.length - index,
                 }}
               >
-                <ToastCtx.Provider value={{ toast, store }}>
+                <ToastCtx.Provider value={{ toastId: toast.id, store }}>
                   <DeckToast />
                 </ToastCtx.Provider>
               </div>

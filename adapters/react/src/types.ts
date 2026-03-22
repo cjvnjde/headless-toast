@@ -111,15 +111,15 @@ type ToastProviderProps<
   TCustom extends ToastCustomOptions = {},
 > = {
   children: ReactNode;
-  toast: ReactToastState<TData, TCustom>;
+  toast?: ReactToastState<TData, TCustom>;
+  toastId?: string;
   store: ReactToastStore<TData, TCustom>;
 };
 
-type UseToastResult<
+type UseToastActionsResult<
   TData extends ToastData = ToastData,
   TCustom extends ToastCustomOptions = {},
 > = {
-  toast: ReactToastState<TData, TCustom>;
   dismiss: (reason?: Exclude<CloseReason, "timeout">) => void;
   pause: () => void;
   resume: () => void;
@@ -131,6 +131,13 @@ type UseToastResult<
     onMouseEnter: () => void;
     onMouseLeave: () => void;
   };
+};
+
+type UseToastResult<
+  TData extends ToastData = ToastData,
+  TCustom extends ToastCustomOptions = {},
+> = UseToastActionsResult<TData, TCustom> & {
+  toast: ReactToastState<TData, TCustom>;
 };
 
 type DragHandlers = {
@@ -174,6 +181,7 @@ export type {
   ReactToastOptions,
   ReactToastUpdate,
   ReactLoadingToastOptions,
+  UseToastActionsResult,
   UseToastResult,
   DragHandlers,
   DragResult,

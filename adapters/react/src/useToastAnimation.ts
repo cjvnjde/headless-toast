@@ -1,12 +1,14 @@
 import { TOAST_STATUS } from "@headless-toast/core";
 import {
-  useRef,
   useEffect,
+  useRef,
   type AnimationEvent,
   type TransitionEvent,
 } from "react";
 import type { AnimationResult } from "./types";
-import { useToastContext, useToast } from "./useToast";
+import { useToastActions } from "./useToastActions";
+import { useToastSelector } from "./useToastSelector";
+import { useToastSource } from "./useToastSource";
 import { getAnimationDuration } from "./utils";
 
 type UseToastAnimationOptions = {
@@ -17,67 +19,67 @@ type UseToastAnimationOptions = {
 function useToastAnimation<TElement extends HTMLElement = HTMLDivElement>(
   options?: UseToastAnimationOptions,
 ): AnimationResult<TElement> {
-  const { store } = useToastContext();
-  const { toast, markEntered, markExited } = useToast();
+  const { store, toastId } = useToastSource();
+  const status = useToastSelector((toast) => toast.status);
+  const type = useToastSelector((toast) => toast.type);
+  const { markEntered, markExited } = useToastActions();
   const ref = useRef<TElement>(null);
 
   const completeCurrentPhase = () => {
-    if (toast.status === TOAST_STATUS.ENTERING) {
+    if (status === TOAST_STATUS.ENTERING) {
       markEntered();
-    } else if (toast.status === TOAST_STATUS.EXITING) {
+      return;
+    }
+
+    if (status === TOAST_STATUS.EXITING) {
       markExited();
     }
   };
 
   useEffect(() => {
-    const el = ref.current;
+    const element = ref.current;
 
-    if (!el) {
+    if (!element) {
       return;
     }
 
-    if (
-      toast.status === TOAST_STATUS.ENTERING ||
-      toast.status === TOAST_STATUS.EXITING
-    ) {
-      const phase = toast.status === TOAST_STATUS.ENTERING ? "enter" : "exit";
+    if (status === TOAST_STATUS.ENTERING || status === TOAST_STATUS.EXITING) {
+      const phase = status === TOAST_STATUS.ENTERING ? "enter" : "exit";
 
       if (typeof requestAnimationFrame === "undefined") {
         completeCurrentPhase();
         return;
       }
 
-      const rafId = requestAnimationFrame(() => {
-        const duration = getAnimationDuration(el);
+      const frameId = requestAnimationFrame(() => {
+        const duration = getAnimationDuration(element);
 
         if (duration > 0) {
-          store.setAnimationDuration(toast.id, phase, duration);
+          store.setAnimationDuration(toastId, phase, duration);
           return;
         }
 
         completeCurrentPhase();
       });
 
-      return () => cancelAnimationFrame(rafId);
+      return () => cancelAnimationFrame(frameId);
     }
-  }, [toast.status, toast.id, store, completeCurrentPhase]);
+  }, [status, store, toastId]);
 
-  const handlePhaseEnd = () => completeCurrentPhase();
-
-  const onAnimationEnd = (e: AnimationEvent<TElement>) => {
-    if (e.target !== e.currentTarget) {
+  const onAnimationEnd = (event: AnimationEvent<TElement>) => {
+    if (event.target !== event.currentTarget) {
       return;
     }
 
-    handlePhaseEnd();
+    completeCurrentPhase();
   };
 
-  const onTransitionEnd = (e: TransitionEvent<TElement>) => {
-    if (e.target !== e.currentTarget) {
+  const onTransitionEnd = (event: TransitionEvent<TElement>) => {
+    if (event.target !== event.currentTarget) {
       return;
     }
 
-    handlePhaseEnd();
+    completeCurrentPhase();
   };
 
   return {
@@ -85,9 +87,9 @@ function useToastAnimation<TElement extends HTMLElement = HTMLDivElement>(
     className: options?.className ?? "",
     attributes: {
       "data-toast": "",
-      "data-toast-id": toast.id,
-      "data-toast-status": toast.status,
-      "data-toast-type": toast.type,
+      "data-toast-id": toastId,
+      "data-toast-status": status,
+      "data-toast-type": type,
       "data-toast-swipe-dismissed": options?.swipeDismissed ? "true" : "false",
     },
     handlers: {

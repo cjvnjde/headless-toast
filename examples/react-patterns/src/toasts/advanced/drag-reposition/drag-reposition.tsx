@@ -422,7 +422,10 @@ function RepositionToaster({
             };
 
           return (
-            <ToastCtx.Provider key={toast.id} value={{ toast, store }}>
+            <ToastCtx.Provider
+              key={toast.id}
+              value={{ toastId: toast.id, store }}
+            >
               <RepositionToast
                 targetPosition={targetPosition}
                 registerHeight={registerHeight}
