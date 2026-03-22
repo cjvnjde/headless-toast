@@ -5,19 +5,27 @@ import { useStoreSelector } from "./useStoreSelector";
 import { useToastSource } from "./useToastSource";
 import type { ReactToastState } from "./types";
 
+function useToastSelector<TData extends ToastData, TSelected>(
+  selector: (toast: ReactToastState<TData>) => TSelected,
+  isEqual?: (left: TSelected, right: TSelected) => boolean,
+): TSelected;
+
 function useToastSelector<
-  TData extends ToastData = ToastData,
-  TCustom extends ToastCustomOptions = {},
-  TSelected = ReactToastState<TData, TCustom>,
+  TData extends ToastData,
+  TCustom extends ToastCustomOptions,
+  TSelected,
 >(
   selector: (toast: ReactToastState<TData, TCustom>) => TSelected,
   isEqual?: (left: TSelected, right: TSelected) => boolean,
+): TSelected;
+
+function useToastSelector(
+  selector: (toast: ReactToastState) => unknown,
+  isEqual?: (left: unknown, right: unknown) => boolean,
 ) {
-  const { initialToast, store, toastId } = useToastSource<TData, TCustom>();
+  const { initialToast, store, toastId } = useToastSource();
   const toastIdRef = useRef(toastId);
-  const lastToastRef = useRef<ReactToastState<TData, TCustom> | undefined>(
-    initialToast,
-  );
+  const lastToastRef = useRef<ReactToastState | undefined>(initialToast);
 
   if (toastIdRef.current !== toastId) {
     toastIdRef.current = toastId;
@@ -38,7 +46,7 @@ function useToastSelector<
         return selector(lastToastRef.current);
       }
 
-      throw new Error(`Toast \"${toastId}\" could not be found.`);
+      throw new Error(`Toast "${toastId}" could not be found.`);
     },
     isEqual,
   );
