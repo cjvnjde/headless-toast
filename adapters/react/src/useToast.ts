@@ -1,4 +1,4 @@
-import { createContext, createElement, useContext, useCallback } from "react";
+import { createContext, createElement, useContext } from "react";
 import type {
   CloseReason,
   ToastCustomOptions,
@@ -53,51 +53,33 @@ function useToast<
 >() {
   const { toast, store } = useToastContext<TData, TCustom>();
 
-  const dismiss = useCallback(
-    (reason?: Exclude<CloseReason, "timeout">) => {
-      store.dismiss(toast.id, reason);
-    },
-    [store, toast.id],
-  );
+  const dismiss = (reason?: Exclude<CloseReason, "timeout">) =>
+    store.dismiss(toast.id, reason);
 
-  const pause = useCallback(() => {
-    store.pause(toast.id);
-  }, [store, toast.id]);
+  const pause = () => store.pause(toast.id);
 
-  const resume = useCallback(() => {
-    store.resume(toast.id);
-  }, [store, toast.id]);
+  const resume = () => store.resume(toast.id);
 
-  const update = useCallback(
-    (updates: ReactToastUpdate<TData, TCustom>) => {
-      store.update(toast.id, updates);
-    },
-    [store, toast.id],
-  );
+  const update = (updates: ReactToastUpdate<TData, TCustom>) =>
+    store.update(toast.id, updates);
 
-  const waitForClose = useCallback((): Promise<CloseReason> => {
-    return store.waitForClose(toast.id);
-  }, [store, toast.id]);
+  const waitForClose = () => store.waitForClose(toast.id);
 
-  const markEntered = useCallback(() => {
-    store.markEntered(toast.id);
-  }, [store, toast.id]);
+  const markEntered = () => store.markEntered(toast.id);
 
-  const markExited = useCallback(() => {
-    store.markExited(toast.id);
-  }, [store, toast.id]);
+  const markExited = () => store.markExited(toast.id);
 
-  const onMouseEnter = useCallback(() => {
+  const onMouseEnter = () => {
     if (toast.options.pauseOnHover) {
       pause();
     }
-  }, [toast.options.pauseOnHover, pause]);
+  };
 
-  const onMouseLeave = useCallback(() => {
+  const onMouseLeave = () => {
     if (toast.options.pauseOnHover) {
       resume();
     }
-  }, [toast.options.pauseOnHover, resume]);
+  };
 
   return {
     toast,

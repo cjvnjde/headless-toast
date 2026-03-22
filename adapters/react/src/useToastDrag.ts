@@ -1,7 +1,6 @@
 import {
   useState,
   useRef,
-  useCallback,
   type PointerEvent,
   type CSSProperties,
   type RefObject,
@@ -30,156 +29,135 @@ function useToastDrag(elementRef?: RefObject<HTMLElement | null>) {
 
   const config = resolveDraggableConfig(toast.options.draggable);
 
-  const applyOffset = useCallback(
-    (offset: { x: number; y: number }) => {
-      offsetRef.current = offset;
+  const applyOffset = (offset: { x: number; y: number }) => {
+    offsetRef.current = offset;
+
+    const el = elementRef?.current;
+
+    if (el) {
+      const { x, y } = offset;
+
+      el.style.transform =
+        x === 0 && y === 0 ? "" : `translate(${x}px, ${y}px)`;
+      el.style.transition = isDraggingRef.current ? "none" : "";
+      el.style.cursor = isDraggingRef.current ? "grabbing" : "";
+    } else {
+      setStyleOffset({ ...offset });
+    }
+  };
+
+  const stopDragging = (shouldResume: boolean) => {
+    if (!isDraggingRef.current) return;
+
+    isDraggingRef.current = false;
+    pointerIdRef.current = null;
+    setIsDragging(false);
+
+    if (!swipeDismissedRef.current) {
+      offsetRef.current = { x: 0, y: 0 };
 
       const el = elementRef?.current;
 
       if (el) {
-        const { x, y } = offset;
-
-        el.style.transform =
-          x === 0 && y === 0 ? "" : `translate(${x}px, ${y}px)`;
-        el.style.transition = isDraggingRef.current ? "none" : "";
-        el.style.cursor = isDraggingRef.current ? "grabbing" : "";
+        el.style.transition = "transform 200ms ease-out";
+        el.style.transform = "";
+        el.style.cursor = "";
       } else {
-        setStyleOffset({ ...offset });
+        setStyleOffset(null);
       }
-    },
-    [elementRef],
-  );
+    }
 
-  const stopDragging = useCallback(
-    (shouldResume: boolean) => {
-      if (!isDraggingRef.current) return;
+    if (shouldResume) {
+      resume();
+    }
+  };
 
+  const onPointerDown = (e: PointerEvent) => {
+    if (!config) {
+      return;
+    }
+
+    if (pointerIdRef.current !== null) {
+      return;
+    }
+
+    e.currentTarget.setPointerCapture(e.pointerId);
+    pointerIdRef.current = e.pointerId;
+    startPos.current = { x: e.clientX, y: e.clientY };
+    lastPos.current = { x: e.clientX, y: e.clientY };
+    lastTime.current = Date.now();
+    isDraggingRef.current = true;
+    swipeDismissedRef.current = false;
+    offsetRef.current = { x: 0, y: 0 };
+    setIsDragging(true);
+    setSwipeDismissed(false);
+    setStyleOffset(null);
+
+    pause();
+  };
+
+  const onPointerMove = (e: PointerEvent) => {
+    if (!config || !isDraggingRef.current) {
+      return;
+    }
+
+    if (pointerIdRef.current !== e.pointerId) {
+      return;
+    }
+
+    const now = Date.now();
+    const dt = Math.max(now - lastTime.current, 1);
+
+    const dx = e.clientX - startPos.current.x;
+    const dy = e.clientY - startPos.current.y;
+    const vx = (e.clientX - lastPos.current.x) / dt;
+    const vy = (e.clientY - lastPos.current.y) / dt;
+
+    lastPos.current = { x: e.clientX, y: e.clientY };
+    lastTime.current = now;
+
+    const dragState = computeDragState(config, { dx, dy, vx, vy });
+
+    applyOffset({ x: dragState.offsetX, y: dragState.offsetY });
+
+    if (dragState.dismissed) {
       isDraggingRef.current = false;
       pointerIdRef.current = null;
+      swipeDismissedRef.current = true;
       setIsDragging(false);
+      setSwipeDismissed(true);
 
-      if (!swipeDismissedRef.current) {
-        offsetRef.current = { x: 0, y: 0 };
-
-        const el = elementRef?.current;
-
-        if (el) {
-          el.style.transition = "transform 200ms ease-out";
-          el.style.transform = "";
-          el.style.cursor = "";
-        } else {
-          setStyleOffset(null);
-        }
+      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+        e.currentTarget.releasePointerCapture(e.pointerId);
       }
 
-      if (shouldResume) {
-        resume();
-      }
-    },
-    [resume, elementRef],
-  );
+      dismiss(CLOSE_REASON.SWIPE);
+    }
+  };
 
-  const onPointerDown = useCallback(
-    (e: PointerEvent) => {
-      if (!config) {
-        return;
-      }
+  const onPointerUp = (e: PointerEvent) => {
+    if (pointerIdRef.current !== e.pointerId) {
+      return;
+    }
 
-      if (pointerIdRef.current !== null) {
-        return;
-      }
+    stopDragging(true);
+  };
 
-      e.currentTarget.setPointerCapture(e.pointerId);
-      pointerIdRef.current = e.pointerId;
-      startPos.current = { x: e.clientX, y: e.clientY };
-      lastPos.current = { x: e.clientX, y: e.clientY };
-      lastTime.current = Date.now();
-      isDraggingRef.current = true;
-      swipeDismissedRef.current = false;
-      offsetRef.current = { x: 0, y: 0 };
-      setIsDragging(true);
-      setSwipeDismissed(false);
-      setStyleOffset(null);
+  const onPointerCancel = (e: PointerEvent) => {
+    if (pointerIdRef.current !== e.pointerId) {
+      return;
+    }
 
-      pause();
-    },
-    [config, pause],
-  );
+    stopDragging(true);
+  };
 
-  const onPointerMove = useCallback(
-    (e: PointerEvent) => {
-      if (!config || !isDraggingRef.current) {
-        return;
-      }
+  const onLostPointerCapture = (e: PointerEvent) => {
+    if (pointerIdRef.current !== e.pointerId) {
+      return;
+    }
 
-      if (pointerIdRef.current !== e.pointerId) {
-        return;
-      }
-
-      const now = Date.now();
-      const dt = Math.max(now - lastTime.current, 1);
-
-      const dx = e.clientX - startPos.current.x;
-      const dy = e.clientY - startPos.current.y;
-      const vx = (e.clientX - lastPos.current.x) / dt;
-      const vy = (e.clientY - lastPos.current.y) / dt;
-
-      lastPos.current = { x: e.clientX, y: e.clientY };
-      lastTime.current = now;
-
-      const dragState = computeDragState(config, { dx, dy, vx, vy });
-
-      applyOffset({ x: dragState.offsetX, y: dragState.offsetY });
-
-      if (dragState.dismissed) {
-        isDraggingRef.current = false;
-        pointerIdRef.current = null;
-        swipeDismissedRef.current = true;
-        setIsDragging(false);
-        setSwipeDismissed(true);
-
-        if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-          e.currentTarget.releasePointerCapture(e.pointerId);
-        }
-
-        dismiss(CLOSE_REASON.SWIPE);
-      }
-    },
-    [config, dismiss, applyOffset],
-  );
-
-  const onPointerUp = useCallback(
-    (e: PointerEvent) => {
-      if (pointerIdRef.current !== e.pointerId) {
-        return;
-      }
-
-      stopDragging(true);
-    },
-    [stopDragging],
-  );
-
-  const onPointerCancel = useCallback(
-    (e: PointerEvent) => {
-      if (pointerIdRef.current !== e.pointerId) {
-        return;
-      }
-
-      stopDragging(true);
-    },
-    [stopDragging],
-  );
-
-  const onLostPointerCapture = useCallback(
-    (e: PointerEvent) => {
-      if (pointerIdRef.current !== e.pointerId) {
-        return;
-      }
-
-      stopDragging(true);
-    },
-    [stopDragging],
-  );
+    stopDragging(true);
+  };
 
   let style: CSSProperties;
 

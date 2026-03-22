@@ -1,4 +1,4 @@
-import { useSyncExternalStore, useCallback, useRef } from "react";
+import { useSyncExternalStore, useRef } from "react";
 import type { ToastCustomOptions, ToastData } from "@headless-toast/core";
 import { toast as sharedToast } from "./toast";
 import type { ReactToastState, ReactToastStore } from "./types";
@@ -21,16 +21,13 @@ function useStore<
     snapshotRef.current = resolvedStore.getToasts();
   }
 
-  const subscribe = useCallback(
-    (onStoreChange: () => void) =>
-      resolvedStore.subscribe(() => {
-        snapshotRef.current = resolvedStore.getToasts();
-        onStoreChange();
-      }),
-    [resolvedStore],
-  );
+  const subscribe = (onStoreChange: () => void) =>
+    resolvedStore.subscribe(() => {
+      snapshotRef.current = resolvedStore.getToasts();
+      onStoreChange();
+    });
 
-  const getSnapshot = useCallback(() => snapshotRef.current, []);
+  const getSnapshot = () => snapshotRef.current;
 
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 }
