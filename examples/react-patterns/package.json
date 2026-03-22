@@ -16,22 +16,23 @@
     "@headless-toast/core": "workspace:*",
     "@headless-toast/react": "workspace:*",
     "@tailwindcss/vite": "^4.1.18",
-    "@tanstack/react-router": "^1.167.5",
-    "@tanstack/router-plugin": "^1.166.14",
+    "@tanstack/react-router": "^1.168.1",
+    "@tanstack/router-plugin": "^1.167.2",
     "@use-gesture/react": "^10.3.1",
     "framer-motion": "^12.23.24",
-    "lucide-react": "^0.545.0",
+    "lucide-react": "^0.577.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
-    "@types/node": "^24.3.0",
+    "@rolldown/plugin-babel": "^0.2.2",
+    "@types/node": "^25.5.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
-    "@vitejs/plugin-react": "^5.1.4",
+    "@vitejs/plugin-react": "^6.0.1",
     "typescript": "^5.7.2",
-    "vite": "^7.3.1",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite": "^8.0.1",
+    "vite-tsconfig-paths": "^6.1.1"
   }
 }

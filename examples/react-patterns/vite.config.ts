@@ -1,10 +1,11 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
+import babel from "@rolldown/plugin-babel";
 
 const repoRoot = resolve(import.meta.dirname, "../..");
 
@@ -32,6 +33,9 @@ export default defineConfig({
     tailwindcss(),
     react(),
     copySpaFallback(),
+    babel({
+      presets: [reactCompilerPreset()],
+    }),
   ],
   resolve: {
     alias: {

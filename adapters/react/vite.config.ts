@@ -1,9 +1,15 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { resolve } from "node:path";
+import babel from "@rolldown/plugin-babel";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    babel({
+      presets: [reactCompilerPreset()],
+    }),
+  ],
   resolve: {
     alias: {
       "@headless-toast/core": resolve(__dirname, "../../core/src/index.ts"),
