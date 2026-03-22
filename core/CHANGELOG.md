@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Miscellaneous
 
 - Bump package versions to 0.0.2 for core and react adapters
+- Bump package versions to 0.0.2 for core and react adapters
 - Update CHANGELOG with recent changes and refactor notes
 - Update dependencies in package.json and pnpm-workspace.yaml
 
