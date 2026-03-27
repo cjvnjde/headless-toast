@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Github, Package2 } from "lucide-react";
+import { Package, Package2 } from "lucide-react";
 import { examples } from "../lib/examples";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -23,7 +23,7 @@ function Header() {
               rel="noreferrer"
               className="doc-chip-link"
             >
-              <Github size={15} />
+              <Package size={15} />
               GitHub
             </a>
             <a
