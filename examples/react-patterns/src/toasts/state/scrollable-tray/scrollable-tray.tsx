@@ -2,7 +2,7 @@ import { useRef } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import {
-  ToastCtx,
+  mapToastItems,
   createToast,
   useStore,
   useToast,
@@ -14,6 +14,10 @@ import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
 import rawSource from "./scrollable-tray.tsx?raw";
 import toastCss from "./toast.css?raw";
+
+const toast = createToast<{ title: string; body: string }>({
+  defaults: { duration: 0 },
+}).toast;
 
 function ViewportLayer({ children }: { children: ReactNode }) {
   if (typeof document === "undefined") {
@@ -31,13 +35,7 @@ function TrayToast() {
   });
 
   return (
-    <article
-      ref={ref}
-      className={className}
-      {...handlers}
-      {...attributes}
-      data-toast-placement={toast.options.placement ?? "top-right"}
-    >
+    <article ref={ref} className={className} {...handlers} {...attributes}>
       <p className="text-sm font-semibold text-(--ink)">{toast.data.title}</p>
       <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
       <button
@@ -62,13 +60,8 @@ function ScrollableToaster({
     <ViewportLayer>
       <div className="fixed right-4 top-4 z-[9999] max-h-[calc(100vh-2rem)] w-[min(24rem,calc(100vw-2rem))] overflow-y-auto pr-2">
         <div className="flex flex-col gap-3">
-          {toasts.map((toast) => (
-            <ToastCtx.Provider
-              key={toast.id}
-              value={{ toastId: toast.id, store }}
-            >
-              <TrayToast />
-            </ToastCtx.Provider>
+          {mapToastItems(store, toasts, () => (
+            <TrayToast />
           ))}
         </div>
       </div>
@@ -77,19 +70,7 @@ function ScrollableToaster({
 }
 
 function ScrollableTrayPreview() {
-  const storeRef = useRef<ReactToastStore<{
-    title: string;
-    body: string;
-  }> | null>(null);
   const countRef = useRef(0);
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<{ title: string; body: string }>({
-      defaults: { duration: 0 },
-    }).toast;
-  }
-
-  const toast = storeRef.current;
 
   return (
     <div className="space-y-4">

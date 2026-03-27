@@ -5,6 +5,7 @@ import {
   type AnimationEvent,
   type TransitionEvent,
 } from "react";
+import { DEFAULT_PLACEMENT } from "./stack";
 import type { AnimationResult } from "./types";
 import { useToastActions } from "./useToastActions";
 import { useToastSelector } from "./useToastSelector";
@@ -22,7 +23,9 @@ function useToastAnimation<TElement extends HTMLElement = HTMLDivElement>(
   const { store, toastId } = useToastSource();
   const status = useToastSelector((toast) => toast.status);
   const type = useToastSelector((toast) => toast.type);
-  const { markEntered, markExited } = useToastActions();
+  const placement = useToastSelector((toast) => toast.options.placement);
+  const dismissible = useToastSelector((toast) => toast.options.dismissible);
+  const { markEntered, markExited, pauseOnHoverHandlers } = useToastActions();
   const ref = useRef<TElement>(null);
 
   const completeCurrentPhase = () => {
@@ -90,11 +93,15 @@ function useToastAnimation<TElement extends HTMLElement = HTMLDivElement>(
       "data-toast-id": toastId,
       "data-toast-status": status,
       "data-toast-type": type,
+      "data-toast-placement": placement ?? DEFAULT_PLACEMENT,
+      "data-toast-dismissible": dismissible !== false ? "true" : "false",
       "data-toast-swipe-dismissed": options?.swipeDismissed ? "true" : "false",
     },
     handlers: {
       onAnimationEnd,
       onTransitionEnd,
+      onMouseEnter: pauseOnHoverHandlers.onMouseEnter,
+      onMouseLeave: pauseOnHoverHandlers.onMouseLeave,
     },
   };
 }

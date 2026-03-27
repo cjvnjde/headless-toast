@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import {
   Toaster,
   createToast,
@@ -7,7 +6,7 @@ import {
   useToastAnimation,
   useToastSelector,
 } from "@headless-toast/react";
-import type { ReactToastState, ReactToastStore } from "@headless-toast/react";
+import type { ReactToastState } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
@@ -15,6 +14,10 @@ import rawSource from "./countdown-progress.tsx?raw";
 import toastCss from "./toast.css?raw";
 
 type CountdownToastData = { title: string; body: string };
+
+const toast = createToast<CountdownToastData>({
+  defaults: { placement: "top-right" },
+}).toast;
 
 function ProgressBar() {
   const progress = useProgress();
@@ -31,25 +34,14 @@ function ProgressToast() {
   const data = useToastSelector(
     (toast: ReactToastState<CountdownToastData>) => toast.data,
   );
-  const options = useToastSelector(
-    (toast: ReactToastState<CountdownToastData>) => toast.options,
-  );
-  const { dismiss, pauseOnHoverHandlers } =
-    useToastActions<CountdownToastData>();
+  const { dismiss } = useToastActions<CountdownToastData>();
   const { ref, className, handlers, attributes } = useToastAnimation({
     className:
       "countdown-progress-toast pointer-events-auto relative w-full overflow-hidden rounded-3xl border border-(--line) bg-(--surface-strong) p-4 pr-12 shadow-[0_18px_36px_rgba(15,23,42,0.12)]",
   });
 
   return (
-    <article
-      ref={ref}
-      className={className}
-      {...handlers}
-      {...pauseOnHoverHandlers}
-      {...attributes}
-      data-toast-placement={options.placement ?? "top-right"}
-    >
+    <article ref={ref} className={className} {...handlers} {...attributes}>
       <p className="text-sm font-semibold text-(--ink)">{data.title}</p>
       <p className="mt-1 text-sm text-(--ink-soft)">{data.body}</p>
       <button
@@ -67,16 +59,6 @@ function ProgressToast() {
 }
 
 function CountdownProgressPreview() {
-  const storeRef = useRef<ReactToastStore<CountdownToastData> | null>(null);
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<CountdownToastData>({
-      defaults: { placement: "top-right" },
-    }).toast;
-  }
-
-  const toast = storeRef.current;
-
   return (
     <div className="space-y-4">
       <p className="text-sm leading-7 text-(--ink-soft)">

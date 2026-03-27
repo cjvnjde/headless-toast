@@ -1,25 +1,27 @@
-import { useRef } from "react";
 import {
   Toaster,
   createToast,
   useToast,
   useToastAnimation,
 } from "@headless-toast/react";
-import type { ReactToastStore } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
 import rawSource from "./basic-variants.tsx?raw";
 import toastCss from "./toast.css?raw";
 
+const toast = createToast<{ title: string; body: string }>({
+  defaults: { duration: 4500, pauseOnHover: true, placement: "top-right" },
+}).toast;
+
 function VariantToast() {
-  const { toast, dismiss, pauseOnHoverHandlers } = useToast<{
+  const { toast, dismiss } = useToast<{
     title: string;
     body: string;
   }>();
   const { ref, className, handlers, attributes } = useToastAnimation({
     className:
-      "basic-variants-toast pointer-events-auto relative w-full rounded-3xl border border-white/60 bg-white/95 p-4 pr-12 shadow-[0_20px_40px_rgba(15,23,42,0.12)] backdrop-blur dark:border-white/10 dark:bg-slate-950/90",
+      "basic-variants-toast pointer-events-auto relative w-full rounded-3xl border border-(--line) bg-(--surface-strong) p-4 pr-12 shadow-[0_20px_40px_rgba(15,23,42,0.12)]",
   });
 
   const tone =
@@ -38,19 +40,13 @@ function VariantToast() {
       ref={ref}
       className={`${className} ${tone}`}
       {...handlers}
-      {...pauseOnHoverHandlers}
       {...attributes}
-      data-toast-placement={toast.options.placement ?? "top-right"}
     >
-      <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-        {toast.data.title}
-      </p>
-      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-        {toast.data.body}
-      </p>
+      <p className="text-sm font-semibold text-(--ink)">{toast.data.title}</p>
+      <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
       <button
         type="button"
-        className="absolute right-3 top-3 rounded-full border border-slate-200 px-2 py-1 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-300"
+        className="absolute right-3 top-3 rounded-full border border-(--line) px-2 py-1 text-xs text-(--ink-soft)"
         onClick={() => dismiss("user")}
       >
         Close
@@ -60,18 +56,6 @@ function VariantToast() {
 }
 
 function BasicVariantsPreview() {
-  const storeRef = useRef<ReactToastStore<{
-    title: string;
-    body: string;
-  }> | null>(null);
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<{ title: string; body: string }>({
-      defaults: { duration: 4500, pauseOnHover: true, placement: "top-right" },
-    }).toast;
-  }
-
-  const toast = storeRef.current;
   const buttonClass =
     "rounded-full border border-(--line) bg-(--chip-bg) px-4 py-2 text-sm font-semibold text-(--ink) hover:-translate-y-0.5";
 

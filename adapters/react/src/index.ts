@@ -11,7 +11,9 @@ export { useProgressEffect } from "./useProgressEffect";
 export { useToastAnimation } from "./useToastAnimation";
 export { useToastDrag } from "./useToastDrag";
 export { Toaster } from "./Toaster";
+export { ToastProvider } from "./ToastProvider";
 export { AnimationWrapper } from "./AnimationWrapper";
+export { mapToastItems } from "./mapToastItems";
 export type { AnimationWrapperProps } from "./AnimationWrapper";
 export { getAnimationDuration } from "./utils";
 export { DEFAULT_DRAGGABLE_CONFIG, resolveDraggableConfig } from "./drag";
@@ -28,6 +30,7 @@ export type {
   AdapterStoreConfig,
   ToasterListProps,
   ToasterProps,
+  ToastProviderProps,
   ReactLoadingToastOptions,
   ReactResolvedToastOptions,
   ReactToastMethodOptions,

@@ -7,7 +7,7 @@ import {
   useToastAnimation,
   useToastSelector,
 } from "@headless-toast/react";
-import type { ReactToastState, ReactToastStore } from "@headless-toast/react";
+import type { ReactToastState } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
@@ -18,6 +18,10 @@ type ProgressCallbackToastData = {
   title: string;
   body: string;
 };
+
+const toast = createToast<ProgressCallbackToastData>({
+  defaults: { placement: "top-right", pauseOnHover: true },
+}).toast;
 
 function DomProgressBar() {
   const fillRef = useRef<HTMLDivElement | null>(null);
@@ -59,25 +63,14 @@ function ProgressCallbackToast() {
   const data = useToastSelector(
     (toast: ReactToastState<ProgressCallbackToastData>) => toast.data,
   );
-  const options = useToastSelector(
-    (toast: ReactToastState<ProgressCallbackToastData>) => toast.options,
-  );
-  const { dismiss, pauseOnHoverHandlers } =
-    useToastActions<ProgressCallbackToastData>();
+  const { dismiss } = useToastActions<ProgressCallbackToastData>();
   const { ref, className, handlers, attributes } = useToastAnimation({
     className:
       "progress-callback-toast pointer-events-auto relative w-full overflow-hidden rounded-3xl border border-(--line) bg-(--surface-strong) p-4 pr-12 shadow-[0_18px_36px_rgba(15,23,42,0.12)]",
   });
 
   return (
-    <article
-      ref={ref}
-      className={className}
-      {...handlers}
-      {...pauseOnHoverHandlers}
-      {...attributes}
-      data-toast-placement={options.placement ?? "top-right"}
-    >
+    <article ref={ref} className={className} {...handlers} {...attributes}>
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-semibold text-(--ink)">{data.title}</p>
@@ -102,18 +95,6 @@ function ProgressCallbackToast() {
 }
 
 function ProgressCallbackPreview() {
-  const storeRef = useRef<ReactToastStore<ProgressCallbackToastData> | null>(
-    null,
-  );
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<ProgressCallbackToastData>({
-      defaults: { placement: "top-right", pauseOnHover: true },
-    }).toast;
-  }
-
-  const toast = storeRef.current;
-
   return (
     <div className="space-y-4">
       <p className="text-sm leading-7 text-(--ink-soft)">

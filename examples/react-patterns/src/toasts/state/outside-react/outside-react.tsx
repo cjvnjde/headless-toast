@@ -38,13 +38,7 @@ function OutsideToast() {
   });
 
   return (
-    <article
-      ref={ref}
-      className={className}
-      {...handlers}
-      {...attributes}
-      data-toast-placement={toast.options.placement ?? "top-right"}
-    >
+    <article ref={ref} className={className} {...handlers} {...attributes}>
       <p className="text-sm font-semibold text-(--ink)">{toast.data.title}</p>
       <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
       <button

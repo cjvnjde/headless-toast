@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import {
   Toaster,
   createToast,
@@ -13,6 +12,14 @@ import "./toast.css";
 import rawSource from "./store-inspector.tsx?raw";
 import toastCss from "./toast.css?raw";
 
+const storeA = createToast<{ title: string; body: string }>({
+  defaults: { placement: "top-left", duration: 0 },
+}).toast;
+
+const storeB = createToast<{ title: string; body: string }>({
+  defaults: { placement: "top-right", duration: 0 },
+}).toast;
+
 function InspectorToast() {
   const { toast, dismiss } = useToast<{ title: string; body: string }>();
   const { ref, className, handlers, attributes } = useToastAnimation({
@@ -21,13 +28,7 @@ function InspectorToast() {
   });
 
   return (
-    <article
-      ref={ref}
-      className={className}
-      {...handlers}
-      {...attributes}
-      data-toast-placement={toast.options.placement ?? "top-right"}
-    >
+    <article ref={ref} className={className} {...handlers} {...attributes}>
       <p className="text-sm font-semibold text-(--ink)">{toast.data.title}</p>
       <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
       <button
@@ -86,30 +87,6 @@ function StateTable({
 }
 
 function StoreInspectorPreview() {
-  const storeARef = useRef<ReactToastStore<{
-    title: string;
-    body: string;
-  }> | null>(null);
-  const storeBRef = useRef<ReactToastStore<{
-    title: string;
-    body: string;
-  }> | null>(null);
-
-  if (!storeARef.current) {
-    storeARef.current = createToast<{ title: string; body: string }>({
-      defaults: { placement: "top-left", duration: 0 },
-    }).toast;
-  }
-
-  if (!storeBRef.current) {
-    storeBRef.current = createToast<{ title: string; body: string }>({
-      defaults: { placement: "top-right", duration: 0 },
-    }).toast;
-  }
-
-  const storeA = storeARef.current;
-  const storeB = storeBRef.current;
-
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-3">

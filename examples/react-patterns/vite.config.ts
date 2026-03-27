@@ -4,7 +4,6 @@ import { defineConfig } from "vite";
 import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
-import tsconfigPaths from "vite-tsconfig-paths";
 import babel from "@rolldown/plugin-babel";
 
 const repoRoot = resolve(import.meta.dirname, "../..");
@@ -29,7 +28,6 @@ export default defineConfig({
   base,
   plugins: [
     tanstackRouter({ target: "react", autoCodeSplitting: true }),
-    tsconfigPaths({ projects: ["./tsconfig.json"] }),
     tailwindcss(),
     react(),
     copySpaFallback(),
@@ -42,6 +40,7 @@ export default defineConfig({
       "@headless-toast/react": resolve(repoRoot, "adapters/react/src/index.ts"),
       "@headless-toast/core": resolve(repoRoot, "core/src/index.ts"),
     },
+    tsconfigPaths: true,
   },
   optimizeDeps: {
     exclude: ["@headless-toast/react", "@headless-toast/core"],

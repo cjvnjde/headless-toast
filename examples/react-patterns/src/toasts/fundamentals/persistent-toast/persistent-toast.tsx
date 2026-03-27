@@ -1,16 +1,18 @@
-import { useRef } from "react";
 import {
   Toaster,
   createToast,
   useToast,
   useToastAnimation,
 } from "@headless-toast/react";
-import type { ReactToastStore } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
 import rawSource from "./persistent-toast.tsx?raw";
 import toastCss from "./toast.css?raw";
+
+const toast = createToast<{ title: string; body: string }>({
+  defaults: { placement: "top-right" },
+}).toast;
 
 function PersistentToast() {
   const { toast, dismiss } = useToast<{ title: string; body: string }>();
@@ -21,8 +23,8 @@ function PersistentToast() {
 
   const tone =
     toast.type === "success"
-      ? "border border-emerald-200 bg-emerald-50 text-emerald-950 dark:border-emerald-400/20 dark:bg-emerald-400/12 dark:text-emerald-50"
-      : "border border-amber-200 bg-amber-50 text-amber-950 dark:border-amber-300/20 dark:bg-amber-400/12 dark:text-amber-50";
+      ? "border border-emerald-200 bg-emerald-50 text-emerald-950 dark:border-emerald-400/20 dark:bg-emerald-950 dark:text-emerald-50"
+      : "border border-amber-200 bg-amber-50 text-amber-950 dark:border-amber-300/20 dark:bg-amber-950 dark:text-amber-50";
 
   return (
     <article
@@ -30,7 +32,6 @@ function PersistentToast() {
       className={`${className} ${tone}`}
       {...handlers}
       {...attributes}
-      data-toast-placement={toast.options.placement ?? "top-right"}
     >
       <p className="text-sm font-semibold">{toast.data.title}</p>
       <p className="mt-1 text-sm opacity-80">{toast.data.body}</p>
@@ -48,18 +49,6 @@ function PersistentToast() {
 }
 
 function PersistentToastPreview() {
-  const storeRef = useRef<ReactToastStore<{
-    title: string;
-    body: string;
-  }> | null>(null);
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<{ title: string; body: string }>({
-      defaults: { placement: "top-right" },
-    }).toast;
-  }
-
-  const toast = storeRef.current;
   const id = "sync-warning";
 
   return (

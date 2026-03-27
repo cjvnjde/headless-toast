@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import { useDrag } from "@use-gesture/react";
 import { animate, motion, useMotionValue } from "framer-motion";
 import {
-  ToastCtx,
+  mapToastItems,
   createToast,
   useStore,
   useToast,
@@ -13,6 +13,10 @@ import type { ReactToastStore, ToastPlacement } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import rawSource from "./drag-reposition.tsx?raw";
+
+const toast = createToast<{ title: string; body: string }>({
+  defaults: { duration: 0 },
+}).toast;
 
 const placements = [
   "top-left",
@@ -131,20 +135,20 @@ function computeTargetPositions(
 ) {
   const positions = new Map<string, ToastPosition>();
   const toastWidth = resolveToastWidth(viewport.width);
-  const activeToasts = toasts.filter((toast) => toast.status !== "exiting");
+  const activeToasts = toasts.filter((t) => t.status !== "exiting");
 
   for (const placement of placements) {
     const group = activeToasts.filter(
-      (toast) => (toast.options.placement ?? "top-right") === placement,
+      (t) => (t.options.placement ?? "top-right") === placement,
     );
     const baseX = resolveBaseX(placement, toastWidth, viewport.width);
 
     if (placement.startsWith("top")) {
       let currentY = VIEWPORT_PADDING;
 
-      for (const toast of group) {
-        positions.set(toast.id, { x: baseX, y: currentY, width: toastWidth });
-        currentY += (heights[toast.id] ?? DEFAULT_TOAST_HEIGHT) + STACK_GAP;
+      for (const t of group) {
+        positions.set(t.id, { x: baseX, y: currentY, width: toastWidth });
+        currentY += (heights[t.id] ?? DEFAULT_TOAST_HEIGHT) + STACK_GAP;
       }
 
       continue;
@@ -152,10 +156,10 @@ function computeTargetPositions(
 
     let currentY = viewport.height - VIEWPORT_PADDING;
 
-    for (const toast of [...group].reverse()) {
-      const height = heights[toast.id] ?? DEFAULT_TOAST_HEIGHT;
+    for (const t of [...group].reverse()) {
+      const height = heights[t.id] ?? DEFAULT_TOAST_HEIGHT;
       currentY -= height;
-      positions.set(toast.id, { x: baseX, y: currentY, width: toastWidth });
+      positions.set(t.id, { x: baseX, y: currentY, width: toastWidth });
       currentY -= STACK_GAP;
     }
   }
@@ -382,7 +386,7 @@ function RepositionToaster({
   }, [targetPositions]);
 
   useEffect(() => {
-    const toastIds = new Set(toasts.map((toast) => toast.id));
+    const toastIds = new Set(toasts.map((t) => t.id));
 
     setHeights((current) => {
       const next = Object.fromEntries(
@@ -408,9 +412,9 @@ function RepositionToaster({
   return (
     <ViewportLayer>
       <div className="pointer-events-none fixed inset-0 z-[9999] select-none">
-        {toasts.map((toast) => {
-          const targetPosition = targetPositions.get(toast.id) ??
-            lastKnownPositionsRef.current.get(toast.id) ?? {
+        {mapToastItems(store, toasts, (currentToast) => {
+          const targetPosition = targetPositions.get(currentToast.id) ??
+            lastKnownPositionsRef.current.get(currentToast.id) ?? {
               x:
                 viewport.width -
                 resolveToastWidth(viewport.width) -
@@ -420,18 +424,13 @@ function RepositionToaster({
             };
 
           return (
-            <ToastCtx.Provider
-              key={toast.id}
-              value={{ toastId: toast.id, store }}
-            >
-              <RepositionToast
-                targetPosition={targetPosition}
-                registerHeight={registerHeight}
-                onReposition={(id, nextPlacement) =>
-                  store.update(id, { placement: nextPlacement })
-                }
-              />
-            </ToastCtx.Provider>
+            <RepositionToast
+              targetPosition={targetPosition}
+              registerHeight={registerHeight}
+              onReposition={(id, nextPlacement) =>
+                store.update(id, { placement: nextPlacement })
+              }
+            />
           );
         })}
       </div>
@@ -440,19 +439,6 @@ function RepositionToaster({
 }
 
 function DragRepositionPreview() {
-  const storeRef = useRef<ReactToastStore<{
-    title: string;
-    body: string;
-  }> | null>(null);
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<{ title: string; body: string }>({
-      defaults: { duration: 0 },
-    }).toast;
-  }
-
-  const toast = storeRef.current;
-
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-3">

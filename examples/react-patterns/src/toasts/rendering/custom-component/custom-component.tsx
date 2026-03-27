@@ -1,39 +1,34 @@
-import { useRef } from "react";
 import {
   Toaster,
   createToast,
   useToast,
   useToastAnimation,
 } from "@headless-toast/react";
-import type { ReactToastStore } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
 import rawSource from "./custom-component.tsx?raw";
 import toastCss from "./toast.css?raw";
 
+const toast = createToast<{ title: string; body: string }>({
+  defaults: { duration: 4200, pauseOnHover: true },
+}).toast;
+
 function FancyToast() {
-  const { toast, dismiss, pauseOnHoverHandlers } = useToast<{
+  const { toast, dismiss } = useToast<{
     title: string;
     body: string;
   }>();
   const { ref, className, handlers, attributes } = useToastAnimation({
     className:
-      "custom-component-toast pointer-events-auto relative grid w-full grid-cols-[auto_1fr_auto] items-start gap-4 rounded-[1.75rem] border border-(--line) bg-[radial-gradient(circle_at_top_left,rgba(101,216,206,0.18),transparent_40%),var(--surface-strong)] p-4 shadow-[0_18px_36px_rgba(15,23,42,0.14)]",
+      "custom-component-toast pointer-events-auto relative grid w-full grid-cols-[auto_1fr_auto] items-start gap-4 rounded-[1.75rem] border border-(--line) bg-(--surface-strong) p-4 shadow-[0_18px_36px_rgba(15,23,42,0.14)]",
   });
 
   const icon =
     toast.type === "success" ? "✓" : toast.type === "error" ? "!" : "i";
 
   return (
-    <article
-      ref={ref}
-      className={className}
-      {...handlers}
-      {...pauseOnHoverHandlers}
-      {...attributes}
-      data-toast-placement={toast.options.placement ?? "top-right"}
-    >
+    <article ref={ref} className={className} {...handlers} {...attributes}>
       <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-(--accent)/15 text-lg font-bold text-(--accent-strong)">
         {icon}
       </div>
@@ -55,19 +50,6 @@ function FancyToast() {
 }
 
 function CustomComponentPreview() {
-  const storeRef = useRef<ReactToastStore<{
-    title: string;
-    body: string;
-  }> | null>(null);
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<{ title: string; body: string }>({
-      defaults: { duration: 4200, pauseOnHover: true },
-    }).toast;
-  }
-
-  const toast = storeRef.current;
-
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-3">

@@ -1,16 +1,17 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   Toaster,
   createToast,
   useToast,
   useToastAnimation,
 } from "@headless-toast/react";
-import type { ReactToastStore } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
 import rawSource from "./inline-sidebar.tsx?raw";
 import toastCss from "./toast.css?raw";
+
+const toast = createToast<{ title: string; body: string }>().toast;
 
 function SidebarToast() {
   const { toast, dismiss } = useToast<{ title: string; body: string }>();
@@ -20,13 +21,7 @@ function SidebarToast() {
   });
 
   return (
-    <article
-      ref={ref}
-      className={className}
-      {...handlers}
-      {...attributes}
-      data-toast-placement={toast.options.placement ?? "top-right"}
-    >
+    <article ref={ref} className={className} {...handlers} {...attributes}>
       <p className="text-sm font-semibold text-(--ink)">{toast.data.title}</p>
       <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
       <button
@@ -48,13 +43,7 @@ function GlobalToast() {
   });
 
   return (
-    <article
-      ref={ref}
-      className={className}
-      {...handlers}
-      {...attributes}
-      data-toast-placement={toast.options.placement ?? "top-right"}
-    >
+    <article ref={ref} className={className} {...handlers} {...attributes}>
       <p className="text-sm font-semibold text-(--ink)">{toast.data.title}</p>
       <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
       <button
@@ -69,17 +58,7 @@ function GlobalToast() {
 }
 
 function InlineSidebarPreview() {
-  const storeRef = useRef<ReactToastStore<{
-    title: string;
-    body: string;
-  }> | null>(null);
   const [projectName, setProjectName] = useState("Headless Toast");
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<{ title: string; body: string }>().toast;
-  }
-
-  const toast = storeRef.current;
 
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_24rem]">

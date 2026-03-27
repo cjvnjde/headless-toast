@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  ToastCtx,
+  mapToastItems,
   createToast,
   useStore,
   useToast,
@@ -12,6 +12,10 @@ import type { ReactToastStore } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import rawSource from "./framer-motion.tsx?raw";
+
+const toast = createToast<{ title: string; body: string }>({
+  defaults: { pauseOnHover: true },
+}).toast;
 
 function ViewportLayer({ children }: { children: ReactNode }) {
   if (typeof document === "undefined") {
@@ -60,15 +64,14 @@ function MotionToaster({
 }: {
   store: ReactToastStore<{ title: string; body: string }>;
 }) {
-  const toasts = useStore(store).filter((toast) => toast.status !== "exiting");
+  const toasts = useStore(store).filter((t) => t.status !== "exiting");
 
   return (
     <ViewportLayer>
       <div className="pointer-events-none fixed right-4 top-4 z-[9999] flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3">
         <AnimatePresence mode="popLayout">
-          {toasts.map((toast) => (
+          {mapToastItems(store, toasts, (currentToast) => (
             <motion.div
-              key={toast.id}
               layout
               initial={{ opacity: 0, y: -24, scale: 0.92 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -76,13 +79,11 @@ function MotionToaster({
               transition={{ type: "spring", stiffness: 420, damping: 26 }}
               onAnimationComplete={(definition) => {
                 if (definition === "exit") {
-                  store.markExited(toast.id);
+                  store.markExited(currentToast.id);
                 }
               }}
             >
-              <ToastCtx.Provider value={{ toastId: toast.id, store }}>
-                <MotionToast />
-              </ToastCtx.Provider>
+              <MotionToast />
             </motion.div>
           ))}
         </AnimatePresence>
@@ -92,19 +93,6 @@ function MotionToaster({
 }
 
 function FramerMotionPreview() {
-  const storeRef = useRef<ReactToastStore<{
-    title: string;
-    body: string;
-  }> | null>(null);
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<{ title: string; body: string }>({
-      defaults: { pauseOnHover: true },
-    }).toast;
-  }
-
-  const toast = storeRef.current;
-
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-3">

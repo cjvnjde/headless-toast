@@ -1,16 +1,16 @@
-import { useRef } from "react";
 import {
   Toaster,
   createToast,
   useToast,
   useToastAnimation,
 } from "@headless-toast/react";
-import type { ReactToastStore } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
 import rawSource from "./multiple-containers.tsx?raw";
 import toastCss from "./toast.css?raw";
+
+const toast = createToast<{ title: string; body: string }>().toast;
 
 function PanelToast() {
   const { toast, dismiss } = useToast<{ title: string; body: string }>();
@@ -20,13 +20,7 @@ function PanelToast() {
   });
 
   return (
-    <article
-      ref={ref}
-      className={className}
-      {...handlers}
-      {...attributes}
-      data-toast-placement={toast.options.placement ?? "top-right"}
-    >
+    <article ref={ref} className={className} {...handlers} {...attributes}>
       <p className="text-sm font-semibold text-(--ink)">{toast.data.title}</p>
       <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
       <button
@@ -48,13 +42,7 @@ function GlobalToast() {
   });
 
   return (
-    <article
-      ref={ref}
-      className={className}
-      {...handlers}
-      {...attributes}
-      data-toast-placement={toast.options.placement ?? "top-right"}
-    >
+    <article ref={ref} className={className} {...handlers} {...attributes}>
       <p className="text-sm font-semibold text-(--ink)">{toast.data.title}</p>
       <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
       <button
@@ -69,17 +57,6 @@ function GlobalToast() {
 }
 
 function MultipleContainersPreview() {
-  const storeRef = useRef<ReactToastStore<{
-    title: string;
-    body: string;
-  }> | null>(null);
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<{ title: string; body: string }>().toast;
-  }
-
-  const toast = storeRef.current;
-
   function add(
     containerId: string,
     tone: "success" | "error" | "warning" | "info",

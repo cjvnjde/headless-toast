@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import {
   Toaster,
   createToast,
@@ -7,7 +6,7 @@ import {
   useToastAnimation,
   useToastSelector,
 } from "@headless-toast/react";
-import type { ReactToastState, ReactToastStore } from "@headless-toast/react";
+import type { ReactToastState } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
@@ -15,6 +14,10 @@ import rawSource from "./tailwind-styled.tsx?raw";
 import toastCss from "./toast.css?raw";
 
 type TailwindToastData = { title: string; body: string };
+
+const toast = createToast<TailwindToastData>({
+  defaults: { duration: 5000, pauseOnHover: true },
+}).toast;
 
 const placementListClassName = [
   "pointer-events-none fixed flex w-[min(26rem,calc(100vw-24px))] max-w-[calc(100vw-24px)] flex-col gap-3 p-4",
@@ -48,8 +51,7 @@ function TailwindToast() {
     (toast: ReactToastState<TailwindToastData>) => toast.options,
   );
   const type = useToastSelector((toast) => toast.type);
-  const { dismiss, pauseOnHoverHandlers } =
-    useToastActions<TailwindToastData>();
+  const { dismiss } = useToastActions<TailwindToastData>();
   const { ref, className, handlers, attributes } = useToastAnimation({
     className:
       "tailwind-styled-toast pointer-events-auto relative overflow-hidden rounded-[1.6rem] border border-white/60 bg-slate-950 text-slate-50 shadow-[0_24px_50px_rgba(15,23,42,0.35)] dark:border-white/10",
@@ -72,9 +74,7 @@ function TailwindToast() {
       className={className}
       style={{ "--toast-accent": accent }}
       {...handlers}
-      {...pauseOnHoverHandlers}
       {...attributes}
-      data-toast-placement={options.placement ?? "top-right"}
     >
       <div className="absolute inset-x-0 top-0 h-1 bg-(--toast-accent)" />
       <div className="flex items-start gap-4 p-4 pr-12">
@@ -103,16 +103,6 @@ function TailwindToast() {
 }
 
 function TailwindStyledPreview() {
-  const storeRef = useRef<ReactToastStore<TailwindToastData> | null>(null);
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<TailwindToastData>({
-      defaults: { duration: 5000, pauseOnHover: true },
-    }).toast;
-  }
-
-  const toast = storeRef.current;
-
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-3">

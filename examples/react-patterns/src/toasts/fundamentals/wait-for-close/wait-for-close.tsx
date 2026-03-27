@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   Toaster,
   createToast,
@@ -7,11 +7,7 @@ import {
   useToastAnimation,
   useToastSelector,
 } from "@headless-toast/react";
-import type {
-  CloseReason,
-  ReactToastState,
-  ReactToastStore,
-} from "@headless-toast/react";
+import type { CloseReason, ReactToastState } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
@@ -22,6 +18,10 @@ type AwaitCloseToastData = {
   title: string;
   body: string;
 };
+
+const toast = createToast<AwaitCloseToastData>({
+  defaults: { duration: 4200, pauseOnHover: true, placement: "top-right" },
+}).toast;
 
 function AwaitCloseProgressBar() {
   const progress = useProgress();
@@ -42,22 +42,14 @@ function AwaitCloseToast() {
     (toast: ReactToastState<AwaitCloseToastData>) => toast.options,
   );
   const type = useToastSelector((toast) => toast.type);
-  const { dismiss, pauseOnHoverHandlers } =
-    useToastActions<AwaitCloseToastData>();
+  const { dismiss } = useToastActions<AwaitCloseToastData>();
   const { ref, className, handlers, attributes } = useToastAnimation({
     className:
       "wait-for-close-toast pointer-events-auto relative w-full rounded-3xl border border-(--line) bg-(--surface-strong) p-4 pr-12 shadow-[0_18px_36px_rgba(15,23,42,0.12)]",
   });
 
   return (
-    <article
-      ref={ref}
-      className={className}
-      {...handlers}
-      {...pauseOnHoverHandlers}
-      {...attributes}
-      data-toast-placement={options.placement ?? "top-right"}
-    >
+    <article ref={ref} className={className} {...handlers} {...attributes}>
       <p className="text-xs font-bold tracking-[0.18em] uppercase text-(--accent-strong)">
         {type === "success" ? "Follow-up step" : "Awaiting close"}
       </p>
@@ -82,20 +74,11 @@ function AwaitCloseToast() {
 }
 
 function WaitForClosePreview() {
-  const storeRef = useRef<ReactToastStore<AwaitCloseToastData> | null>(null);
   const [isWaiting, setIsWaiting] = useState(false);
   const [lastReason, setLastReason] = useState<CloseReason | null>(null);
   const [statusMessage, setStatusMessage] = useState(
     "Start the flow, then either click Close now or let the toast timeout.",
   );
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<AwaitCloseToastData>({
-      defaults: { duration: 4200, pauseOnHover: true, placement: "top-right" },
-    }).toast;
-  }
-
-  const toast = storeRef.current;
 
   async function startFlow() {
     if (isWaiting) {

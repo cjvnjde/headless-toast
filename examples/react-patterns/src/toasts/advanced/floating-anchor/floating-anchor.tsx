@@ -10,7 +10,7 @@ import {
 } from "@floating-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  ToastCtx,
+  mapToastItems,
   createToast,
   useStore,
   useToast,
@@ -19,6 +19,10 @@ import type { ReactToastStore } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import rawSource from "./floating-anchor.tsx?raw";
+
+const toast = createToast<{ title: string; body: string }>({
+  defaults: { pauseOnHover: true },
+}).toast;
 
 function ViewportLayer({ children }: { children: ReactNode }) {
   if (typeof document === "undefined") {
@@ -69,7 +73,7 @@ function AnchoredToaster({
   store: ReactToastStore<{ title: string; body: string }>;
   referenceRef: React.RefObject<HTMLElement | null>;
 }) {
-  const toasts = useStore(store).filter((toast) => toast.status !== "exiting");
+  const toasts = useStore(store).filter((t) => t.status !== "exiting");
   const { refs, floatingStyles } = useFloating({
     elements: { reference: referenceRef.current },
     placement: "bottom-end",
@@ -87,9 +91,8 @@ function AnchoredToaster({
         className="z-[9999] flex max-w-sm flex-col gap-3"
       >
         <AnimatePresence mode="popLayout">
-          {toasts.map((toast) => (
+          {mapToastItems(store, toasts, (currentToast) => (
             <motion.div
-              key={toast.id}
               layout
               initial={{ opacity: 0, y: -8, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -97,13 +100,11 @@ function AnchoredToaster({
               transition={{ type: "spring", stiffness: 380, damping: 26 }}
               onAnimationComplete={(definition) => {
                 if (definition === "exit") {
-                  store.markExited(toast.id);
+                  store.markExited(currentToast.id);
                 }
               }}
             >
-              <ToastCtx.Provider value={{ toastId: toast.id, store }}>
-                <AnchoredToast />
-              </ToastCtx.Provider>
+              <AnchoredToast />
             </motion.div>
           ))}
         </AnimatePresence>
@@ -113,19 +114,7 @@ function AnchoredToaster({
 }
 
 function FloatingAnchorPreview() {
-  const storeRef = useRef<ReactToastStore<{
-    title: string;
-    body: string;
-  }> | null>(null);
   const bellRef = useRef<HTMLButtonElement>(null);
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<{ title: string; body: string }>({
-      defaults: { pauseOnHover: true },
-    }).toast;
-  }
-
-  const toast = storeRef.current;
   const count = useStore(toast).length;
 
   return (

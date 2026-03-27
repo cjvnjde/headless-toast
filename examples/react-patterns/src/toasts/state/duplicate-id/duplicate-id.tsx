@@ -5,12 +5,13 @@ import {
   useToast,
   useToastAnimation,
 } from "@headless-toast/react";
-import type { ReactToastStore } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
 import rawSource from "./duplicate-id.tsx?raw";
 import toastCss from "./toast.css?raw";
+
+const toast = createToast<{ title: string; body: string }>().toast;
 
 function IdentityToast() {
   const { toast, dismiss } = useToast<{ title: string; body: string }>();
@@ -20,13 +21,7 @@ function IdentityToast() {
   });
 
   return (
-    <article
-      ref={ref}
-      className={className}
-      {...handlers}
-      {...attributes}
-      data-toast-placement={toast.options.placement ?? "top-right"}
-    >
+    <article ref={ref} className={className} {...handlers} {...attributes}>
       <p className="text-sm font-semibold text-(--ink)">{toast.data.title}</p>
       <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
       <p className="mt-3 text-xs font-medium text-(--accent-strong)">
@@ -44,17 +39,7 @@ function IdentityToast() {
 }
 
 function DuplicateIdPreview() {
-  const storeRef = useRef<ReactToastStore<{
-    title: string;
-    body: string;
-  }> | null>(null);
   const counterRef = useRef(0);
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<{ title: string; body: string }>().toast;
-  }
-
-  const toast = storeRef.current;
 
   return (
     <div className="space-y-4">

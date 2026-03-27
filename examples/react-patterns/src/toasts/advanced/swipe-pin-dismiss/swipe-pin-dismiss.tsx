@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useDrag } from "@use-gesture/react";
@@ -10,7 +10,7 @@ import {
   useTransform,
 } from "framer-motion";
 import {
-  ToastCtx,
+  mapToastItems,
   createToast,
   useStore,
   useToast,
@@ -19,6 +19,10 @@ import type { ReactToastStore } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import rawSource from "./swipe-pin-dismiss.tsx?raw";
+
+const toast = createToast<{ title: string; body: string }>({
+  defaults: { pauseOnHover: true },
+}).toast;
 
 function ViewportLayer({ children }: { children: ReactNode }) {
   if (typeof document === "undefined") {
@@ -57,10 +61,14 @@ function SwipeToast() {
   } = useToast<{ title: string; body: string }>();
   const x = useMotionValue(0);
   const opacity = useTransform(x, [-160, 0, 180], [0.8, 1, 0.35]);
-  const background = useTransform(
+  const bgColor = useTransform(
     x,
     [-160, 0, 180],
-    ["#d1fae5", "rgba(255,255,255,0.98)", "#fee2e2"],
+    [
+      "var(--surface-pin, #d1fae5)",
+      "var(--surface-strong)",
+      "var(--surface-dismiss, #fee2e2)",
+    ],
   );
   const [pinned, setPinned] = useState(false);
   const [dismissed, setDismissed] = useState(false);
@@ -107,31 +115,29 @@ function SwipeToast() {
 
   return (
     <motion.article
-      style={{ x, opacity, backgroundColor: background }}
-      className="pointer-events-auto relative flex gap-4 rounded-[1.5rem] border border-(--line) p-4 pr-12 shadow-[0_24px_50px_rgba(15,23,42,0.16)] select-none touch-none"
+      style={{ x, opacity, backgroundColor: bgColor }}
+      className="pointer-events-auto relative flex gap-4 rounded-[1.5rem] border border-(--line) bg-(--surface-strong) p-4 pr-12 shadow-[0_24px_50px_rgba(15,23,42,0.16)] select-none touch-none"
       {...(pinned ? {} : stripGestureHandlers(bind()))}
       onMouseEnter={pauseOnHoverHandlers.onMouseEnter}
       onMouseLeave={pauseOnHoverHandlers.onMouseLeave}
     >
       <div className="min-w-0 flex-1">
         {pinned ? (
-          <span className="mb-2 inline-flex rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-bold tracking-[0.16em] text-emerald-800 uppercase">
+          <span className="mb-2 inline-flex rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-bold tracking-[0.16em] text-emerald-800 uppercase dark:bg-emerald-400/20 dark:text-emerald-300">
             Pinned
           </span>
         ) : null}
-        <p className="text-sm font-semibold text-slate-900">
-          {toast.data.title}
-        </p>
-        <p className="mt-1 text-sm text-slate-600">{toast.data.body}</p>
+        <p className="text-sm font-semibold text-(--ink)">{toast.data.title}</p>
+        <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
         {!pinned ? (
-          <p className="mt-3 text-[11px] font-medium text-slate-400">
+          <p className="mt-3 text-[11px] font-medium text-(--ink-soft)">
             Swipe left to pin • swipe right to dismiss
           </p>
         ) : null}
       </div>
       <button
         type="button"
-        className="absolute right-3 top-3 text-xs text-slate-500"
+        className="absolute right-3 top-3 text-xs text-(--ink-soft)"
         onClick={() => dismiss("user")}
       >
         Close
@@ -145,15 +151,14 @@ function SwipeToaster({
 }: {
   store: ReactToastStore<{ title: string; body: string }>;
 }) {
-  const toasts = useStore(store).filter((toast) => toast.status !== "exiting");
+  const toasts = useStore(store).filter((t) => t.status !== "exiting");
 
   return (
     <ViewportLayer>
       <div className="pointer-events-none fixed right-4 top-4 z-[9999] flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3">
         <AnimatePresence mode="popLayout">
-          {toasts.map((toast) => (
+          {mapToastItems(store, toasts, (currentToast) => (
             <motion.div
-              key={toast.id}
               layout
               initial={{ opacity: 0, y: -18, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -161,13 +166,11 @@ function SwipeToaster({
               transition={{ type: "spring", stiffness: 420, damping: 26 }}
               onAnimationComplete={(definition) => {
                 if (definition === "exit") {
-                  store.markExited(toast.id);
+                  store.markExited(currentToast.id);
                 }
               }}
             >
-              <ToastCtx.Provider value={{ toastId: toast.id, store }}>
-                <SwipeToast />
-              </ToastCtx.Provider>
+              <SwipeToast />
             </motion.div>
           ))}
         </AnimatePresence>
@@ -177,19 +180,6 @@ function SwipeToaster({
 }
 
 function SwipePinDismissPreview() {
-  const storeRef = useRef<ReactToastStore<{
-    title: string;
-    body: string;
-  }> | null>(null);
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<{ title: string; body: string }>({
-      defaults: { pauseOnHover: true },
-    }).toast;
-  }
-
-  const toast = storeRef.current;
-
   return (
     <div className="space-y-4">
       <button

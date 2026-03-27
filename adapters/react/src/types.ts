@@ -163,11 +163,15 @@ type AnimationResult<TElement extends HTMLElement = HTMLDivElement> = {
     "data-toast-id": string;
     "data-toast-status": string;
     "data-toast-type": string;
+    "data-toast-placement": string;
+    "data-toast-dismissible": "true" | "false";
     "data-toast-swipe-dismissed": "true" | "false";
   };
   handlers: {
     onAnimationEnd: (e: AnimationEvent<TElement>) => void;
     onTransitionEnd: (e: TransitionEvent<TElement>) => void;
+    onMouseEnter: () => void;
+    onMouseLeave: () => void;
   };
 };
 

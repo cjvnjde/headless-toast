@@ -1,19 +1,21 @@
-import { useRef } from "react";
 import {
   Toaster,
   createToast,
   useToast,
   useToastAnimation,
 } from "@headless-toast/react";
-import type { ReactToastStore } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
 import rawSource from "./promise-lifecycle.tsx?raw";
 import toastCss from "./toast.css?raw";
 
+const toast = createToast<{ title: string; body: string }>({
+  defaults: { placement: "top-right", pauseOnHover: true },
+}).toast;
+
 function PromiseToast() {
-  const { toast, dismiss, pauseOnHoverHandlers } = useToast<{
+  const { toast, dismiss } = useToast<{
     title: string;
     body: string;
   }>();
@@ -23,14 +25,7 @@ function PromiseToast() {
   });
 
   return (
-    <article
-      ref={ref}
-      className={className}
-      {...handlers}
-      {...pauseOnHoverHandlers}
-      {...attributes}
-      data-toast-placement={toast.options.placement ?? "top-right"}
-    >
+    <article ref={ref} className={className} {...handlers} {...attributes}>
       <p className="text-xs font-bold tracking-[0.18em] uppercase text-(--accent-strong)">
         {toast.type}
       </p>
@@ -50,19 +45,6 @@ function PromiseToast() {
 }
 
 function PromiseLifecyclePreview() {
-  const storeRef = useRef<ReactToastStore<{
-    title: string;
-    body: string;
-  }> | null>(null);
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<{ title: string; body: string }>({
-      defaults: { placement: "top-right", pauseOnHover: true },
-    }).toast;
-  }
-
-  const toast = storeRef.current;
-
   function resolvePromise() {
     const promise = new Promise<string>((resolve) => {
       window.setTimeout(

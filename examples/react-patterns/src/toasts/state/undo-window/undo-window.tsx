@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   Toaster,
   createToast,
@@ -7,11 +7,7 @@ import {
   useToastAnimation,
   useToastSelector,
 } from "@headless-toast/react";
-import type {
-  CloseReason,
-  ReactToastState,
-  ReactToastStore,
-} from "@headless-toast/react";
+import type { CloseReason, ReactToastState } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
@@ -24,6 +20,10 @@ type UndoWindowToastData = {
 };
 
 type ArchiveStatus = "active" | "pending" | "archived";
+
+const toast = createToast<UndoWindowToastData>({
+  defaults: { placement: "top-right", pauseOnHover: true },
+}).toast;
 
 function isCommitReason(reason: CloseReason) {
   return reason === "timeout" || reason === "programmatic";
@@ -48,22 +48,14 @@ function UndoWindowToast() {
     (toast: ReactToastState<UndoWindowToastData>) => toast.options,
   );
   const type = useToastSelector((toast) => toast.type);
-  const { dismiss, pauseOnHoverHandlers } =
-    useToastActions<UndoWindowToastData>();
+  const { dismiss } = useToastActions<UndoWindowToastData>();
   const { ref, className, handlers, attributes } = useToastAnimation({
     className:
       "undo-window-toast pointer-events-auto relative w-full rounded-3xl border border-(--line) bg-(--surface-strong) p-4 pr-12 shadow-[0_18px_36px_rgba(15,23,42,0.12)]",
   });
 
   return (
-    <article
-      ref={ref}
-      className={className}
-      {...handlers}
-      {...pauseOnHoverHandlers}
-      {...attributes}
-      data-toast-placement={options.placement ?? "top-right"}
-    >
+    <article ref={ref} className={className} {...handlers} {...attributes}>
       <p className="text-xs font-bold tracking-[0.18em] uppercase text-(--accent-strong)">
         {type === "warning" ? "Undo window" : "Workflow update"}
       </p>
@@ -107,20 +99,11 @@ function UndoWindowToast() {
 }
 
 function UndoWindowPreview() {
-  const storeRef = useRef<ReactToastStore<UndoWindowToastData> | null>(null);
   const [status, setStatus] = useState<ArchiveStatus>("active");
   const [lastReason, setLastReason] = useState<CloseReason | null>(null);
   const [activity, setActivity] = useState(
     "Archive stays reversible until the toast fully closes.",
   );
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<UndoWindowToastData>({
-      defaults: { placement: "top-right", pauseOnHover: true },
-    }).toast;
-  }
-
-  const toast = storeRef.current;
 
   async function startArchiveFlow() {
     if (status === "pending") {
@@ -255,7 +238,7 @@ function UndoWindowPage() {
     <ExamplePage
       category="State"
       title="Undo window"
-      summary="Await handle.closed and branch on the close reason when destructive work should wait until the toast’s undo window is truly over."
+      summary="Await handle.closed and branch on the close reason when destructive work should wait until the toast's undo window is truly over."
       notes={[
         "The preview keeps the item pending until the toast fully exits, not just until a button is clicked.",
         "User closes the toast through Undo, programmatic closes it through Archive now, and timeout commits automatically.",

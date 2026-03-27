@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useDrag } from "@use-gesture/react";
@@ -10,7 +10,7 @@ import {
   useTransform,
 } from "framer-motion";
 import {
-  ToastCtx,
+  mapToastItems,
   createToast,
   useStore,
   useToast,
@@ -19,6 +19,8 @@ import type { ReactToastStore } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import rawSource from "./drag-to-dismiss.tsx?raw";
+
+const toast = createToast<{ title: string; body: string }>().toast;
 
 function ViewportLayer({ children }: { children: ReactNode }) {
   if (typeof document === "undefined") {
@@ -154,11 +156,9 @@ function DragDismissToaster({
     <ViewportLayer>
       <div className="pointer-events-none fixed right-4 top-4 z-[9999] flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3">
         <AnimatePresence initial={false} mode="popLayout">
-          {toasts.map((toast) => (
-            <motion.div key={toast.id} layout="position">
-              <ToastCtx.Provider value={{ toastId: toast.id, store }}>
-                <DraggableToast />
-              </ToastCtx.Provider>
+          {mapToastItems(store, toasts, () => (
+            <motion.div layout="position">
+              <DraggableToast />
             </motion.div>
           ))}
         </AnimatePresence>
@@ -168,17 +168,6 @@ function DragDismissToaster({
 }
 
 function DragToDismissPreview() {
-  const storeRef = useRef<ReactToastStore<{
-    title: string;
-    body: string;
-  }> | null>(null);
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<{ title: string; body: string }>().toast;
-  }
-
-  const toast = storeRef.current;
-
   return (
     <div className="space-y-4">
       <button

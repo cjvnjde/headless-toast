@@ -36,6 +36,8 @@ function AnimationWrapper({
       style={style}
       onAnimationEnd={handlers.onAnimationEnd}
       onTransitionEnd={handlers.onTransitionEnd}
+      onMouseEnter={handlers.onMouseEnter}
+      onMouseLeave={handlers.onMouseLeave}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}

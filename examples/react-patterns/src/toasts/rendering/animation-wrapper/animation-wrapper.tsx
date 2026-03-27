@@ -1,54 +1,41 @@
-import { useRef } from "react";
 import {
   AnimationWrapper,
   Toaster,
   createToast,
   useToast,
 } from "@headless-toast/react";
-import type { ReactToastStore } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
 import rawSource from "./animation-wrapper.tsx?raw";
 import toastCss from "./toast.css?raw";
 
+const toast = createToast<{ title: string; body: string }>({
+  defaults: { duration: 4000, pauseOnHover: true },
+}).toast;
+
 function WrappedToast() {
-  const { toast, dismiss, pauseOnHoverHandlers } = useToast<{
+  const { toast, dismiss } = useToast<{
     title: string;
     body: string;
   }>();
 
   return (
     <AnimationWrapper className="animation-wrapper-toast pointer-events-auto relative rounded-3xl border border-(--line) bg-(--surface-strong) p-4 pr-12 shadow-[0_18px_36px_rgba(15,23,42,0.12)]">
-      <div {...pauseOnHoverHandlers}>
-        <p className="text-sm font-semibold text-(--ink)">{toast.data.title}</p>
-        <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
-        <button
-          type="button"
-          className="absolute right-3 top-3 text-xs text-(--ink-soft)"
-          onClick={() => dismiss("user")}
-        >
-          Close
-        </button>
-      </div>
+      <p className="text-sm font-semibold text-(--ink)">{toast.data.title}</p>
+      <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
+      <button
+        type="button"
+        className="absolute right-3 top-3 text-xs text-(--ink-soft)"
+        onClick={() => dismiss("user")}
+      >
+        Close
+      </button>
     </AnimationWrapper>
   );
 }
 
 function AnimationWrapperPreview() {
-  const storeRef = useRef<ReactToastStore<{
-    title: string;
-    body: string;
-  }> | null>(null);
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<{ title: string; body: string }>({
-      defaults: { duration: 4000, pauseOnHover: true },
-    }).toast;
-  }
-
-  const toast = storeRef.current;
-
   return (
     <div className="space-y-4">
       <button

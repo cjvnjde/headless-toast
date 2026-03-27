@@ -6,8 +6,8 @@
   "scripts": {
     "build": "pnpm --filter '@headless-toast/core' build && pnpm --filter '@headless-toast/react' build",
     "lint": "pnpm --filter '@headless-toast/core' lint && pnpm --filter '@headless-toast/react' lint",
-    "examples:dev": "pnpm --filter '@headless-toast/examples-react-router' dev",
-    "examples:build": "pnpm --filter '@headless-toast/examples-react-router' build",
+    "examples:dev": "pnpm --filter '@headless-toast/examples-react-patterns' dev",
+    "examples:build": "pnpm --filter '@headless-toast/examples-react-patterns' build",
     "test": "pnpm --filter '@headless-toast/core' test && pnpm --filter '@headless-toast/react' test",
     "prepare": "husky",
     "update": "pnpm update --interactive --recursive --latest",

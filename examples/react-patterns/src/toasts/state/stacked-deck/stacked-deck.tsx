@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import {
-  ToastCtx,
+  mapToastItems,
   createToast,
   useStore,
   useToast,
@@ -14,6 +14,10 @@ import { extractExampleSource } from "#/lib/exampleSource";
 import "./toast.css";
 import rawSource from "./stacked-deck.tsx?raw";
 import toastCss from "./toast.css?raw";
+
+const toast = createToast<{ title: string; body: string }>({
+  defaults: { duration: 0 },
+}).toast;
 
 function ViewportLayer({ children }: { children: ReactNode }) {
   if (typeof document === "undefined") {
@@ -36,13 +40,7 @@ function DeckToast() {
   });
 
   return (
-    <article
-      ref={ref}
-      className={className}
-      {...handlers}
-      {...attributes}
-      data-toast-placement={toast.options.placement ?? "top-right"}
-    >
+    <article ref={ref} className={className} {...handlers} {...attributes}>
       <p className="text-sm font-semibold text-(--ink)">{toast.data.title}</p>
       <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
       <button
@@ -84,7 +82,8 @@ function DeckToaster({
           className="relative transition-[height] duration-300"
           style={{ height: expanded ? expandedHeight : collapsedHeight }}
         >
-          {reversed.map((toast, index) => {
+          {mapToastItems(store, reversed, (currentToast) => {
+            const index = reversed.indexOf(currentToast);
             const hidden = !expanded && index >= MAX_VISIBLE;
             const y = expanded
               ? index * (TOAST_HEIGHT + EXPANDED_GAP)
@@ -98,7 +97,6 @@ function DeckToaster({
 
             return (
               <div
-                key={toast.id}
                 className="absolute inset-x-0 top-0 h-24 transition duration-300"
                 style={{
                   transform: `translateY(${y}px) scale(${scale})`,
@@ -106,9 +104,7 @@ function DeckToaster({
                   zIndex: reversed.length - index,
                 }}
               >
-                <ToastCtx.Provider value={{ toastId: toast.id, store }}>
-                  <DeckToast />
-                </ToastCtx.Provider>
+                <DeckToast />
               </div>
             );
           })}
@@ -124,20 +120,8 @@ function DeckToaster({
 }
 
 function StackedDeckPreview() {
-  const storeRef = useRef<ReactToastStore<{
-    title: string;
-    body: string;
-  }> | null>(null);
   const countRef = useRef(0);
   const types = ["success", "error", "warning", "info"] as const;
-
-  if (!storeRef.current) {
-    storeRef.current = createToast<{ title: string; body: string }>({
-      defaults: { duration: 0 },
-    }).toast;
-  }
-
-  const toast = storeRef.current;
 
   function addOne() {
     countRef.current += 1;
