@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## react@0.0.6 - 2026-03-28
+
+### Bug Fixes
+
+- _(vite)_ Treat react and react-dom subpaths as external
+
 ## react@0.0.5 - 2026-03-28
 
 ### Features
