@@ -40,3 +40,4 @@ VITE_BASE_PATH=/headless-toast/ pnpm build
 ```
 
 The GitHub Actions workflow sets this automatically from `actions/configure-pages`.
+If the value does not include a trailing slash, the Vite config normalizes it so public asset URLs still resolve correctly on GitHub Pages.

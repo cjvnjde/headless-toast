@@ -22,7 +22,15 @@ function copySpaFallback() {
   };
 }
 
-const base = process.env.VITE_BASE_PATH ?? "/";
+function normalizeBasePath(value: string | undefined) {
+  if (!value || value === "/") {
+    return "/";
+  }
+
+  return value.endsWith("/") ? value : `${value}/`;
+}
+
+const base = normalizeBasePath(process.env.VITE_BASE_PATH);
 
 export default defineConfig({
   base,
