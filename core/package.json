@@ -1,6 +1,6 @@
 {
   "name": "@headless-toast/core",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Framework-agnostic headless toast state machine with zero DOM dependencies",
   "type": "module",
   "homepage": "https://cjvnjde.github.io/headless-toast",

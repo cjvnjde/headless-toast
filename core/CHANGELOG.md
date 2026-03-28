@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## unreleased
+
+### Features
+
+- _(core/store)_ Add pauseAll and resumeAll API to pause/resume toasts
+
 ## core@0.0.2 - 2026-03-21
 
 ### Refactoring
