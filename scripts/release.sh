@@ -98,7 +98,11 @@ case "$PKG_DIR" in
 esac
 ok "Changelog generated"
 
-# ── 8. commit version + changelog (skip-changelog footer) ───────────────────
+# ── 8. format, then commit version + changelog (skip-changelog footer) ──────
+
+info "Formatting…"
+pnpm format
+ok "Formatted"
 
 git add "$PKG_DIR/package.json" "$PKG_DIR/CHANGELOG.md"
 git commit -m "chore(release): $TAG" -m "skip-changelog: true"
