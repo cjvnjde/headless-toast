@@ -12,12 +12,17 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@codemirror/lang-css": "^6.3.1",
+    "@codemirror/lang-javascript": "^6.2.5",
+    "@codemirror/language": "^6.12.3",
+    "@codemirror/theme-one-dark": "^6.1.3",
+    "@fig/lezer-bash": "^1.2.5",
     "@floating-ui/react": "^0.27.19",
-    "@headless-toast/core": "workspace:*",
     "@headless-toast/react": "workspace:*",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-router": "^1.168.5",
     "@tanstack/router-plugin": "^1.167.6",
+    "@uiw/react-codemirror": "^4.25.9",
     "@use-gesture/react": "^10.3.1",
     "framer-motion": "^12.23.24",
     "lucide-react": "^1.7.0",
