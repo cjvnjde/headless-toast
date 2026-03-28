@@ -85,20 +85,15 @@ node -e "
 "
 ok "Updated $PKG_DIR/package.json → $NEW_VERSION"
 
-# ── 6. create tag (on current HEAD, before changelog commit) ─────────────────
-
-git tag "$TAG" -m "Release: $TAG"
-ok "Created tag $TAG"
-
-# ── 7. generate changelog (needs the tag to exist) ──────────────────────────
+# ── 6. generate changelog (--tag tells git-cliff the version for unreleased) ─
 
 case "$PKG_DIR" in
-  core)           pnpm run changelog:core  ;;
-  adapters/react) pnpm run changelog:react ;;
+  core)           pnpm run changelog:core  --tag "$TAG" ;;
+  adapters/react) pnpm run changelog:react --tag "$TAG" ;;
 esac
 ok "Changelog generated"
 
-# ── 8. format, then commit version + changelog (skip-changelog footer) ──────
+# ── 7. format, then commit version + changelog (skip-changelog footer) ──────
 
 info "Formatting…"
 pnpm format
@@ -108,10 +103,10 @@ git add "$PKG_DIR/package.json" "$PKG_DIR/CHANGELOG.md"
 git commit -m "chore(release): $TAG" -m "skip-changelog: true"
 ok "Committed release changes"
 
-# ── 9. re-tag to include the release commit ──────────────────────────────────
+# ── 8. tag the release commit ────────────────────────────────────────────────
 
-git tag -f "$TAG" -m "Release: $TAG"
-ok "Re-tagged $TAG (now includes changelog)"
+git tag "$TAG" -m "Release: $TAG"
+ok "Created tag $TAG"
 
 echo ""
 echo "🎉 Release $TAG is ready!"

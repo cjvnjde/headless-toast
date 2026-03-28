@@ -60,19 +60,16 @@ info "Running build ($PKG_NAME)…"
 pnpm --filter "$PKG_NAME" build
 ok "Build passed"
 
-# ── 5. delete old tag, re-create at HEAD ─────────────────────────────────────
+# ── 5. delete old tag ────────────────────────────────────────────────────────
 
 git tag -d "$TAG"
 ok "Deleted old tag $TAG"
 
-git tag "$TAG" -m "Release: $TAG"
-ok "Created tag $TAG at HEAD"
-
-# ── 6. regenerate changelog (needs the tag to exist) ────────────────────────
+# ── 6. regenerate changelog (--tag tells git-cliff the version) ─────────────
 
 case "$PKG_DIR" in
-  core)           pnpm run changelog:core  ;;
-  adapters/react) pnpm run changelog:react ;;
+  core)           pnpm run changelog:core  --tag "$TAG" ;;
+  adapters/react) pnpm run changelog:react --tag "$TAG" ;;
 esac
 ok "Changelog regenerated"
 
@@ -86,10 +83,10 @@ git add "$PKG_DIR/CHANGELOG.md"
 git commit -m "chore(release): $TAG" -m "skip-changelog: true"
 ok "Committed updated changelog"
 
-# ── 8. re-tag to include the release commit ──────────────────────────────────
+# ── 8. tag the release commit ────────────────────────────────────────────────
 
 git tag -f "$TAG" -m "Release: $TAG"
-ok "Re-tagged $TAG (now includes changelog)"
+ok "Force-tagged $TAG"
 
 echo ""
 echo "🎉 Re-release $TAG is ready!"
