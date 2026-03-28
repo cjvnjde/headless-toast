@@ -22,7 +22,7 @@ export default defineConfig({
       fileName: "index",
     },
     rollupOptions: {
-      external: ["react", "react-dom", "@headless-toast/core"],
+      external: [/^react(\/|$)/, /^react-dom(\/|$)/, "@headless-toast/core"],
     },
   },
 });
