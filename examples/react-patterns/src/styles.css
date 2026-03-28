@@ -317,44 +317,54 @@ a {
 }
 
 .doc-code-block {
-  margin: 0;
-  overflow-x: auto;
+  overflow: hidden;
   border: 1px solid var(--code-line);
   border-radius: 0.9rem;
   background: var(--code-bg);
+}
+
+.doc-code-editor .cm-editor {
+  background: var(--code-bg);
   color: #dbeafe;
-  padding: 1rem;
   font-size: 0.84rem;
+}
+
+.doc-code-editor .cm-focused {
+  outline: none;
+}
+
+.doc-code-editor .cm-scroller {
+  overflow: auto;
+  font-family:
+    "SFMono-Regular", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
   line-height: 1.72;
 }
 
-.doc-code-block code {
-  font-family:
-    "SFMono-Regular", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+.doc-code-editor .cm-content {
+  padding: 1rem;
 }
 
-.doc-code-block .token-comment {
-  color: #7c8aa5;
+.doc-code-editor .cm-line {
+  padding: 0;
 }
 
-.doc-code-block .token-string {
-  color: #a7f3d0;
+.doc-code-editor .cm-gutters {
+  display: none;
 }
 
-.doc-code-block .token-keyword {
-  color: #93c5fd;
+.doc-code-editor .cm-activeLine,
+.doc-code-editor .cm-activeLineGutter {
+  background: transparent;
 }
 
-.doc-code-block .token-number {
-  color: #f9a8d4;
+.doc-code-editor .cm-cursor,
+.doc-code-editor .cm-dropCursor {
+  display: none;
 }
 
-.doc-code-block .token-type {
-  color: #c4b5fd;
-}
-
-.doc-code-block .token-property {
-  color: #fcd34d;
+.doc-code-editor .cm-selectionBackground,
+.doc-code-editor ::selection {
+  background: rgba(147, 197, 253, 0.24);
 }
 
 @media (max-width: 768px) {

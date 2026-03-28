@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
+import type { CodeFile } from "./CodeBlock";
 import { CodeBlock } from "./CodeBlock";
 import { PreviewSurface } from "./PreviewSurface";
-import type { CodeFile } from "./CodeBlock";
 
 type ExamplePageProps = {
   category: string;

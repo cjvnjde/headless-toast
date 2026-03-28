@@ -7,7 +7,28 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-const installSnippet = `pnpm add @headless-toast/react\npnpm add @headless-toast/core`;
+const installFiles = [
+  {
+    filename: "pnpm",
+    language: "bash",
+    code: "pnpm add @headless-toast/react",
+  },
+  {
+    filename: "npm",
+    language: "bash",
+    code: "npm install @headless-toast/react",
+  },
+  {
+    filename: "yarn",
+    language: "bash",
+    code: "yarn add @headless-toast/react",
+  },
+  {
+    filename: "bun",
+    language: "bash",
+    code: "bun add @headless-toast/react",
+  },
+] as const;
 
 function HomePage() {
   const featured = examples.filter((example) => example.featured);
@@ -37,13 +58,10 @@ function HomePage() {
       </section>
 
       <CodeBlock
-        files={[
-          {
-            filename: "install.sh",
-            language: "bash",
-            code: installSnippet,
-          },
-        ]}
+        eyebrow="Getting started"
+        title="Install the React adapter"
+        description="@headless-toast/react already includes @headless-toast/core, so you only need one package."
+        files={[...installFiles]}
       />
 
       <section className="space-y-4">
