@@ -17,8 +17,6 @@ import { Route as StateScrollableTrayRouteImport } from './routes/state/scrollab
 import { Route as StateOutsideReactRouteImport } from './routes/state/outside-react'
 import { Route as StateMaxToastsRouteImport } from './routes/state/max-toasts'
 import { Route as StateDuplicateIdRouteImport } from './routes/state/duplicate-id'
-import { Route as RenderingTailwindStyledRouteImport } from './routes/rendering/tailwind-styled'
-import { Route as RenderingCustomComponentRouteImport } from './routes/rendering/custom-component'
 import { Route as RenderingAnimationWrapperRouteImport } from './routes/rendering/animation-wrapper'
 import { Route as InlineMultipleContainersRouteImport } from './routes/inline/multiple-containers'
 import { Route as InlineInlineSidebarRouteImport } from './routes/inline/inline-sidebar'
@@ -76,17 +74,6 @@ const StateDuplicateIdRoute = StateDuplicateIdRouteImport.update({
   path: '/state/duplicate-id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RenderingTailwindStyledRoute = RenderingTailwindStyledRouteImport.update({
-  id: '/rendering/tailwind-styled',
-  path: '/rendering/tailwind-styled',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RenderingCustomComponentRoute =
-  RenderingCustomComponentRouteImport.update({
-    id: '/rendering/custom-component',
-    path: '/rendering/custom-component',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const RenderingAnimationWrapperRoute =
   RenderingAnimationWrapperRouteImport.update({
     id: '/rendering/animation-wrapper',
@@ -194,8 +181,6 @@ export interface FileRoutesByFullPath {
   '/inline/inline-sidebar': typeof InlineInlineSidebarRoute
   '/inline/multiple-containers': typeof InlineMultipleContainersRoute
   '/rendering/animation-wrapper': typeof RenderingAnimationWrapperRoute
-  '/rendering/custom-component': typeof RenderingCustomComponentRoute
-  '/rendering/tailwind-styled': typeof RenderingTailwindStyledRoute
   '/state/duplicate-id': typeof StateDuplicateIdRoute
   '/state/max-toasts': typeof StateMaxToastsRoute
   '/state/outside-react': typeof StateOutsideReactRoute
@@ -222,8 +207,6 @@ export interface FileRoutesByTo {
   '/inline/inline-sidebar': typeof InlineInlineSidebarRoute
   '/inline/multiple-containers': typeof InlineMultipleContainersRoute
   '/rendering/animation-wrapper': typeof RenderingAnimationWrapperRoute
-  '/rendering/custom-component': typeof RenderingCustomComponentRoute
-  '/rendering/tailwind-styled': typeof RenderingTailwindStyledRoute
   '/state/duplicate-id': typeof StateDuplicateIdRoute
   '/state/max-toasts': typeof StateMaxToastsRoute
   '/state/outside-react': typeof StateOutsideReactRoute
@@ -251,8 +234,6 @@ export interface FileRoutesById {
   '/inline/inline-sidebar': typeof InlineInlineSidebarRoute
   '/inline/multiple-containers': typeof InlineMultipleContainersRoute
   '/rendering/animation-wrapper': typeof RenderingAnimationWrapperRoute
-  '/rendering/custom-component': typeof RenderingCustomComponentRoute
-  '/rendering/tailwind-styled': typeof RenderingTailwindStyledRoute
   '/state/duplicate-id': typeof StateDuplicateIdRoute
   '/state/max-toasts': typeof StateMaxToastsRoute
   '/state/outside-react': typeof StateOutsideReactRoute
@@ -281,8 +262,6 @@ export interface FileRouteTypes {
     | '/inline/inline-sidebar'
     | '/inline/multiple-containers'
     | '/rendering/animation-wrapper'
-    | '/rendering/custom-component'
-    | '/rendering/tailwind-styled'
     | '/state/duplicate-id'
     | '/state/max-toasts'
     | '/state/outside-react'
@@ -309,8 +288,6 @@ export interface FileRouteTypes {
     | '/inline/inline-sidebar'
     | '/inline/multiple-containers'
     | '/rendering/animation-wrapper'
-    | '/rendering/custom-component'
-    | '/rendering/tailwind-styled'
     | '/state/duplicate-id'
     | '/state/max-toasts'
     | '/state/outside-react'
@@ -337,8 +314,6 @@ export interface FileRouteTypes {
     | '/inline/inline-sidebar'
     | '/inline/multiple-containers'
     | '/rendering/animation-wrapper'
-    | '/rendering/custom-component'
-    | '/rendering/tailwind-styled'
     | '/state/duplicate-id'
     | '/state/max-toasts'
     | '/state/outside-react'
@@ -366,8 +341,6 @@ export interface RootRouteChildren {
   InlineInlineSidebarRoute: typeof InlineInlineSidebarRoute
   InlineMultipleContainersRoute: typeof InlineMultipleContainersRoute
   RenderingAnimationWrapperRoute: typeof RenderingAnimationWrapperRoute
-  RenderingCustomComponentRoute: typeof RenderingCustomComponentRoute
-  RenderingTailwindStyledRoute: typeof RenderingTailwindStyledRoute
   StateDuplicateIdRoute: typeof StateDuplicateIdRoute
   StateMaxToastsRoute: typeof StateMaxToastsRoute
   StateOutsideReactRoute: typeof StateOutsideReactRoute
@@ -433,20 +406,6 @@ declare module '@tanstack/react-router' {
       path: '/state/duplicate-id'
       fullPath: '/state/duplicate-id'
       preLoaderRoute: typeof StateDuplicateIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/rendering/tailwind-styled': {
-      id: '/rendering/tailwind-styled'
-      path: '/rendering/tailwind-styled'
-      fullPath: '/rendering/tailwind-styled'
-      preLoaderRoute: typeof RenderingTailwindStyledRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/rendering/custom-component': {
-      id: '/rendering/custom-component'
-      path: '/rendering/custom-component'
-      fullPath: '/rendering/custom-component'
-      preLoaderRoute: typeof RenderingCustomComponentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/rendering/animation-wrapper': {
@@ -582,8 +541,6 @@ const rootRouteChildren: RootRouteChildren = {
   InlineInlineSidebarRoute: InlineInlineSidebarRoute,
   InlineMultipleContainersRoute: InlineMultipleContainersRoute,
   RenderingAnimationWrapperRoute: RenderingAnimationWrapperRoute,
-  RenderingCustomComponentRoute: RenderingCustomComponentRoute,
-  RenderingTailwindStyledRoute: RenderingTailwindStyledRoute,
   StateDuplicateIdRoute: StateDuplicateIdRoute,
   StateMaxToastsRoute: StateMaxToastsRoute,
   StateOutsideReactRoute: StateOutsideReactRoute,

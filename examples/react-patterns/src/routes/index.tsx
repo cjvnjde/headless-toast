@@ -49,10 +49,10 @@ function HomePage() {
             <ArrowRight size={16} />
           </Link>
           <Link
-            to="/rendering/tailwind-styled"
+            to="/rendering/animation-wrapper"
             className="doc-button doc-button-secondary"
           >
-            Tailwind v4 example
+            AnimationWrapper
           </Link>
         </div>
       </section>

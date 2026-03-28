@@ -67,29 +67,12 @@ const examples = [
     featured: true,
   },
   {
-    path: "/rendering/custom-component",
-    title: "Custom component",
-    summary:
-      "Swap in your own toast markup and styling while keeping the same store.",
-    category: "Rendering",
-    tags: ["useToast", "custom UI"],
-  },
-  {
     path: "/rendering/animation-wrapper",
     title: "AnimationWrapper",
     summary:
       "Use the convenience wrapper when one animated outer element is enough.",
     category: "Rendering",
     tags: ["AnimationWrapper", "CSS animations"],
-  },
-  {
-    path: "/rendering/tailwind-styled",
-    title: "Tailwind styled",
-    summary:
-      "A fully Tailwind v4 toast implementation using emitted data attributes.",
-    category: "Rendering",
-    tags: ["Tailwind", "data attributes"],
-    featured: true,
   },
   {
     path: "/state/duplicate-id",
@@ -222,10 +205,12 @@ const categories = [
 ] as const;
 
 function groupExamples() {
-  return categories.map((category) => ({
-    category,
-    items: examples.filter((example) => example.category === category),
-  }));
+  return categories
+    .map((category) => ({
+      category,
+      items: examples.filter((example) => example.category === category),
+    }))
+    .filter((group) => group.items.length > 0);
 }
 
 export { categories, examples, groupExamples };

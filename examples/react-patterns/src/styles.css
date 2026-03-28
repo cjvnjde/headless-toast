@@ -98,7 +98,12 @@ a {
 }
 
 button {
+  cursor: pointer;
   font: inherit;
+}
+
+button:disabled {
+  cursor: not-allowed;
 }
 
 a {
@@ -159,11 +164,11 @@ a {
   background: var(--chip-hover);
 }
 
-.brand-dot {
-  width: 0.7rem;
-  height: 0.7rem;
-  border-radius: 999px;
-  background: var(--accent);
+.brand-logo {
+  width: 1.2rem;
+  height: 1.2rem;
+  flex: none;
+  object-fit: contain;
 }
 
 .doc-chip,
@@ -306,7 +311,7 @@ a {
 
 .doc-preview-content {
   position: relative;
-  min-height: 24rem;
+  min-height: min-content;
   padding: 1.25rem;
   overflow: visible;
 }
@@ -382,7 +387,6 @@ a {
   }
 
   .doc-preview-content {
-    min-height: 18rem;
     padding: 1rem;
   }
 

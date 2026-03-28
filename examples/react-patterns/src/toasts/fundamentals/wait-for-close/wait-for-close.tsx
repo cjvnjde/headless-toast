@@ -64,10 +64,22 @@ function AwaitCloseToast() {
 
       <button
         type="button"
-        className="absolute right-3 top-3 text-xs text-(--ink-soft)"
+        aria-label="Close toast"
+        className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-(--line) text-(--ink-soft) hover:bg-black/4 dark:hover:bg-white/6"
         onClick={() => dismiss("user")}
       >
-        Close now
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 16 16"
+          className="h-3.5 w-3.5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+        >
+          <path d="M4 4l8 8" />
+          <path d="M12 4 4 12" />
+        </svg>
       </button>
     </article>
   );
@@ -77,7 +89,7 @@ function WaitForClosePreview() {
   const [isWaiting, setIsWaiting] = useState(false);
   const [lastReason, setLastReason] = useState<CloseReason | null>(null);
   const [statusMessage, setStatusMessage] = useState(
-    "Start the flow, then either click Close now or let the toast timeout.",
+    "Start the flow, then either click the close icon or let the toast timeout.",
   );
 
   async function startFlow() {

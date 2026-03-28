@@ -3,6 +3,8 @@ import { Package, Package2 } from "lucide-react";
 import { examples } from "../lib/examples";
 import { ThemeToggle } from "./ThemeToggle";
 
+const logoSrc = `${import.meta.env.BASE_URL}toast.png`;
+
 function Header() {
   return (
     <header className="sticky top-0 z-20 border-b border-(--line) bg-(--header-bg)/96 backdrop-blur">
@@ -10,7 +12,12 @@ function Header() {
         <div className="flex flex-wrap items-center gap-3 justify-between">
           <div className="flex items-center gap-3 min-w-0">
             <Link to="/" className="brand-mark">
-              <span className="brand-dot" />
+              <img
+                src={logoSrc}
+                alt=""
+                aria-hidden="true"
+                className="brand-logo"
+              />
               <span>Headless Toast</span>
             </Link>
             <span className="doc-tag">{examples.length} examples</span>
