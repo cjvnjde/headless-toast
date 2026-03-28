@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## unreleased
+
+### Features
+
+- _(core/store)_ Add pauseAll and resumeAll API to pause/resume toasts
+
+### Refactoring
+
+- _(examples)_ Migrate examples to mapToastItems and createToast
+
+### Miscellaneous
+
+- _(tsconfig)_ Remove baseUrl from adapters/react and examples
+
 ## react@0.0.4 - 2026-03-22
 
 ### Refactoring
