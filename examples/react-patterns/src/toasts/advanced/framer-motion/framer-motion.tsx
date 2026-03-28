@@ -134,11 +134,6 @@ function FramerMotionPage() {
       category="Advanced"
       title="Framer Motion"
       summary="When another animation library owns the DOM timing, manually tell the store when enter and exit phases are complete so state stays in sync with the visuals."
-      notes={[
-        "markEntered() advances a toast out of the entering phase when your motion animation is done.",
-        "markExited() finalizes cleanup after the exit animation completes.",
-        "This pattern is perfect when your app already standardizes on Framer Motion.",
-      ]}
       files={[{ filename: "framer-motion.tsx", language: "tsx", code }]}
       preview={<FramerMotionPreview />}
     />

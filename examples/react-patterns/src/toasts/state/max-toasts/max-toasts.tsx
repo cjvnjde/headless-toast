@@ -96,11 +96,6 @@ function MaxToastsPage() {
       category="State"
       title="Max toasts"
       summary="Cap visible notifications when a surface should never grow into an unreadable wall of messages, even during bursty event streams."
-      notes={[
-        "maxToasts is configured at store creation time.",
-        "Rapid-fire events stay bounded because the oldest visible toast exits before the next one enters.",
-        "This page also doubles as a small stress test for your custom toast renderer.",
-      ]}
       files={[
         { filename: "max-toasts.tsx", language: "tsx", code },
         { filename: "toast.css", language: "css", code: toastCss },

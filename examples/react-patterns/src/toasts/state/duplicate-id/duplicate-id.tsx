@@ -93,11 +93,6 @@ function DuplicateIdPage() {
       category="State"
       title="Duplicate id updates"
       summary="Give a toast a stable id when it represents one long-running task, one upload slot, or one notification channel that should update in place."
-      notes={[
-        "Reusing the id updates the existing toast instead of rendering another copy.",
-        "This keeps long-running workflows from flooding the viewport with near-identical notifications.",
-        "Stable ids pair especially well with promise flows, uploads, and background jobs.",
-      ]}
       files={[
         { filename: "duplicate-id.tsx", language: "tsx", code },
         { filename: "toast.css", language: "css", code: toastCss },

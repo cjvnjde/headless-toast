@@ -170,11 +170,6 @@ function FloatingAnchorPage() {
       category="Advanced"
       title="Floating anchor"
       summary="Use Floating UI when toasts should follow a trigger, icon, badge, or surface instead of one of the built-in viewport placements."
-      notes={[
-        "The toast store still manages state; Floating UI only handles positioning.",
-        "This is useful for inbox badges, notification bells, or contextual action menus.",
-        "Anchored stacks feel more local and task-specific than global viewport toasts.",
-      ]}
       files={[{ filename: "floating-anchor.tsx", language: "tsx", code }]}
       preview={<FloatingAnchorPreview />}
     />

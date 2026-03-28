@@ -154,11 +154,6 @@ function TailwindStyledPage() {
       category="Rendering"
       title="Tailwind styled"
       summary="If the host app already uses Tailwind, keep the headless flow and replace all presentation with utility classes and data-attribute selectors."
-      notes={[
-        "This page intentionally keeps toast styles local to the example instead of sharing a global toast component.",
-        "The same store, toaster, and hook APIs work no matter how opinionated your styling layer is.",
-        "Use data-placement and data-toast-status selectors when list positioning or lifecycle phases need visual tweaks.",
-      ]}
       files={[
         { filename: "tailwind-styled.tsx", language: "tsx", code },
         { filename: "toast.css", language: "css", code: toastCss },

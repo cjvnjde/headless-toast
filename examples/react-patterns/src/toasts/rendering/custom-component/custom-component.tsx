@@ -98,11 +98,6 @@ function CustomComponentPage() {
       category="Rendering"
       title="Custom component"
       summary="The toast state machine is headless, so you can replace the entire toast item with your own branded layout while keeping the same store and lifecycle hooks."
-      notes={[
-        "useToast() gives you the current toast, actions, and option state for whichever toast is being rendered.",
-        "useToastAnimation() wires the CSS lifecycle without imposing markup on you.",
-        "This is the right pattern when you want your own design system component instead of a library-owned look.",
-      ]}
       files={[
         { filename: "custom-component.tsx", language: "tsx", code },
         { filename: "toast.css", language: "css", code: toastCss },

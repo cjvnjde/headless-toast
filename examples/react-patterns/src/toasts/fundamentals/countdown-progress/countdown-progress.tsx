@@ -99,11 +99,6 @@ function CountdownProgressPage() {
       category="Fundamentals"
       title="Countdown progress"
       summary="Expose remaining lifetime with toast.progress and pair it with pauseOnHover so long messages stay readable without permanently increasing duration."
-      notes={[
-        "The progress value is already calculated for you by the store.",
-        "pauseOnHover keeps the default duration short while still respecting readable content.",
-        "This pattern works especially well for uploads, exports, and background jobs.",
-      ]}
       files={[
         { filename: "countdown-progress.tsx", language: "tsx", code },
         { filename: "toast.css", language: "css", code: toastCss },

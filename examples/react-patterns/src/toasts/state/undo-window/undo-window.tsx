@@ -239,11 +239,6 @@ function UndoWindowPage() {
       category="State"
       title="Undo window"
       summary="Await handle.closed and branch on the close reason when destructive work should wait until the toast's undo window is truly over."
-      notes={[
-        "The preview keeps the item pending until the toast fully exits, not just until a button is clicked.",
-        "User closes the toast through Undo, programmatic closes it through Archive now, and timeout commits automatically.",
-        "This pattern works well for soft-delete, archive, and delayed-send workflows.",
-      ]}
       files={[
         { filename: "undo-window.tsx", language: "tsx", code },
         { filename: "toast.css", language: "css", code: toastCss },

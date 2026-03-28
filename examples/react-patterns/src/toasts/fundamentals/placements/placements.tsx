@@ -92,11 +92,6 @@ function PlacementsPage() {
       category="Fundamentals"
       title="Placements"
       summary="Change placement at call time and keep the toast item itself completely unchanged. Placement affects only where the list is rendered."
-      notes={[
-        "Placement belongs to the toast options, not to the toast component.",
-        "One toast design can be reused across every supported viewport edge.",
-        "This pattern is great when product areas need different toast destinations without forking UI code.",
-      ]}
       files={[
         { filename: "placements.tsx", language: "tsx", code },
         { filename: "toast.css", language: "css", code: toastCss },

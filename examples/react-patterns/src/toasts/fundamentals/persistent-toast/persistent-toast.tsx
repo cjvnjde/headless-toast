@@ -105,11 +105,6 @@ function PersistentToastPage() {
       category="Fundamentals"
       title="Persistent toast"
       summary="Turn off the close affordance and set duration to 0 when the notification represents a state that should stay on screen until your app explicitly changes it."
-      notes={[
-        "dismissible: false removes the manual close option from your component.",
-        "duration: 0 creates a fully persistent toast.",
-        "Pair it with a stable id when the toast should later update in place instead of stacking another notification.",
-      ]}
       files={[
         { filename: "persistent-toast.tsx", language: "tsx", code },
         { filename: "toast.css", language: "css", code: toastCss },

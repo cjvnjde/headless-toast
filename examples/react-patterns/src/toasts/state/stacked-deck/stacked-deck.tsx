@@ -164,11 +164,6 @@ function StackedDeckPage() {
       category="State"
       title="Stacked deck"
       summary="When a product surface can accumulate many notifications, useStore() lets you collapse them into a hover-expandable deck instead of a tall linear list."
-      notes={[
-        "This layout never touches the core store — it is purely a React render strategy.",
-        "Collapsed stacks help dashboards and admin tools where notifications can arrive quickly.",
-        "Hover-to-expand keeps detail available without overwhelming the viewport.",
-      ]}
       files={[
         { filename: "stacked-deck.tsx", language: "tsx", code },
         { filename: "toast.css", language: "css", code: toastCss },

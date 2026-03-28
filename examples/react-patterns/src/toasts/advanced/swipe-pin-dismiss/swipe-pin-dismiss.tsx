@@ -210,11 +210,6 @@ function SwipePinDismissPage() {
       category="Advanced"
       title="Swipe to pin or dismiss"
       summary="For richer gesture interactions, combine a gesture library with the headless store and translate the final gesture into either an update() call or a dismiss()."
-      notes={[
-        "Swiping left calls update({ duration: 0 }) so the toast becomes pinned.",
-        "Swiping right dismisses the toast with a custom exit animation.",
-        "This pattern is useful when notifications double as lightweight task cards.",
-      ]}
       files={[{ filename: "swipe-pin-dismiss.tsx", language: "tsx", code }]}
       preview={<SwipePinDismissPreview />}
     />

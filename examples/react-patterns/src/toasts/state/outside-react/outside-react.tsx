@@ -91,11 +91,6 @@ function OutsideReactPage() {
       category="State"
       title="Outside React"
       summary="The store is plain JavaScript, so you can keep it in a module or service layer and trigger toasts from interceptors, workers, or utility functions."
-      notes={[
-        "Only the renderer needs React. Triggering a toast does not.",
-        "This keeps toast orchestration close to the code that knows what happened.",
-        "A shared notifications module is useful for API clients, auth flows, and background tasks.",
-      ]}
       files={[
         { filename: "outside-react.tsx", language: "tsx", code },
         { filename: "toast.css", language: "css", code: toastCss },

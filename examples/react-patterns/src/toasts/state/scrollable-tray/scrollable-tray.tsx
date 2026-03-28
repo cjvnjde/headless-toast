@@ -107,11 +107,6 @@ function ScrollableTrayPage() {
       category="State"
       title="Scrollable tray"
       summary="If a surface legitimately needs many simultaneous notifications, render them in a scrollable tray instead of overlapping or clipping them."
-      notes={[
-        "Like the stacked deck, this is purely a custom render loop powered by useStore().",
-        "Scrollable trays work well for ops dashboards, inboxes, and notification centers.",
-        "The core store keeps lifecycle timing and actions intact while you own the layout.",
-      ]}
       files={[
         { filename: "scrollable-tray.tsx", language: "tsx", code },
         { filename: "toast.css", language: "css", code: toastCss },

@@ -70,11 +70,6 @@ function AnimationWrapperPage() {
       category="Rendering"
       title="AnimationWrapper"
       summary="AnimationWrapper is the convenience version of useToastAnimation(). Use it when you only need one animated outer element and want to keep the component body small."
-      notes={[
-        "You still own all the inner markup and styling.",
-        "The wrapper emits the same data attributes as useToastAnimation().",
-        "This is a good fit for compact components where a single outer shell is enough.",
-      ]}
       files={[
         { filename: "animation-wrapper.tsx", language: "tsx", code },
         { filename: "toast.css", language: "css", code: toastCss },

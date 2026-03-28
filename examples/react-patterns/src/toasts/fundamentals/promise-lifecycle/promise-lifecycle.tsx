@@ -121,11 +121,6 @@ function PromiseLifecyclePage() {
       category="Fundamentals"
       title="Promise lifecycle"
       summary="Use one toast id for a whole async flow so loading, success, and error states update in place instead of stacking three separate notifications."
-      notes={[
-        "toast.promise() keeps async feedback compact and easy to follow.",
-        "Success and error handlers can derive content from the resolved value or thrown error.",
-        "This is the cleanest pattern for data fetching, uploads, and long-running background tasks.",
-      ]}
       files={[
         { filename: "promise-lifecycle.tsx", language: "tsx", code },
         { filename: "toast.css", language: "css", code: toastCss },

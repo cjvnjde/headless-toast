@@ -159,11 +159,6 @@ function WaitForClosePage() {
       category="Fundamentals"
       title="Wait for close"
       summary="Every toast handle exposes a closed promise, so follow-up work can wait until the toast has fully exited and been removed."
-      notes={[
-        "handle.closed resolves after the exit animation and removal, not when dismiss() is first requested.",
-        "The resolved close reason tells you whether the toast timed out, was dismissed by the user, or was closed programmatically.",
-        "Use this for chained notifications, guided steps, and any workflow that should not advance while the toast is still visible.",
-      ]}
       files={[
         { filename: "wait-for-close.tsx", language: "tsx", code },
         { filename: "toast.css", language: "css", code: toastCss },

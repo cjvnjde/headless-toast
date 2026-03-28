@@ -141,11 +141,6 @@ function StoreInspectorPage() {
       category="State"
       title="Store inspector"
       summary="useStore(store) subscribes React to the raw toast array, which makes dashboards, counters, debug views, and alternative render loops straightforward."
-      notes={[
-        "You can build UI from the toast state without rendering through Toaster.List.",
-        "Multiple stores stay fully isolated, which is useful for complex products with different notification domains.",
-        "The same store data can power debug panels, counters, badges, or entirely custom layouts.",
-      ]}
       files={[
         { filename: "store-inspector.tsx", language: "tsx", code },
         { filename: "toast.css", language: "css", code: toastCss },

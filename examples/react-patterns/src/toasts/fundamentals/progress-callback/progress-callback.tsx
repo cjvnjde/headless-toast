@@ -136,11 +136,6 @@ function ProgressCallbackPage() {
       category="Fundamentals"
       title="Progress callback"
       summary="Use useProgressEffect() when progress should drive DOM updates or side effects without re-rendering the toast body on every tick."
-      notes={[
-        "The callback receives every progress tick, just like a normal progress render path.",
-        "This demo updates both the fill width and the visible percentage label directly on DOM nodes.",
-        "The render counter should stay stable while the progress animation keeps moving.",
-      ]}
       files={[
         { filename: "progress-callback.tsx", language: "tsx", code },
         { filename: "toast.css", language: "css", code: toastCss },

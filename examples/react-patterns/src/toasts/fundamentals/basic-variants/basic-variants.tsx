@@ -143,11 +143,6 @@ function BasicVariantsPage() {
       category="Fundamentals"
       title="Basic variants"
       summary="Use one toast item component for the built-in type helpers and branch on currentToast.type only where the UI needs to change."
-      notes={[
-        "A single renderer can style success, error, warning, info, and loading states.",
-        "The store API stays tiny: call toast.success(), toast.error(), and the rest of the lifecycle works the same.",
-        "This is the best starting point when you want a minimal, reusable toast component.",
-      ]}
       files={[
         { filename: "basic-variants.tsx", language: "tsx", code },
         { filename: "toast.css", language: "css", code: toastCss },

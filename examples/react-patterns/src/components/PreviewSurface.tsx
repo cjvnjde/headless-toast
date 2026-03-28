@@ -13,7 +13,7 @@ function PreviewSurface({ children }: PreviewSurfaceProps) {
           <span />
           <span />
         </div>
-        <p className="doc-preview-label">Interactive preview canvas</p>
+        <p className="doc-preview-label">Try the example</p>
         <span className="doc-preview-note">
           Fixed-position demos use the browser viewport.
         </span>
