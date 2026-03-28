@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import {
   Toaster,
   createToast,
@@ -7,9 +7,7 @@ import {
 } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
-import "./toast.css";
 import rawSource from "./form-validation.tsx?raw";
-import toastCss from "./toast.css?raw";
 
 const toast = createToast<{ title: string; body: string }>().toast;
 
@@ -17,17 +15,21 @@ function ValidationToast() {
   const { toast, dismiss } = useToast<{ title: string; body: string }>();
   const { ref, className, handlers, attributes } = useToastAnimation({
     className:
-      "form-validation-toast pointer-events-auto relative rounded-2xl border border-(--line) bg-(--surface-strong) p-3 pr-10 shadow-sm",
+      "origin-top-right transition duration-200 ease-out will-change-[translate,scale,opacity] data-[toast-status=entering]:starting:opacity-0 data-[toast-status=entering]:starting:-translate-y-3 data-[toast-status=entering]:starting:scale-95 data-[toast-status=exiting]:opacity-0 data-[toast-status=exiting]:-translate-y-2 data-[toast-status=exiting]:scale-95 data-[toast-status=exiting]:duration-150 data-[toast-status=exiting]:ease-in [&[data-toast-placement^=bottom]]:origin-bottom-right pointer-events-auto relative rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 pr-10 shadow-sm",
   });
 
   return (
     <article ref={ref} className={className} {...handlers} {...attributes}>
-      <p className="text-sm font-semibold text-(--ink)">{toast.data.title}</p>
-      <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
+      <p className="text-sm font-semibold text-slate-950 dark:text-slate-50">
+        {toast.data.title}
+      </p>
+      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+        {toast.data.body}
+      </p>
       <button
         type="button"
         aria-label="Close toast"
-        className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-(--line) text-(--ink-soft) hover:bg-black/4 dark:hover:bg-white/6"
+        className="absolute right-3 top-3 inline-flex cursor-pointer h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition duration-150 hover:bg-slate-100 hover:shadow-sm dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
         onClick={() => dismiss("user")}
       >
         <svg
@@ -51,7 +53,7 @@ function FormValidationPreview() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
-  function submit(event: React.FormEvent<HTMLFormElement>) {
+  function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const errors: string[] = [];
@@ -76,11 +78,11 @@ function FormValidationPreview() {
 
   return (
     <form
-      className="rounded-[1.5rem] border border-(--line) bg-(--surface-strong) p-5"
+      className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5"
       onSubmit={submit}
     >
-      <div className="rounded-[1rem] border border-dashed border-(--line-strong) bg-(--surface-muted) p-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-(--accent-strong)">
+      <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950/60 p-3">
+        <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 dark:text-indigo-300">
           Form feedback
         </p>
         <div className="mt-3 min-h-24 space-y-2">
@@ -93,23 +95,26 @@ function FormValidationPreview() {
       </div>
 
       <div className="mt-5 grid gap-4">
-        <label className="text-sm text-(--ink-soft)">
+        <label className="text-sm text-slate-600 dark:text-slate-300">
           Name
           <input
-            className="mt-2 w-full rounded-2xl border border-(--line) bg-transparent px-3 py-2 text-(--ink) outline-none"
+            className="mt-2 w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-transparent px-3 py-2 text-slate-950 dark:text-slate-50 outline-none"
             value={name}
             onChange={(event) => setName(event.target.value)}
           />
         </label>
-        <label className="text-sm text-(--ink-soft)">
+        <label className="text-sm text-slate-600 dark:text-slate-300">
           Email
           <input
-            className="mt-2 w-full rounded-2xl border border-(--line) bg-transparent px-3 py-2 text-(--ink) outline-none"
+            className="mt-2 w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-transparent px-3 py-2 text-slate-950 dark:text-slate-50 outline-none"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
         </label>
-        <button type="submit" className="doc-button w-fit">
+        <button
+          type="submit"
+          className="inline-flex w-fit items-center justify-center gap-2 rounded-full bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition  hover:bg-indigo-500 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60 dark:bg-indigo-500 dark:hover:bg-indigo-400"
+        >
           Submit
         </button>
       </div>
@@ -125,10 +130,7 @@ function FormValidationPage() {
       category="Inline"
       title="Form validation"
       summary="Render validation feedback next to the form instead of at the viewport edge so users do not have to context-switch between their current task and a global notification stack."
-      files={[
-        { filename: "form-validation.tsx", language: "tsx", code },
-        { filename: "toast.css", language: "css", code: toastCss },
-      ]}
+      files={[{ filename: "form-validation.tsx", language: "tsx", code }]}
       preview={<FormValidationPreview />}
     />
   );

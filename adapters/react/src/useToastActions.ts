@@ -12,9 +12,11 @@ function useToastActions<
   TCustom extends ToastCustomOptions = {},
 >(): UseToastActionsResult<TData, TCustom> {
   const { store, toastId } = useToastSource<TData, TCustom>();
-  const pauseOnHover = useToastSelector<TData, TCustom, boolean | undefined>(
-    (toast) => toast.options.pauseOnHover,
-  );
+  const pauseOnHover = useToastSelector<
+    TData,
+    TCustom,
+    boolean | "individual" | undefined
+  >((toast) => toast.options.pauseOnHover);
 
   const dismiss = (reason?: Exclude<CloseReason, "timeout">) =>
     store.dismiss(toastId, reason);
@@ -33,13 +35,13 @@ function useToastActions<
   const markExited = () => store.markExited(toastId);
 
   const onMouseEnter = () => {
-    if (pauseOnHover) {
+    if (pauseOnHover === "individual") {
       pause();
     }
   };
 
   const onMouseLeave = () => {
-    if (pauseOnHover) {
+    if (pauseOnHover === "individual") {
       resume();
     }
   };

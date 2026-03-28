@@ -1,0 +1,205 @@
+/* Copy this file next to plain-css.tsx */
+
+.plain-css-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.plain-css-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.plain-css-button {
+  appearance: none;
+  border: 1px solid #4f46e5;
+  border-radius: 999px;
+  background: #4f46e5;
+  color: #ffffff;
+  padding: 0.7rem 1rem;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease,
+    opacity 160ms ease;
+}
+
+.plain-css-button:hover {
+  background: #4338ca;
+  border-color: #4338ca;
+  box-shadow: 0 10px 24px rgba(79, 70, 229, 0.22);
+}
+
+.plain-css-button--secondary {
+  border-color: #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+}
+
+.plain-css-button--secondary:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.plain-css-viewport {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+}
+
+.plain-css-stack {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  width: min(24rem, calc(100vw - 2rem));
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.plain-css-toast[data-toast] {
+  pointer-events: auto;
+  position: relative;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.5rem;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 1rem;
+  padding-right: 3rem;
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.12);
+  transform-origin: top right;
+  will-change: transform, opacity;
+}
+
+.plain-css-toast[data-toast][data-toast-status="entering"] {
+  animation: plain-css-toast-enter 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.plain-css-toast[data-toast][data-toast-status="exiting"] {
+  animation: plain-css-toast-exit 180ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.plain-css-toast[data-toast][data-toast-placement^="bottom"] {
+  transform-origin: bottom right;
+}
+
+.plain-css-toast__content {
+  min-width: 0;
+  flex: 1;
+}
+
+.plain-css-toast__title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.plain-css-toast__body {
+  margin: 0.35rem 0 0;
+  color: #475569;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.plain-css-toast__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: inline-flex;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.plain-css-toast__close:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+}
+
+.plain-css-toast__close-icon {
+  height: 0.9rem;
+  width: 0.9rem;
+}
+
+@keyframes plain-css-toast-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -14px, 0) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes plain-css-toast-exit {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(0, -10px, 0) scale(0.96);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .plain-css-button--secondary {
+    border-color: #334155;
+    background: #0f172a;
+    color: #e2e8f0;
+  }
+
+  .plain-css-button--secondary:hover {
+    border-color: #475569;
+    background: #1e293b;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.28);
+  }
+
+  .plain-css-toast[data-toast] {
+    border-color: #334155;
+    background: #0f172a;
+    color: #f8fafc;
+    box-shadow: 0 18px 36px rgba(2, 6, 23, 0.42);
+  }
+
+  .plain-css-toast__body {
+    color: #cbd5e1;
+  }
+
+  .plain-css-toast__close {
+    border-color: #334155;
+    color: #94a3b8;
+  }
+
+  .plain-css-toast__close:hover {
+    border-color: #475569;
+    background: #1e293b;
+    color: #e2e8f0;
+  }
+}

@@ -316,6 +316,8 @@ interface ToastStore<
   ): void;
   pause(id: ToastReference<TData, TCustom>): void;
   resume(id: ToastReference<TData, TCustom>): void;
+  pauseAll(): void;
+  resumeAll(): void;
 
   promise<T>(
     promise: Promise<T>,

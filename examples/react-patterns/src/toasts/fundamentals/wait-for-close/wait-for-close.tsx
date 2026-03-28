@@ -10,9 +10,7 @@ import {
 import type { CloseReason, ReactToastState } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
-import "./toast.css";
 import rawSource from "./wait-for-close.tsx?raw";
-import toastCss from "./toast.css?raw";
 
 type AwaitCloseToastData = {
   title: string;
@@ -28,7 +26,7 @@ function AwaitCloseProgressBar() {
 
   return (
     <div
-      className="h-full rounded-full bg-(--accent)"
+      className="h-full rounded-full bg-indigo-600 dark:bg-indigo-500"
       style={{ width: `${progress * 100}%` }}
     />
   );
@@ -45,19 +43,23 @@ function AwaitCloseToast() {
   const { dismiss } = useToastActions<AwaitCloseToastData>();
   const { ref, className, handlers, attributes } = useToastAnimation({
     className:
-      "wait-for-close-toast pointer-events-auto relative w-full rounded-3xl border border-(--line) bg-(--surface-strong) p-4 pr-12 shadow-[0_18px_36px_rgba(15,23,42,0.12)]",
+      "origin-top-right transition duration-200 ease-out will-change-[translate,scale,opacity] data-[toast-status=entering]:starting:opacity-0 data-[toast-status=entering]:starting:-translate-y-3 data-[toast-status=entering]:starting:scale-95 data-[toast-status=exiting]:opacity-0 data-[toast-status=exiting]:-translate-y-2 data-[toast-status=exiting]:scale-95 data-[toast-status=exiting]:duration-150 data-[toast-status=exiting]:ease-in [&[data-toast-placement^=bottom]]:origin-bottom-right pointer-events-auto relative w-full rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 pr-12 shadow-xl",
   });
 
   return (
     <article ref={ref} className={className} {...handlers} {...attributes}>
-      <p className="text-xs font-bold tracking-[0.18em] uppercase text-(--accent-strong)">
+      <p className="text-xs font-bold tracking-widest uppercase text-indigo-600 dark:text-indigo-300">
         {type === "success" ? "Follow-up step" : "Awaiting close"}
       </p>
-      <p className="mt-2 text-sm font-semibold text-(--ink)">{data.title}</p>
-      <p className="mt-1 text-sm text-(--ink-soft)">{data.body}</p>
+      <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-slate-50">
+        {data.title}
+      </p>
+      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+        {data.body}
+      </p>
 
       {options.progress ? (
-        <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-black/8 dark:bg-white/10">
+        <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
           <AwaitCloseProgressBar />
         </div>
       ) : null}
@@ -65,7 +67,7 @@ function AwaitCloseToast() {
       <button
         type="button"
         aria-label="Close toast"
-        className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-(--line) text-(--ink-soft) hover:bg-black/4 dark:hover:bg-white/6"
+        className="absolute right-3 top-3 inline-flex cursor-pointer h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition duration-150 hover:bg-slate-100 hover:shadow-sm dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
         onClick={() => dismiss("user")}
       >
         <svg
@@ -133,7 +135,7 @@ function WaitForClosePreview() {
       <div className="flex flex-wrap gap-3">
         <button
           type="button"
-          className="doc-button disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-indigo-500 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 dark:bg-indigo-500 dark:hover:bg-indigo-400"
           disabled={isWaiting}
           onClick={() => void startFlow()}
         >
@@ -141,21 +143,20 @@ function WaitForClosePreview() {
         </button>
       </div>
 
-      <div className="rounded-[1.5rem] border border-(--line) bg-(--surface-strong) p-4 shadow-[0_14px_28px_rgba(15,23,42,0.08)]">
-        <p className="text-xs font-bold tracking-[0.18em] uppercase text-(--accent-strong)">
+      <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-lg">
+        <p className="text-xs font-bold tracking-widest uppercase text-indigo-600 dark:text-indigo-300">
           Workflow state
         </p>
-        <p className="mt-2 text-sm leading-7 text-(--ink)">{statusMessage}</p>
-        <p className="mt-3 text-xs font-medium text-(--ink-soft)">
+        <p className="mt-2 text-sm leading-7 text-slate-950 dark:text-slate-50">
+          {statusMessage}
+        </p>
+        <p className="mt-3 text-xs font-medium text-slate-600 dark:text-slate-300">
           Last close reason: {lastReason ?? "—"}
         </p>
       </div>
 
-      <Toaster
-        store={toast}
-        className="pointer-events-none fixed inset-0 z-[9999]"
-      >
-        <Toaster.List className="fixed right-4 top-4 flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3">
+      <Toaster store={toast} className="pointer-events-none fixed inset-0 z-50">
+        <Toaster.List className="fixed right-4 top-4 flex w-[calc(100vw-2rem)] max-w-sm flex-col gap-3">
           <AwaitCloseToast />
         </Toaster.List>
       </Toaster>
@@ -171,10 +172,7 @@ function WaitForClosePage() {
       category="Fundamentals"
       title="Wait for close"
       summary="Every toast handle exposes a closed promise, so follow-up work can wait until the toast has fully exited and been removed."
-      files={[
-        { filename: "wait-for-close.tsx", language: "tsx", code },
-        { filename: "toast.css", language: "css", code: toastCss },
-      ]}
+      files={[{ filename: "wait-for-close.tsx", language: "tsx", code }]}
       preview={<WaitForClosePreview />}
     />
   );

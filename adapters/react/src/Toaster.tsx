@@ -88,6 +88,79 @@ function areToasterToastsEqual(
   return true;
 }
 
+function usePauseOnHover(
+  store: ReactToastStore,
+  toasts: ReactToastState[],
+  containerId?: string,
+) {
+  const hoverPausedIdsRef = useRef<Set<string>>(new Set());
+  const unsubscribeRef = useRef<(() => void) | null>(null);
+  const pausingRef = useRef(false);
+  const enabled = toasts.some((toast) => toast.options.pauseOnHover === true);
+
+  const pauseEligible = () => {
+    if (pausingRef.current) {
+      return;
+    }
+
+    pausingRef.current = true;
+
+    const currentToasts = filterByContainer(store.getToasts(), containerId);
+
+    for (const toast of currentToasts) {
+      if (toast.options.pauseOnHover !== true) {
+        continue;
+      }
+
+      if (toast.status !== TOAST_STATUS.VISIBLE) {
+        continue;
+      }
+
+      if (toast.paused) {
+        continue;
+      }
+
+      hoverPausedIdsRef.current.add(toast.id);
+      store.pause(toast.id);
+    }
+
+    pausingRef.current = false;
+  };
+
+  const onMouseEnter = () => {
+    pauseEligible();
+    unsubscribeRef.current = store.subscribe(() => {
+      pauseEligible();
+    });
+  };
+
+  const onMouseLeave = () => {
+    unsubscribeRef.current?.();
+    unsubscribeRef.current = null;
+
+    for (const id of hoverPausedIdsRef.current) {
+      store.resume(id);
+    }
+
+    hoverPausedIdsRef.current.clear();
+  };
+
+  useEffect(() => {
+    return () => {
+      unsubscribeRef.current?.();
+      unsubscribeRef.current = null;
+
+      for (const id of hoverPausedIdsRef.current) {
+        store.resume(id);
+      }
+
+      hoverPausedIdsRef.current.clear();
+    };
+  }, [store]);
+
+  return enabled ? { onMouseEnter, onMouseLeave } : undefined;
+}
+
 function usePauseOnFocusLoss(store: ReactToastStore, containerId?: string) {
   const focusPausedIdsRef = useRef<Set<string>>(new Set());
   const toastsRef = useRef(filterByContainer(store.getToasts(), containerId));
@@ -154,6 +227,7 @@ function ToastListGroup({
   store,
   className,
   children,
+  pauseOnHoverHandlers,
 }: {
   placement: ToastPlacement;
   toasts: ReactToastState[];
@@ -161,6 +235,10 @@ function ToastListGroup({
   store: ReactToastStore;
   className?: string;
   children?: ReactNode;
+  pauseOnHoverHandlers?: {
+    onMouseEnter: () => void;
+    onMouseLeave: () => void;
+  };
 }) {
   const cachedItemsRef = useRef<Map<string, ReactNode>>(new Map());
   const childrenRef = useRef(children);
@@ -215,7 +293,7 @@ function ToastListGroup({
     return item;
   });
 
-  const containerHandlers =
+  const stackHandlers =
     stackConfig?.expandOn === STACK_EXPAND_ON.HOVER
       ? {
           onMouseEnter: () => setIsHoverExpanded(true),
@@ -224,6 +302,28 @@ function ToastListGroup({
       : stackConfig?.expandOn === STACK_EXPAND_ON.CLICK
         ? { onClick: () => setIsClickExpanded((value) => !value) }
         : {};
+
+  const mergedOnMouseEnter =
+    pauseOnHoverHandlers || stackHandlers.onMouseEnter
+      ? () => {
+          pauseOnHoverHandlers?.onMouseEnter();
+          stackHandlers.onMouseEnter?.();
+        }
+      : undefined;
+
+  const mergedOnMouseLeave =
+    pauseOnHoverHandlers || stackHandlers.onMouseLeave
+      ? () => {
+          pauseOnHoverHandlers?.onMouseLeave();
+          stackHandlers.onMouseLeave?.();
+        }
+      : undefined;
+
+  const containerHandlers = {
+    ...stackHandlers,
+    ...(mergedOnMouseEnter ? { onMouseEnter: mergedOnMouseEnter } : {}),
+    ...(mergedOnMouseLeave ? { onMouseLeave: mergedOnMouseLeave } : {}),
+  };
 
   return (
     <div
@@ -249,6 +349,11 @@ function ToasterList({ className, children }: ToasterListProps) {
   }
 
   const groups = groupByPlacement(context.toasts);
+  const pauseOnHoverHandlers = usePauseOnHover(
+    context.store,
+    context.toasts,
+    context.containerId,
+  );
 
   return (
     <>
@@ -260,6 +365,7 @@ function ToasterList({ className, children }: ToasterListProps) {
           inline={context.inline}
           store={context.store}
           className={className}
+          pauseOnHoverHandlers={pauseOnHoverHandlers}
         >
           {children}
         </ToastListGroup>

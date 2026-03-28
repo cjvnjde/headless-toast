@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { tv } from "tailwind-variants";
 import { useDrag } from "@use-gesture/react";
 import { animate, motion, useMotionValue } from "framer-motion";
 import {
@@ -26,6 +27,17 @@ const placements = [
   "bottom-center",
   "bottom-right",
 ] as const satisfies ToastPlacement[];
+
+const placementDropZone = tv({
+  base: "flex items-center justify-center rounded-3xl border-2 border-dashed text-xs font-semibold uppercase tracking-widest",
+  variants: {
+    active: {
+      true: "border-indigo-400 bg-indigo-50 text-indigo-600 dark:border-indigo-400 dark:bg-indigo-500/10 dark:text-indigo-300",
+      false:
+        "border-slate-300/70 text-slate-500 dark:border-slate-700/70 dark:text-slate-400",
+    },
+  },
+});
 
 const VIEWPORT_PADDING = 16;
 const STACK_GAP = 12;
@@ -294,25 +306,11 @@ function RepositionToast({
   return (
     <>
       {activeZone ? (
-        <div className="pointer-events-none fixed inset-4 z-[9998] grid grid-cols-3 grid-rows-2 gap-3 select-none">
+        <div className="pointer-events-none fixed inset-4 z-40 grid grid-cols-3 grid-rows-2 gap-3 select-none">
           {placements.map((zone) => (
             <div
               key={zone}
-              className="flex items-center justify-center rounded-3xl border-2 border-dashed text-xs font-semibold uppercase tracking-[0.16em]"
-              style={{
-                borderColor:
-                  zone === activeZone
-                    ? "var(--accent)"
-                    : "color-mix(in oklab, var(--line) 85%, transparent)",
-                color:
-                  zone === activeZone
-                    ? "var(--accent-strong)"
-                    : "var(--ink-soft)",
-                background:
-                  zone === activeZone
-                    ? "color-mix(in oklab, var(--accent) 10%, transparent)"
-                    : "transparent",
-              }}
+              className={placementDropZone({ active: zone === activeZone })}
             >
               {zone}
             </div>
@@ -323,7 +321,7 @@ function RepositionToast({
       <motion.article
         ref={ref}
         style={{ x, y, scale, width: targetPosition.width }}
-        className="pointer-events-auto fixed left-0 top-0 z-[9999] flex cursor-grab gap-4 rounded-[1.5rem] border border-(--line) bg-(--surface-strong) p-4 pr-12 shadow-[0_24px_50px_rgba(15,23,42,0.18)] select-none touch-none"
+        className="pointer-events-auto fixed left-0 top-0 z-50 flex cursor-grab gap-4 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 pr-12 shadow-2xl select-none touch-none"
         initial={{ opacity: 0, scale: 0.94 }}
         animate={
           toast.status === "exiting"
@@ -341,21 +339,23 @@ function RepositionToast({
         onMouseLeave={pauseOnHoverHandlers.onMouseLeave}
       >
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-bold tracking-[0.18em] uppercase text-(--accent-strong)">
+          <p className="text-xs font-bold tracking-widest uppercase text-indigo-600 dark:text-indigo-300">
             {placement}
           </p>
-          <p className="mt-2 text-sm font-semibold text-(--ink)">
+          <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-slate-50">
             {toast.data.title}
           </p>
-          <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
-          <p className="mt-3 text-[11px] font-medium text-(--ink-soft)">
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+            {toast.data.body}
+          </p>
+          <p className="mt-3 text-xs font-medium text-slate-600 dark:text-slate-300">
             Drag and drop into another viewport zone.
           </p>
         </div>
         <button
           type="button"
           aria-label="Close toast"
-          className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-(--line) text-(--ink-soft) hover:bg-black/4 dark:hover:bg-white/6"
+          className="absolute right-3 top-3 inline-flex cursor-pointer h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition duration-150 hover:bg-slate-100 hover:shadow-sm dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
           onClick={() => dismiss("user")}
         >
           <svg
@@ -423,7 +423,7 @@ function RepositionToaster({
 
   return (
     <ViewportLayer>
-      <div className="pointer-events-none fixed inset-0 z-[9999] select-none">
+      <div className="pointer-events-none fixed inset-0 z-50 select-none">
         {mapToastItems(store, toasts, (currentToast) => {
           const targetPosition = targetPositions.get(currentToast.id) ??
             lastKnownPositionsRef.current.get(currentToast.id) ?? {
@@ -456,7 +456,7 @@ function DragRepositionPreview() {
       <div className="flex flex-wrap gap-3">
         <button
           type="button"
-          className="doc-button"
+          className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-indigo-500 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 dark:bg-indigo-500 dark:hover:bg-indigo-400"
           onClick={() =>
             toast.info(
               {
@@ -471,7 +471,7 @@ function DragRepositionPreview() {
         </button>
         <button
           type="button"
-          className="doc-button doc-button-secondary"
+          className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition duration-150 hover:border-slate-300 hover:bg-slate-100 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-800"
           onClick={() =>
             toast.warning(
               {

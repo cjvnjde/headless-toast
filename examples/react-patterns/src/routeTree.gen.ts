@@ -17,6 +17,7 @@ import { Route as StateScrollableTrayRouteImport } from './routes/state/scrollab
 import { Route as StateOutsideReactRouteImport } from './routes/state/outside-react'
 import { Route as StateMaxToastsRouteImport } from './routes/state/max-toasts'
 import { Route as StateDuplicateIdRouteImport } from './routes/state/duplicate-id'
+import { Route as RenderingPlainCssRouteImport } from './routes/rendering/plain-css'
 import { Route as RenderingAnimationWrapperRouteImport } from './routes/rendering/animation-wrapper'
 import { Route as InlineMultipleContainersRouteImport } from './routes/inline/multiple-containers'
 import { Route as InlineInlineSidebarRouteImport } from './routes/inline/inline-sidebar'
@@ -26,6 +27,7 @@ import { Route as FundamentalsPromiseLifecycleRouteImport } from './routes/funda
 import { Route as FundamentalsProgressCallbackRouteImport } from './routes/fundamentals/progress-callback'
 import { Route as FundamentalsPlacementsRouteImport } from './routes/fundamentals/placements'
 import { Route as FundamentalsPersistentToastRouteImport } from './routes/fundamentals/persistent-toast'
+import { Route as FundamentalsPauseOnHoverRouteImport } from './routes/fundamentals/pause-on-hover'
 import { Route as FundamentalsCountdownProgressRouteImport } from './routes/fundamentals/countdown-progress'
 import { Route as FundamentalsBasicVariantsRouteImport } from './routes/fundamentals/basic-variants'
 import { Route as AdvancedSwipePinDismissRouteImport } from './routes/advanced/swipe-pin-dismiss'
@@ -72,6 +74,11 @@ const StateMaxToastsRoute = StateMaxToastsRouteImport.update({
 const StateDuplicateIdRoute = StateDuplicateIdRouteImport.update({
   id: '/state/duplicate-id',
   path: '/state/duplicate-id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RenderingPlainCssRoute = RenderingPlainCssRouteImport.update({
+  id: '/rendering/plain-css',
+  path: '/rendering/plain-css',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RenderingAnimationWrapperRoute =
@@ -125,6 +132,12 @@ const FundamentalsPersistentToastRoute =
     path: '/fundamentals/persistent-toast',
     getParentRoute: () => rootRouteImport,
   } as any)
+const FundamentalsPauseOnHoverRoute =
+  FundamentalsPauseOnHoverRouteImport.update({
+    id: '/fundamentals/pause-on-hover',
+    path: '/fundamentals/pause-on-hover',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const FundamentalsCountdownProgressRoute =
   FundamentalsCountdownProgressRouteImport.update({
     id: '/fundamentals/countdown-progress',
@@ -172,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/advanced/swipe-pin-dismiss': typeof AdvancedSwipePinDismissRoute
   '/fundamentals/basic-variants': typeof FundamentalsBasicVariantsRoute
   '/fundamentals/countdown-progress': typeof FundamentalsCountdownProgressRoute
+  '/fundamentals/pause-on-hover': typeof FundamentalsPauseOnHoverRoute
   '/fundamentals/persistent-toast': typeof FundamentalsPersistentToastRoute
   '/fundamentals/placements': typeof FundamentalsPlacementsRoute
   '/fundamentals/progress-callback': typeof FundamentalsProgressCallbackRoute
@@ -181,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/inline/inline-sidebar': typeof InlineInlineSidebarRoute
   '/inline/multiple-containers': typeof InlineMultipleContainersRoute
   '/rendering/animation-wrapper': typeof RenderingAnimationWrapperRoute
+  '/rendering/plain-css': typeof RenderingPlainCssRoute
   '/state/duplicate-id': typeof StateDuplicateIdRoute
   '/state/max-toasts': typeof StateMaxToastsRoute
   '/state/outside-react': typeof StateOutsideReactRoute
@@ -198,6 +213,7 @@ export interface FileRoutesByTo {
   '/advanced/swipe-pin-dismiss': typeof AdvancedSwipePinDismissRoute
   '/fundamentals/basic-variants': typeof FundamentalsBasicVariantsRoute
   '/fundamentals/countdown-progress': typeof FundamentalsCountdownProgressRoute
+  '/fundamentals/pause-on-hover': typeof FundamentalsPauseOnHoverRoute
   '/fundamentals/persistent-toast': typeof FundamentalsPersistentToastRoute
   '/fundamentals/placements': typeof FundamentalsPlacementsRoute
   '/fundamentals/progress-callback': typeof FundamentalsProgressCallbackRoute
@@ -207,6 +223,7 @@ export interface FileRoutesByTo {
   '/inline/inline-sidebar': typeof InlineInlineSidebarRoute
   '/inline/multiple-containers': typeof InlineMultipleContainersRoute
   '/rendering/animation-wrapper': typeof RenderingAnimationWrapperRoute
+  '/rendering/plain-css': typeof RenderingPlainCssRoute
   '/state/duplicate-id': typeof StateDuplicateIdRoute
   '/state/max-toasts': typeof StateMaxToastsRoute
   '/state/outside-react': typeof StateOutsideReactRoute
@@ -225,6 +242,7 @@ export interface FileRoutesById {
   '/advanced/swipe-pin-dismiss': typeof AdvancedSwipePinDismissRoute
   '/fundamentals/basic-variants': typeof FundamentalsBasicVariantsRoute
   '/fundamentals/countdown-progress': typeof FundamentalsCountdownProgressRoute
+  '/fundamentals/pause-on-hover': typeof FundamentalsPauseOnHoverRoute
   '/fundamentals/persistent-toast': typeof FundamentalsPersistentToastRoute
   '/fundamentals/placements': typeof FundamentalsPlacementsRoute
   '/fundamentals/progress-callback': typeof FundamentalsProgressCallbackRoute
@@ -234,6 +252,7 @@ export interface FileRoutesById {
   '/inline/inline-sidebar': typeof InlineInlineSidebarRoute
   '/inline/multiple-containers': typeof InlineMultipleContainersRoute
   '/rendering/animation-wrapper': typeof RenderingAnimationWrapperRoute
+  '/rendering/plain-css': typeof RenderingPlainCssRoute
   '/state/duplicate-id': typeof StateDuplicateIdRoute
   '/state/max-toasts': typeof StateMaxToastsRoute
   '/state/outside-react': typeof StateOutsideReactRoute
@@ -253,6 +272,7 @@ export interface FileRouteTypes {
     | '/advanced/swipe-pin-dismiss'
     | '/fundamentals/basic-variants'
     | '/fundamentals/countdown-progress'
+    | '/fundamentals/pause-on-hover'
     | '/fundamentals/persistent-toast'
     | '/fundamentals/placements'
     | '/fundamentals/progress-callback'
@@ -262,6 +282,7 @@ export interface FileRouteTypes {
     | '/inline/inline-sidebar'
     | '/inline/multiple-containers'
     | '/rendering/animation-wrapper'
+    | '/rendering/plain-css'
     | '/state/duplicate-id'
     | '/state/max-toasts'
     | '/state/outside-react'
@@ -279,6 +300,7 @@ export interface FileRouteTypes {
     | '/advanced/swipe-pin-dismiss'
     | '/fundamentals/basic-variants'
     | '/fundamentals/countdown-progress'
+    | '/fundamentals/pause-on-hover'
     | '/fundamentals/persistent-toast'
     | '/fundamentals/placements'
     | '/fundamentals/progress-callback'
@@ -288,6 +310,7 @@ export interface FileRouteTypes {
     | '/inline/inline-sidebar'
     | '/inline/multiple-containers'
     | '/rendering/animation-wrapper'
+    | '/rendering/plain-css'
     | '/state/duplicate-id'
     | '/state/max-toasts'
     | '/state/outside-react'
@@ -305,6 +328,7 @@ export interface FileRouteTypes {
     | '/advanced/swipe-pin-dismiss'
     | '/fundamentals/basic-variants'
     | '/fundamentals/countdown-progress'
+    | '/fundamentals/pause-on-hover'
     | '/fundamentals/persistent-toast'
     | '/fundamentals/placements'
     | '/fundamentals/progress-callback'
@@ -314,6 +338,7 @@ export interface FileRouteTypes {
     | '/inline/inline-sidebar'
     | '/inline/multiple-containers'
     | '/rendering/animation-wrapper'
+    | '/rendering/plain-css'
     | '/state/duplicate-id'
     | '/state/max-toasts'
     | '/state/outside-react'
@@ -332,6 +357,7 @@ export interface RootRouteChildren {
   AdvancedSwipePinDismissRoute: typeof AdvancedSwipePinDismissRoute
   FundamentalsBasicVariantsRoute: typeof FundamentalsBasicVariantsRoute
   FundamentalsCountdownProgressRoute: typeof FundamentalsCountdownProgressRoute
+  FundamentalsPauseOnHoverRoute: typeof FundamentalsPauseOnHoverRoute
   FundamentalsPersistentToastRoute: typeof FundamentalsPersistentToastRoute
   FundamentalsPlacementsRoute: typeof FundamentalsPlacementsRoute
   FundamentalsProgressCallbackRoute: typeof FundamentalsProgressCallbackRoute
@@ -341,6 +367,7 @@ export interface RootRouteChildren {
   InlineInlineSidebarRoute: typeof InlineInlineSidebarRoute
   InlineMultipleContainersRoute: typeof InlineMultipleContainersRoute
   RenderingAnimationWrapperRoute: typeof RenderingAnimationWrapperRoute
+  RenderingPlainCssRoute: typeof RenderingPlainCssRoute
   StateDuplicateIdRoute: typeof StateDuplicateIdRoute
   StateMaxToastsRoute: typeof StateMaxToastsRoute
   StateOutsideReactRoute: typeof StateOutsideReactRoute
@@ -408,6 +435,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StateDuplicateIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/rendering/plain-css': {
+      id: '/rendering/plain-css'
+      path: '/rendering/plain-css'
+      fullPath: '/rendering/plain-css'
+      preLoaderRoute: typeof RenderingPlainCssRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/rendering/animation-wrapper': {
       id: '/rendering/animation-wrapper'
       path: '/rendering/animation-wrapper'
@@ -471,6 +505,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FundamentalsPersistentToastRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/fundamentals/pause-on-hover': {
+      id: '/fundamentals/pause-on-hover'
+      path: '/fundamentals/pause-on-hover'
+      fullPath: '/fundamentals/pause-on-hover'
+      preLoaderRoute: typeof FundamentalsPauseOnHoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/fundamentals/countdown-progress': {
       id: '/fundamentals/countdown-progress'
       path: '/fundamentals/countdown-progress'
@@ -532,6 +573,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdvancedSwipePinDismissRoute: AdvancedSwipePinDismissRoute,
   FundamentalsBasicVariantsRoute: FundamentalsBasicVariantsRoute,
   FundamentalsCountdownProgressRoute: FundamentalsCountdownProgressRoute,
+  FundamentalsPauseOnHoverRoute: FundamentalsPauseOnHoverRoute,
   FundamentalsPersistentToastRoute: FundamentalsPersistentToastRoute,
   FundamentalsPlacementsRoute: FundamentalsPlacementsRoute,
   FundamentalsProgressCallbackRoute: FundamentalsProgressCallbackRoute,
@@ -541,6 +583,7 @@ const rootRouteChildren: RootRouteChildren = {
   InlineInlineSidebarRoute: InlineInlineSidebarRoute,
   InlineMultipleContainersRoute: InlineMultipleContainersRoute,
   RenderingAnimationWrapperRoute: RenderingAnimationWrapperRoute,
+  RenderingPlainCssRoute: RenderingPlainCssRoute,
   StateDuplicateIdRoute: StateDuplicateIdRoute,
   StateMaxToastsRoute: StateMaxToastsRoute,
   StateOutsideReactRoute: StateOutsideReactRoute,

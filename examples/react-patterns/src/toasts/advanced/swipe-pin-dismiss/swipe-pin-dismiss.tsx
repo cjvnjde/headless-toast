@@ -61,14 +61,19 @@ function SwipeToast() {
   } = useToast<{ title: string; body: string }>();
   const x = useMotionValue(0);
   const opacity = useTransform(x, [-160, 0, 180], [0.8, 1, 0.35]);
+  const isDark =
+    typeof document !== "undefined" &&
+    document.documentElement.classList.contains("dark");
   const bgColor = useTransform(
     x,
     [-160, 0, 180],
-    [
-      "var(--surface-pin, #d1fae5)",
-      "var(--surface-strong)",
-      "var(--surface-dismiss, #fee2e2)",
-    ],
+    isDark
+      ? [
+          "rgba(52, 211, 153, 0.18)",
+          "rgb(15 23 42)",
+          "rgba(251, 113, 133, 0.18)",
+        ]
+      : ["rgb(209 250 229)", "rgb(255 255 255)", "rgb(255 228 230)"],
   );
   const [pinned, setPinned] = useState(false);
   const [dismissed, setDismissed] = useState(false);
@@ -116,21 +121,25 @@ function SwipeToast() {
   return (
     <motion.article
       style={{ x, opacity, backgroundColor: bgColor }}
-      className="pointer-events-auto relative flex gap-4 rounded-[1.5rem] border border-(--line) bg-(--surface-strong) p-4 pr-12 shadow-[0_24px_50px_rgba(15,23,42,0.16)] select-none touch-none"
+      className="pointer-events-auto relative flex gap-4 rounded-3xl border border-slate-200 bg-white p-4 pr-12 shadow-2xl select-none touch-none dark:border-slate-800 dark:bg-slate-900"
       {...(pinned ? {} : stripGestureHandlers(bind()))}
       onMouseEnter={pauseOnHoverHandlers.onMouseEnter}
       onMouseLeave={pauseOnHoverHandlers.onMouseLeave}
     >
       <div className="min-w-0 flex-1">
         {pinned ? (
-          <span className="mb-2 inline-flex rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-bold tracking-[0.16em] text-emerald-800 uppercase dark:bg-emerald-400/20 dark:text-emerald-300">
+          <span className="mb-2 inline-flex rounded-full bg-emerald-100 px-2 py-1 text-xs font-bold uppercase tracking-widest text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-200">
             Pinned
           </span>
         ) : null}
-        <p className="text-sm font-semibold text-(--ink)">{toast.data.title}</p>
-        <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
+        <p className="text-sm font-semibold text-slate-950 dark:text-slate-50">
+          {toast.data.title}
+        </p>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+          {toast.data.body}
+        </p>
         {!pinned ? (
-          <p className="mt-3 text-[11px] font-medium text-(--ink-soft)">
+          <p className="mt-3 text-xs font-medium text-slate-600 dark:text-slate-300">
             Swipe left to pin • swipe right to dismiss
           </p>
         ) : null}
@@ -138,7 +147,7 @@ function SwipeToast() {
       <button
         type="button"
         aria-label="Close toast"
-        className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-(--line) text-(--ink-soft) hover:bg-black/4 dark:hover:bg-white/6"
+        className="absolute right-3 top-3 inline-flex cursor-pointer h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition duration-150 hover:bg-slate-100 hover:shadow-sm dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
         onClick={() => dismiss("user")}
       >
         <svg
@@ -167,7 +176,7 @@ function SwipeToaster({
 
   return (
     <ViewportLayer>
-      <div className="pointer-events-none fixed right-4 top-4 z-[9999] flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3">
+      <div className="pointer-events-none fixed right-4 top-4 z-50 flex w-[calc(100vw-2rem)] max-w-sm flex-col gap-3">
         <AnimatePresence mode="popLayout">
           {mapToastItems(store, toasts, (currentToast) => (
             <motion.div
@@ -196,7 +205,7 @@ function SwipePinDismissPreview() {
     <div className="space-y-4">
       <button
         type="button"
-        className="doc-button"
+        className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-indigo-500 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 dark:bg-indigo-500 dark:hover:bg-indigo-400"
         onClick={() =>
           toast.info(
             {

@@ -325,6 +325,22 @@ class Store<
     this.notify();
   }
 
+  public pauseAll() {
+    for (const toast of this.toasts.values()) {
+      if (toast.status === TOAST_STATUS.VISIBLE && !toast.paused) {
+        this.pause(toast.id);
+      }
+    }
+  }
+
+  public resumeAll() {
+    for (const toast of this.toasts.values()) {
+      if (toast.paused) {
+        this.resume(toast.id);
+      }
+    }
+  }
+
   public promise<T>(
     promise: Promise<T>,
     opts: ToastPromiseConfig<T, TData>,

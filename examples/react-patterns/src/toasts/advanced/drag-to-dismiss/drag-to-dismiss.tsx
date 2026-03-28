@@ -111,7 +111,7 @@ function DraggableToast() {
   return (
     <motion.article
       style={{ x, opacity, rotate }}
-      className="pointer-events-auto relative select-none touch-none rounded-3xl border border-(--line) bg-(--surface-strong) p-4 pr-12 shadow-[0_18px_36px_rgba(15,23,42,0.12)]"
+      className="pointer-events-auto relative select-none touch-none rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 pr-12 shadow-xl"
       initial={{ opacity: 0, scale: 0.94, y: -12 }}
       animate={
         toast.status === "exiting"
@@ -129,15 +129,19 @@ function DraggableToast() {
       onMouseEnter={pauseOnHoverHandlers.onMouseEnter}
       onMouseLeave={pauseOnHoverHandlers.onMouseLeave}
     >
-      <p className="text-sm font-semibold text-(--ink)">{toast.data.title}</p>
-      <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
-      <p className="mt-3 text-[11px] font-medium text-(--ink-soft)">
+      <p className="text-sm font-semibold text-slate-950 dark:text-slate-50">
+        {toast.data.title}
+      </p>
+      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+        {toast.data.body}
+      </p>
+      <p className="mt-3 text-xs font-medium text-slate-600 dark:text-slate-300">
         Drag left or right, then release to dismiss from that final position.
       </p>
       <button
         type="button"
         aria-label="Close toast"
-        className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-(--line) text-(--ink-soft) hover:bg-black/4 dark:hover:bg-white/6"
+        className="absolute right-3 top-3 inline-flex cursor-pointer h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition duration-150 hover:bg-slate-100 hover:shadow-sm dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
         onClick={() => dismiss("user")}
       >
         <svg
@@ -166,7 +170,7 @@ function DragDismissToaster({
 
   return (
     <ViewportLayer>
-      <div className="pointer-events-none fixed right-4 top-4 z-[9999] flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3">
+      <div className="pointer-events-none fixed right-4 top-4 z-50 flex w-[calc(100vw-2rem)] max-w-sm flex-col gap-3">
         <AnimatePresence initial={false} mode="popLayout">
           {mapToastItems(store, toasts, () => (
             <motion.div layout="position">
@@ -184,7 +188,7 @@ function DragToDismissPreview() {
     <div className="space-y-4">
       <button
         type="button"
-        className="doc-button"
+        className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-indigo-500 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 dark:bg-indigo-500 dark:hover:bg-indigo-400"
         onClick={() =>
           toast.info(
             {

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { tv } from "tailwind-variants";
 import {
   Toaster,
   createToast,
@@ -10,9 +11,7 @@ import {
 import type { CloseReason, ReactToastState } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
-import "./toast.css";
 import rawSource from "./undo-window.tsx?raw";
-import toastCss from "./toast.css?raw";
 
 type UndoWindowToastData = {
   title: string;
@@ -25,6 +24,20 @@ const toast = createToast<UndoWindowToastData>({
   defaults: { placement: "top-right", pauseOnHover: true },
 }).toast;
 
+const archiveStatusBadge = tv({
+  base: "mt-3 inline-flex rounded-full px-3 py-1 text-xs font-semibold",
+  variants: {
+    status: {
+      active:
+        "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-200",
+      pending:
+        "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-200",
+      archived:
+        "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200",
+    },
+  },
+});
+
 function isCommitReason(reason: CloseReason) {
   return reason === "timeout" || reason === "programmatic";
 }
@@ -34,7 +47,7 @@ function UndoWindowProgressBar() {
 
   return (
     <div
-      className="h-full rounded-full bg-(--accent)"
+      className="h-full rounded-full bg-indigo-600 dark:bg-indigo-500"
       style={{ width: `${progress * 100}%` }}
     />
   );
@@ -51,29 +64,33 @@ function UndoWindowToast() {
   const { dismiss } = useToastActions<UndoWindowToastData>();
   const { ref, className, handlers, attributes } = useToastAnimation({
     className:
-      "undo-window-toast pointer-events-auto relative w-full rounded-3xl border border-(--line) bg-(--surface-strong) p-4 pr-12 shadow-[0_18px_36px_rgba(15,23,42,0.12)]",
+      "origin-top-right transition duration-200 ease-out will-change-[translate,scale,opacity] data-[toast-status=entering]:starting:opacity-0 data-[toast-status=entering]:starting:-translate-y-3 data-[toast-status=entering]:starting:scale-95 data-[toast-status=exiting]:opacity-0 data-[toast-status=exiting]:-translate-y-2 data-[toast-status=exiting]:scale-95 data-[toast-status=exiting]:duration-150 data-[toast-status=exiting]:ease-in [&[data-toast-placement^=bottom]]:origin-bottom-right pointer-events-auto relative w-full rounded-3xl border border-slate-200 bg-white p-4 pr-12 shadow-xl dark:border-slate-800 dark:bg-slate-900",
   });
 
   return (
     <article ref={ref} className={className} {...handlers} {...attributes}>
-      <p className="text-xs font-bold tracking-[0.18em] uppercase text-(--accent-strong)">
+      <p className="text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-300">
         {type === "warning" ? "Undo window" : "Workflow update"}
       </p>
-      <p className="mt-2 text-sm font-semibold text-(--ink)">{data.title}</p>
-      <p className="mt-1 text-sm leading-6 text-(--ink-soft)">{data.body}</p>
+      <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-slate-50">
+        {data.title}
+      </p>
+      <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">
+        {data.body}
+      </p>
 
       {type === "warning" ? (
         <div className="mt-4 flex flex-wrap gap-2">
           <button
             type="button"
-            className="rounded-full border border-(--line) px-3 py-1.5 text-sm font-medium text-(--ink) hover:bg-black/4 dark:hover:bg-white/6"
+            className="rounded-full cursor-pointer border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-950 transition duration-150 hover:bg-slate-100 hover:shadow-md dark:border-slate-800 dark:text-slate-50 dark:hover:bg-slate-800"
             onClick={() => dismiss("user")}
           >
             Undo
           </button>
           <button
             type="button"
-            className="rounded-full bg-(--accent) px-3 py-1.5 text-sm font-semibold text-white hover:brightness-105"
+            className="rounded-full cursor-pointer bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white transition duration-150 hover:bg-indigo-500 hover:shadow-md dark:bg-indigo-500 dark:hover:bg-indigo-400"
             onClick={() => dismiss("programmatic")}
           >
             Archive now
@@ -83,7 +100,7 @@ function UndoWindowToast() {
         <button
           type="button"
           aria-label="Close toast"
-          className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-(--line) text-(--ink-soft) hover:bg-black/4 dark:hover:bg-white/6"
+          className="absolute right-3 top-3 inline-flex cursor-pointer h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition duration-150 hover:bg-slate-100 hover:shadow-sm dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
           onClick={() => dismiss("user")}
         >
           <svg
@@ -102,7 +119,7 @@ function UndoWindowToast() {
       )}
 
       {options.progress ? (
-        <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-black/8 dark:bg-white/10">
+        <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
           <UndoWindowProgressBar />
         </div>
       ) : null}
@@ -178,35 +195,24 @@ function UndoWindowPreview() {
     setActivity("Reset the item so you can replay the undo flow.");
   }
 
-  const statusBadgeClassName =
-    status === "active"
-      ? "bg-emerald-500/12 text-emerald-600 dark:text-emerald-300"
-      : status === "pending"
-        ? "bg-amber-500/14 text-amber-700 dark:text-amber-300"
-        : "bg-slate-500/14 text-slate-700 dark:text-slate-200";
-
   return (
     <div className="space-y-4">
-      <div className="rounded-[1.5rem] border border-(--line) bg-(--surface-strong) p-5 shadow-[0_14px_28px_rgba(15,23,42,0.08)]">
+      <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-lg dark:border-slate-800 dark:bg-slate-900">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-bold tracking-[0.18em] uppercase text-(--accent-strong)">
+            <p className="text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-300">
               Pending action
             </p>
-            <p className="mt-2 text-lg font-semibold text-(--ink)">
+            <p className="mt-2 text-lg font-semibold text-slate-950 dark:text-slate-50">
               project-brief.md
             </p>
-            <span
-              className={`mt-3 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusBadgeClassName}`}
-            >
-              {status}
-            </span>
+            <span className={archiveStatusBadge({ status })}>{status}</span>
           </div>
 
           {status === "archived" ? (
             <button
               type="button"
-              className="doc-button doc-button-secondary"
+              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition duration-150 hover:border-slate-300 hover:bg-slate-100 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-800"
               onClick={resetItem}
             >
               Restore item
@@ -214,7 +220,7 @@ function UndoWindowPreview() {
           ) : (
             <button
               type="button"
-              className="doc-button disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-indigo-500 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 dark:bg-indigo-500 dark:hover:bg-indigo-400"
               disabled={status === "pending"}
               onClick={() => void startArchiveFlow()}
             >
@@ -225,17 +231,16 @@ function UndoWindowPreview() {
           )}
         </div>
 
-        <p className="mt-4 text-sm leading-7 text-(--ink-soft)">{activity}</p>
-        <p className="mt-3 text-xs font-medium text-(--ink-soft)">
+        <p className="mt-4 text-sm leading-7 text-slate-600 dark:text-slate-300">
+          {activity}
+        </p>
+        <p className="mt-3 text-xs font-medium text-slate-600 dark:text-slate-300">
           Last close reason: {lastReason ?? "—"}
         </p>
       </div>
 
-      <Toaster
-        store={toast}
-        className="pointer-events-none fixed inset-0 z-[9999]"
-      >
-        <Toaster.List className="fixed right-4 top-4 flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3">
+      <Toaster store={toast} className="pointer-events-none fixed inset-0 z-50">
+        <Toaster.List className="fixed right-4 top-4 flex w-[calc(100vw-2rem)] max-w-sm flex-col gap-3">
           <UndoWindowToast />
         </Toaster.List>
       </Toaster>
@@ -251,10 +256,7 @@ function UndoWindowPage() {
       category="State"
       title="Undo window"
       summary="Await handle.closed and branch on the close reason when destructive work should wait until the toast's undo window is truly over."
-      files={[
-        { filename: "undo-window.tsx", language: "tsx", code },
-        { filename: "toast.css", language: "css", code: toastCss },
-      ]}
+      files={[{ filename: "undo-window.tsx", language: "tsx", code }]}
       preview={<UndoWindowPreview />}
     />
   );

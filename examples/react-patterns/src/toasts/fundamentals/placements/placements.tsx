@@ -7,9 +7,7 @@ import {
 import type { ToastPlacement } from "@headless-toast/react";
 import { ExamplePage } from "#/components/ExamplePage";
 import { extractExampleSource } from "#/lib/exampleSource";
-import "./toast.css";
 import rawSource from "./placements.tsx?raw";
-import toastCss from "./toast.css?raw";
 
 const placements = [
   "top-left",
@@ -28,20 +26,22 @@ function PlacementToast() {
   const { toast, dismiss } = useToast<{ title: string; body: string }>();
   const { ref, className, handlers, attributes } = useToastAnimation({
     className:
-      "placements-toast pointer-events-auto relative w-full rounded-3xl border border-(--line) bg-(--surface-strong) p-4 pr-12 text-(--ink) shadow-[0_18px_36px_rgba(15,23,42,0.12)]",
+      "origin-top-right transition duration-200 ease-out will-change-[translate,scale,opacity] data-[toast-status=entering]:starting:opacity-0 data-[toast-status=entering]:starting:-translate-y-3 data-[toast-status=entering]:starting:scale-95 data-[toast-status=exiting]:opacity-0 data-[toast-status=exiting]:-translate-y-2 data-[toast-status=exiting]:scale-95 data-[toast-status=exiting]:duration-150 data-[toast-status=exiting]:ease-in [&[data-toast-placement^=bottom]]:origin-bottom-right pointer-events-auto relative w-full rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 pr-12 text-slate-950 dark:text-slate-50 shadow-xl",
   });
 
   return (
     <article ref={ref} className={className} {...handlers} {...attributes}>
-      <p className="text-xs font-bold tracking-[0.18em] uppercase text-(--accent-strong)">
+      <p className="text-xs font-bold tracking-widest uppercase text-indigo-600 dark:text-indigo-300">
         {toast.options.placement}
       </p>
       <p className="mt-2 text-sm font-semibold">{toast.data.title}</p>
-      <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
+      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+        {toast.data.body}
+      </p>
       <button
         type="button"
         aria-label="Close toast"
-        className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-(--line) text-(--ink-soft) hover:bg-black/4 dark:hover:bg-white/6"
+        className="absolute right-3 top-3 inline-flex cursor-pointer h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition duration-150 hover:bg-slate-100 hover:shadow-sm dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
         onClick={() => dismiss("user")}
       >
         <svg
@@ -69,7 +69,7 @@ function PlacementsPreview() {
           <button
             key={placement}
             type="button"
-            className="rounded-2xl border border-(--line) bg-(--chip-bg) px-4 py-3 text-left text-sm font-semibold text-(--ink) hover:-translate-y-0.5"
+            className="cursor-pointer rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left text-sm font-semibold text-slate-950 shadow-sm transition duration-150 hover:border-slate-300 hover:bg-slate-100 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-slate-50 dark:hover:border-slate-700 dark:hover:bg-slate-800 "
             onClick={() =>
               toast.info(
                 {
@@ -84,11 +84,8 @@ function PlacementsPreview() {
           </button>
         ))}
       </div>
-      <Toaster
-        store={toast}
-        className="pointer-events-none fixed inset-0 z-[9999]"
-      >
-        <Toaster.List className="fixed flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3 p-4 data-[placement=top-left]:left-0 data-[placement=top-left]:top-0 data-[placement=top-center]:left-1/2 data-[placement=top-center]:top-0 data-[placement=top-center]:-translate-x-1/2 data-[placement=top-right]:right-0 data-[placement=top-right]:top-0 data-[placement=bottom-left]:bottom-0 data-[placement=bottom-left]:left-0 data-[placement=bottom-center]:bottom-0 data-[placement=bottom-center]:left-1/2 data-[placement=bottom-center]:-translate-x-1/2 data-[placement=bottom-right]:bottom-0 data-[placement=bottom-right]:right-0">
+      <Toaster store={toast} className="pointer-events-none fixed inset-0 z-50">
+        <Toaster.List className="fixed flex w-[calc(100vw-2rem)] max-w-sm flex-col gap-3 p-4 data-[placement=top-left]:left-0 data-[placement=top-left]:top-0 data-[placement=top-center]:left-1/2 data-[placement=top-center]:top-0 data-[placement=top-center]:-translate-x-1/2 data-[placement=top-right]:right-0 data-[placement=top-right]:top-0 data-[placement=bottom-left]:bottom-0 data-[placement=bottom-left]:left-0 data-[placement=bottom-center]:bottom-0 data-[placement=bottom-center]:left-1/2 data-[placement=bottom-center]:-translate-x-1/2 data-[placement=bottom-right]:bottom-0 data-[placement=bottom-right]:right-0">
           <PlacementToast />
         </Toaster.List>
       </Toaster>
@@ -104,10 +101,7 @@ function PlacementsPage() {
       category="Fundamentals"
       title="Placements"
       summary="Change placement at call time and keep the toast item itself completely unchanged. Placement affects only where the list is rendered."
-      files={[
-        { filename: "placements.tsx", language: "tsx", code },
-        { filename: "toast.css", language: "css", code: toastCss },
-      ]}
+      files={[{ filename: "placements.tsx", language: "tsx", code }]}
       preview={<PlacementsPreview />}
     />
   );

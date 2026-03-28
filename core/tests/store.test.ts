@@ -207,6 +207,88 @@ describe("createToastStore", () => {
       expect(getToast(store, handle.id).status).toBe(TOAST_STATUS.EXITING);
     });
 
+    it("pauseAll pauses all visible toasts", () => {
+      const a = store.add({ duration: 3000 });
+      const b = store.add({ duration: 5000 });
+
+      store.markEntered(a);
+      store.markEntered(b);
+
+      store.pauseAll();
+
+      expect(getToast(store, a.id).paused).toBe(true);
+      expect(getToast(store, b.id).paused).toBe(true);
+
+      vi.advanceTimersByTime(10000);
+      expect(getToast(store, a.id).status).toBe(TOAST_STATUS.VISIBLE);
+      expect(getToast(store, b.id).status).toBe(TOAST_STATUS.VISIBLE);
+    });
+
+    it("pauseAll skips entering, exiting and already-paused toasts", () => {
+      const entering = store.add({ duration: 3000 });
+      const visible = store.add({ duration: 3000 });
+      const paused = store.add({ duration: 3000 });
+
+      store.markEntered(visible);
+      store.markEntered(paused);
+      store.pause(paused);
+
+      const listener = vi.fn();
+      store.subscribe(listener);
+
+      store.pauseAll();
+
+      expect(getToast(store, entering.id).paused).toBe(false);
+      expect(getToast(store, visible.id).paused).toBe(true);
+      expect(getToast(store, paused.id).paused).toBe(true);
+
+      // Only one notification for the one toast that transitioned
+      expect(listener).toHaveBeenCalledTimes(1);
+    });
+
+    it("resumeAll resumes all paused toasts", () => {
+      const a = store.add({ duration: 3000 });
+      const b = store.add({ duration: 5000 });
+
+      store.markEntered(a);
+      store.markEntered(b);
+      vi.advanceTimersByTime(1000);
+
+      store.pauseAll();
+
+      expect(getToast(store, a.id).remaining).toBe(2000);
+      expect(getToast(store, b.id).remaining).toBe(4000);
+
+      store.resumeAll();
+
+      expect(getToast(store, a.id).paused).toBe(false);
+      expect(getToast(store, b.id).paused).toBe(false);
+
+      vi.advanceTimersByTime(1999);
+      expect(getToast(store, a.id).status).toBe(TOAST_STATUS.VISIBLE);
+
+      vi.advanceTimersByTime(1);
+      expect(getToast(store, a.id).status).toBe(TOAST_STATUS.EXITING);
+
+      vi.advanceTimersByTime(1999);
+      expect(getToast(store, b.id).status).toBe(TOAST_STATUS.VISIBLE);
+
+      vi.advanceTimersByTime(1);
+      expect(getToast(store, b.id).status).toBe(TOAST_STATUS.EXITING);
+    });
+
+    it("resumeAll skips toasts that are not paused", () => {
+      const a = store.add({ duration: 3000 });
+      store.markEntered(a);
+
+      const listener = vi.fn();
+      store.subscribe(listener);
+
+      store.resumeAll();
+
+      expect(listener).not.toHaveBeenCalled();
+    });
+
     it("restarts autoclose when the duration is updated", () => {
       const handle = store.add({ duration: 1000 });
 

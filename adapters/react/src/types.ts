@@ -29,7 +29,7 @@ type AdapterToastOptions = {
   placement?: ToastPlacement;
   containerId?: string;
   dismissible?: boolean;
-  pauseOnHover?: boolean;
+  pauseOnHover?: boolean | "individual";
   pauseOnFocusLoss?: boolean;
   draggable?: boolean | DraggableConfig;
   stack?: StackConfig;

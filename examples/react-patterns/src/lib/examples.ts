@@ -33,6 +33,15 @@ const examples = [
     featured: true,
   },
   {
+    path: "/fundamentals/pause-on-hover",
+    title: "Pause on hover",
+    summary:
+      "Container, all-toasts, and individual pause-on-hover modes side by side.",
+    category: "Fundamentals",
+    tags: ["pauseOnHover", "Toaster.List"],
+    featured: true,
+  },
+  {
     path: "/fundamentals/progress-callback",
     title: "Progress callback",
     summary:
@@ -73,6 +82,15 @@ const examples = [
       "Use the convenience wrapper when one animated outer element is enough.",
     category: "Rendering",
     tags: ["AnimationWrapper", "CSS animations"],
+  },
+  {
+    path: "/rendering/plain-css",
+    title: "Plain CSS",
+    summary:
+      "Style a toast with regular CSS classes and keyframes when Tailwind is not part of your stack.",
+    category: "Rendering",
+    tags: ["CSS", "no Tailwind"],
+    featured: true,
   },
   {
     path: "/state/duplicate-id",

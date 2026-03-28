@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import {
@@ -47,18 +47,22 @@ function AnchoredToast() {
 
   return (
     <article
-      className="pointer-events-auto relative flex min-w-[18rem] gap-4 rounded-[1.5rem] border border-(--line) bg-(--surface-strong) p-4 pr-12 shadow-[0_24px_50px_rgba(15,23,42,0.18)]"
+      className="pointer-events-auto relative flex min-w-72 gap-4 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 pr-12 shadow-2xl"
       onMouseEnter={pauseOnHoverHandlers.onMouseEnter}
       onMouseLeave={pauseOnHoverHandlers.onMouseLeave}
     >
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-(--ink)">{toast.data.title}</p>
-        <p className="mt-1 text-sm text-(--ink-soft)">{toast.data.body}</p>
+        <p className="text-sm font-semibold text-slate-950 dark:text-slate-50">
+          {toast.data.title}
+        </p>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+          {toast.data.body}
+        </p>
       </div>
       <button
         type="button"
         aria-label="Close toast"
-        className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-(--line) text-(--ink-soft) hover:bg-black/4 dark:hover:bg-white/6"
+        className="absolute right-3 top-3 inline-flex cursor-pointer h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition duration-150 hover:bg-slate-100 hover:shadow-sm dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
         onClick={() => dismiss("user")}
       >
         <svg
@@ -83,7 +87,7 @@ function AnchoredToaster({
   referenceRef,
 }: {
   store: ReactToastStore<{ title: string; body: string }>;
-  referenceRef: React.RefObject<HTMLElement | null>;
+  referenceRef: RefObject<HTMLElement | null>;
 }) {
   const toasts = useStore(store).filter((t) => t.status !== "exiting");
   const { refs, floatingStyles } = useFloating({
@@ -100,7 +104,7 @@ function AnchoredToaster({
       <div
         ref={refs.setFloating}
         style={floatingStyles}
-        className="z-[9999] flex max-w-sm flex-col gap-3"
+        className="z-50 flex max-w-sm flex-col gap-3"
       >
         <AnimatePresence mode="popLayout">
           {mapToastItems(store, toasts, (currentToast) => (
@@ -127,14 +131,14 @@ function AnchoredToaster({
 
 function FloatingAnchorPreview() {
   const bellRef = useRef<HTMLButtonElement>(null);
-  const count = useStore(toast).length;
+  const count = useStore(toast).filter((t) => t.status !== "exiting").length;
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
-          className="doc-button"
+          className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-indigo-500 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 dark:bg-indigo-500 dark:hover:bg-indigo-400"
           onClick={() =>
             toast.success({
               title: "Saved",
@@ -146,7 +150,7 @@ function FloatingAnchorPreview() {
         </button>
         <button
           type="button"
-          className="doc-button doc-button-secondary"
+          className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition duration-150 hover:border-slate-300 hover:bg-slate-100 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-800"
           onClick={() =>
             toast.error({
               title: "Error",
@@ -159,11 +163,11 @@ function FloatingAnchorPreview() {
         <button
           ref={bellRef}
           type="button"
-          className="relative rounded-full border border-(--line) bg-(--chip-bg) px-4 py-2 font-semibold text-(--ink)"
+          className="relative cursor-pointer rounded-full border border-slate-200 bg-white px-4 py-2 font-semibold text-slate-950 shadow-sm transition duration-150 hover:border-slate-300 hover:bg-slate-100 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-slate-50 dark:hover:border-slate-700 dark:hover:bg-slate-800"
         >
           Bell
           {count > 0 ? (
-            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white">
+            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-xs font-bold text-white">
               {count}
             </span>
           ) : null}
