@@ -9,7 +9,7 @@ function ToastProvider<
   TCustom extends ToastCustomOptions = {},
 >({ children, toast, toastId, store }: ToastProviderProps<TData, TCustom>) {
   const resolvedToastId = toastId ?? toast?.id;
-  const valueRef = useRef<ToastContextValue | null>(null);
+  const valueRef = useRef<ToastContextValue<TData, TCustom> | null>(null);
 
   if (!resolvedToastId) {
     throw new Error(

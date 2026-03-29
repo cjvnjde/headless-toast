@@ -12,12 +12,11 @@ function useStore<
   TData extends ToastData = ToastData,
   TCustom extends ToastCustomOptions = {},
 >(store?: ReactToastStore<TData, TCustom>) {
-  const resolvedStore = (store ?? sharedToast) as ReactToastStore<
-    TData,
-    TCustom
-  >;
+  if (!store) {
+    return useStoreSelector(sharedToast, (toasts) => toasts);
+  }
 
-  return useStoreSelector(resolvedStore, (toasts) => toasts);
+  return useStoreSelector(store, (toasts) => toasts);
 }
 
 export { useStore };

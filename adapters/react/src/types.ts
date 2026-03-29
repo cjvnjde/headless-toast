@@ -1,26 +1,19 @@
 import type {
-  ToastCustomOptions,
-  ToastData,
   CloseReason,
   DraggableConfig,
-  LoadingToastOptions,
-  ResolvedToastOptions,
   StackConfig,
   StoreConfig,
-  ToastMethodOptions,
-  ToastState,
-  ToastStore,
-  ToastOptions,
-  ToastPromiseConfig,
-  PromiseToastOptions,
-  ToastUpdate,
+  ToastCustomOptions,
+  ToastData,
   ToastPlacement,
+  ToastPromiseConfig,
+  ToastStore,
 } from "@headless-toast/core";
 import type {
-  ReactNode,
-  PointerEvent,
-  CSSProperties,
   AnimationEvent,
+  CSSProperties,
+  PointerEvent,
+  ReactNode,
   Ref,
   TransitionEvent,
 } from "react";
@@ -48,42 +41,34 @@ type ReactToastStore<
   TCustom extends ToastCustomOptions = {},
 > = ToastStore<TData, ReactToastCustomOptions<TCustom>>;
 
-type ReactResolvedToastOptions<
-  TData extends ToastData = ToastData,
-  TCustom extends ToastCustomOptions = {},
-> = ResolvedToastOptions<TData, ReactToastCustomOptions<TCustom>> &
-  AdapterToastOptions;
-
 type ReactToastState<
   TData extends ToastData = ToastData,
   TCustom extends ToastCustomOptions = {},
-> = Omit<ToastState<TData, ReactToastCustomOptions<TCustom>>, "options"> & {
-  options: ReactResolvedToastOptions<TData, TCustom>;
-};
+> = ReturnType<ReactToastStore<TData, TCustom>["getToasts"]>[number];
+
+type ReactResolvedToastOptions<
+  TData extends ToastData = ToastData,
+  TCustom extends ToastCustomOptions = {},
+> = ReactToastState<TData, TCustom>["options"];
 
 type ReactToastOptions<
   TData extends ToastData = ToastData,
   TCustom extends ToastCustomOptions = {},
-> = ToastOptions<TData, ReactToastCustomOptions<TCustom>> &
-  Partial<AdapterToastOptions>;
+> = Parameters<ReactToastStore<TData, TCustom>["add"]>[0];
 
 type ReactToastUpdate<
   TData extends ToastData = ToastData,
   TCustom extends ToastCustomOptions = {},
-> = ToastUpdate<TData, ReactToastCustomOptions<TCustom>> &
-  Partial<AdapterToastOptions>;
+> = Parameters<ReactToastStore<TData, TCustom>["update"]>[1];
 
 type ReactToastMethodOptions<TCustom extends ToastCustomOptions = {}> =
-  ToastMethodOptions<ReactToastCustomOptions<TCustom>> &
-    Partial<AdapterToastOptions>;
+  NonNullable<Parameters<ReactToastStore<ToastData, TCustom>["success"]>[1]>;
 
 type ReactLoadingToastOptions<TCustom extends ToastCustomOptions = {}> =
-  LoadingToastOptions<ReactToastCustomOptions<TCustom>> &
-    Partial<AdapterToastOptions>;
+  NonNullable<Parameters<ReactToastStore<ToastData, TCustom>["loading"]>[1]>;
 
 type ReactToastPromiseOptions<TCustom extends ToastCustomOptions = {}> =
-  PromiseToastOptions<ReactToastCustomOptions<TCustom>> &
-    Partial<AdapterToastOptions>;
+  NonNullable<Parameters<ReactToastStore<ToastData, TCustom>["promise"]>[2]>;
 
 type ReactToastPromiseConfig<
   T,

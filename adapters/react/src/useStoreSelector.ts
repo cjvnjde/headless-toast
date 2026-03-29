@@ -4,6 +4,8 @@ import type { ReactToastState, ReactToastStore } from "./types";
 
 type EqualityFn<T> = (left: T, right: T) => boolean;
 
+type SelectionState<T> = { hasValue: false } | { hasValue: true; value: T };
+
 type StoreSelector<
   TData extends ToastData = ToastData,
   TCustom extends ToastCustomOptions = {},
@@ -23,10 +25,9 @@ function useStoreSelector<
   const selectorRef = useRef(selector);
   const isEqualRef = useRef(isEqual);
   const toastsRef = useRef(store.getToasts());
-  const selectionRef = useRef<{
-    hasValue: boolean;
-    value: TSelected;
-  }>({ hasValue: false, value: undefined as TSelected });
+  const selectionRef = useRef<SelectionState<TSelected>>({
+    hasValue: false,
+  });
 
   selectorRef.current = selector;
   isEqualRef.current = isEqual;
@@ -36,7 +37,6 @@ function useStoreSelector<
     toastsRef.current = store.getToasts();
     selectionRef.current = {
       hasValue: false,
-      value: undefined as TSelected,
     };
   }
 
