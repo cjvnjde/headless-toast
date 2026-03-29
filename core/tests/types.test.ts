@@ -5,17 +5,16 @@ import type {
   AnimationConfig,
   CloseReason,
   LoadingToastOptions,
-  PromiseToastOptions,
   ResolvedToastOptions,
   StoreConfig,
-  ToastDefaults,
+  ToastHandle,
   ToastMethodOptions,
   ToastOptions,
   ToastPromiseConfig,
   ToastState,
   ToastStore,
   ToastUpdate,
-} from "../src/types";
+} from "../src";
 
 type MessageData = {
   title: string;
@@ -58,8 +57,31 @@ describe("type ergonomics", () => {
     expectTypeOf<
       keyof LoadingToastOptions<CustomOptions>
     >().not.toEqualTypeOf<"duration">();
-    expectTypeOf<PromiseToastOptions<CustomOptions>>().toEqualTypeOf<
+
+    type PromiseOptions = NonNullable<
+      Parameters<ToastStore<MessageData, CustomOptions>["promise"]>[2]
+    >;
+
+    expectTypeOf<PromiseOptions>().toEqualTypeOf<
       ToastMethodOptions<CustomOptions>
+    >();
+  });
+
+  it("keeps the store API derived from the store class", () => {
+    type DismissReference = Parameters<
+      ToastStore<MessageData, CustomOptions>["dismiss"]
+    >[0];
+    type AddHandle = ReturnType<ToastStore<MessageData, CustomOptions>["add"]>;
+    type SubscribeListener = Parameters<
+      ToastStore<MessageData, CustomOptions>["subscribe"]
+    >[0];
+
+    expectTypeOf<DismissReference>().toEqualTypeOf<string | AddHandle>();
+    expectTypeOf<AddHandle>().toEqualTypeOf<
+      ToastHandle<MessageData, CustomOptions>
+    >();
+    expectTypeOf<SubscribeListener>().toMatchTypeOf<
+      (toasts: ToastState<MessageData, CustomOptions>[]) => void
     >();
   });
 
@@ -93,12 +115,8 @@ describe("type ergonomics", () => {
   });
 
   it("models promise and update payloads the same way the store consumes them", () => {
-    expectTypeOf<ToastDefaults<MessageData, CustomOptions>>().toEqualTypeOf<
-      Partial<ToastOptions<MessageData, CustomOptions>>
-    >();
-
     expectTypeOf<StoreConfig<MessageData, CustomOptions>>().toMatchTypeOf<{
-      defaults?: ToastDefaults<MessageData, CustomOptions>;
+      defaults?: Partial<ToastOptions<MessageData, CustomOptions>>;
       timing?: {
         promiseSuccessDuration?: number;
         promiseErrorDuration?: number;

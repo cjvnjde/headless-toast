@@ -1,15 +1,19 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TimerManager, createDefaultTickScheduler } from "../src/timers";
-import type { TimerCallbacks } from "../src/types";
+
+type TimerManagerCallbacks = ConstructorParameters<typeof TimerManager>[0];
 
 type AnimationFrameCallback = (time: number) => void;
-type TestGlobals = typeof globalThis & {
-  requestAnimationFrame?: (callback: AnimationFrameCallback) => number;
-  cancelAnimationFrame?: (id: number) => void;
-};
+
+declare global {
+  var requestAnimationFrame:
+    | ((callback: AnimationFrameCallback) => number)
+    | undefined;
+  var cancelAnimationFrame: ((id: number) => void) | undefined;
+}
 
 describe("TimerManager", () => {
-  let callbacks: TimerCallbacks;
+  let callbacks: TimerManagerCallbacks;
   let manager: TimerManager;
 
   beforeEach(() => {
@@ -126,7 +130,7 @@ describe("TimerManager", () => {
 });
 
 describe("createDefaultTickScheduler", () => {
-  const testGlobals = globalThis as TestGlobals;
+  const testGlobals = globalThis;
   let originalRAF: ((callback: AnimationFrameCallback) => number) | undefined;
   let originalCAF: ((id: number) => void) | undefined;
   let pendingFrames: Map<number, () => void>;

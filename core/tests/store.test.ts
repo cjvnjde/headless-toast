@@ -410,7 +410,7 @@ describe("createToastStore", () => {
           loading: { title: "Loading" },
           success: { title: "Saved" },
           error: (reason) => ({
-            title: `Failed: ${(reason as Error).message}`,
+            title: `Failed: ${reason instanceof Error ? reason.message : String(reason)}`,
           }),
         }),
       ).rejects.toThrow("boom");
