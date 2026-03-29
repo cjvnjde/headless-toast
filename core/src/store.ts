@@ -1,34 +1,33 @@
 import type {
-  LoadingToastOptions,
-  PromiseToastOptions,
-  ToastDefaults,
-  ToastMethodOptions,
-  ToastPromiseConfig,
-  ToastOptions,
-  ResolvedToastOptions,
-  ToastUpdate,
-  ToastState,
-  ToastStore,
-  ToastHandle,
-  ToastReference,
-  StoreConfig,
-  Subscriber,
   CloseReason,
-  ToastData,
+  LoadingToastOptions,
+  ResolvedToastOptions,
+  StoreConfig,
   ToastCustomOptions,
-  ToastType,
+  ToastData,
+  ToastHandle,
+  ToastMethodOptions,
+  ToastOptions,
   ToastPhase,
-  TypedToastOptions,
+  ToastPromiseConfig,
+  ToastState,
+  ToastType,
+  ToastUpdate,
 } from "./types";
 import { CLOSE_REASON, TOAST_PHASE, TOAST_STATUS, TOAST_TYPE } from "./types";
 import { TimerManager, createDefaultTickScheduler } from "./timers";
 import {
-  resolveData,
-  resolvePromiseData,
+  getPhaseHintDuration,
   isActiveToast,
   isPhaseStatus,
-  getPhaseHintDuration,
+  resolveData,
+  resolvePromiseData,
 } from "./utils";
+
+type ToastReference<
+  TData extends ToastData = ToastData,
+  TCustom extends ToastCustomOptions = {},
+> = string | ToastHandle<TData, TCustom>;
 
 const DEFAULT_STORE_CONFIG = {
   defaults: {
@@ -46,20 +45,22 @@ const DEFAULT_STORE_CONFIG = {
 class Store<
   TData extends ToastData = ToastData,
   TCustom extends ToastCustomOptions = {},
-> implements ToastStore<TData, TCustom> {
+> {
   private nextId = 1;
-  private toasts: Map<string, ToastState<TData, TCustom>> = new Map();
-  private subscribers: Set<Subscriber<TData, TCustom>> = new Set();
+  private toasts = new Map<string, ToastState<TData, TCustom>>();
+  private subscribers = new Set<
+    (toasts: ToastState<TData, TCustom>[]) => void
+  >();
   private timerManager: TimerManager;
-  private closePromises: Map<
+  private closePromises = new Map<
     string,
     {
       promise: Promise<CloseReason>;
       resolve: (reason: CloseReason) => void;
     }
-  > = new Map();
-  private closeReasons: Map<string, CloseReason> = new Map();
-  private readonly defaults: ToastDefaults<TData, TCustom>;
+  >();
+  private closeReasons = new Map<string, CloseReason>();
+  private readonly defaults: Partial<ToastOptions<TData, TCustom>>;
   private readonly maxToasts: number;
   private readonly timing: Required<NonNullable<StoreConfig["timing"]>>;
 
@@ -107,10 +108,12 @@ class Store<
     );
   }
 
-  public subscribe(listener: Subscriber<TData, TCustom>) {
+  public subscribe(listener: (toasts: ToastState<TData, TCustom>[]) => void) {
     this.subscribers.add(listener);
 
-    return () => this.subscribers.delete(listener);
+    return () => {
+      this.subscribers.delete(listener);
+    };
   }
 
   public getToasts() {
@@ -122,7 +125,7 @@ class Store<
       ...this.defaults,
       ...options,
     };
-    const type: ToastType =
+    const type =
       merged.type ?? this.defaults.type ?? DEFAULT_STORE_CONFIG.defaults.type;
     const data = resolveData<TData>(merged.data);
     const toastOptions = this.resolveOptions(merged, data, type);
@@ -178,12 +181,11 @@ class Store<
   }
 
   public loading(data: TData, options?: LoadingToastOptions<TCustom>) {
-    const baseOptions: LoadingToastOptions<TCustom> = options ?? {};
-
-    return this.addTypedToast(TOAST_TYPE.LOADING, data, {
-      ...baseOptions,
-      duration: 0,
-    });
+    return this.addTypedToast(
+      TOAST_TYPE.LOADING,
+      data,
+      this.createLoadingMethodOptions(options),
+    );
   }
 
   public dismiss(
@@ -193,11 +195,7 @@ class Store<
     const id = this.getId(reference);
     const toast = this.toasts.get(id);
 
-    if (!toast) {
-      return;
-    }
-
-    if (!isActiveToast(toast)) {
+    if (!toast || !isActiveToast(toast)) {
       return;
     }
 
@@ -230,15 +228,11 @@ class Store<
     const id = this.getId(reference);
     const toast = this.toasts.get(id);
 
-    if (!toast) {
+    if (!toast || toast.status === TOAST_STATUS.REMOVED) {
       return;
     }
 
-    if (toast.status === TOAST_STATUS.REMOVED) {
-      return;
-    }
-
-    let patch: Partial<ToastState<TData, TCustom>> = {};
+    const patch: Partial<ToastState<TData, TCustom>> = {};
 
     if (toast.status === TOAST_STATUS.EXITING) {
       patch.status = TOAST_STATUS.VISIBLE;
@@ -271,15 +265,7 @@ class Store<
     const id = this.getId(reference);
     const toast = this.toasts.get(id);
 
-    if (!toast) {
-      return;
-    }
-
-    if (toast.paused) {
-      return;
-    }
-
-    if (toast.status !== TOAST_STATUS.VISIBLE) {
+    if (!toast || toast.paused || toast.status !== TOAST_STATUS.VISIBLE) {
       return;
     }
 
@@ -300,11 +286,7 @@ class Store<
     const id = this.getId(reference);
     const toast = this.toasts.get(id);
 
-    if (!toast) {
-      return;
-    }
-
-    if (!toast.paused) {
+    if (!toast || !toast.paused) {
       return;
     }
 
@@ -344,13 +326,12 @@ class Store<
   public promise<T>(
     promise: Promise<T>,
     opts: ToastPromiseConfig<T, TData>,
-    options?: PromiseToastOptions<TCustom>,
+    options?: ToastMethodOptions<TCustom>,
   ) {
-    const baseOptions: PromiseToastOptions<TCustom> = options ?? {};
     const loadingOptions = this.createTypedOptions(
       TOAST_TYPE.LOADING,
       opts.loading,
-      { ...baseOptions, duration: 0 },
+      this.createLoadingMethodOptions(options),
     );
     const handle = this.add(loadingOptions);
 
@@ -384,11 +365,8 @@ class Store<
   ) {
     const id = this.getId(reference);
     const toast = this.toasts.get(id);
-    if (!toast) {
-      return;
-    }
 
-    if (!isPhaseStatus(toast, phase)) {
+    if (!toast || !isPhaseStatus(toast, phase)) {
       return;
     }
 
@@ -506,15 +484,38 @@ class Store<
     data: TData,
     options?: ToastMethodOptions<TCustom>,
   ) {
-    const baseOptions: ToastMethodOptions<TCustom> = options ?? {};
-    const toastOptions = this.createTypedOptions(type, data, baseOptions);
+    const toastOptions = this.createTypedOptions(
+      type,
+      data,
+      this.createMethodOptions(options),
+    );
 
     return this.add(toastOptions);
   }
 
-  private mergeDefaults(
-    defaults: ToastDefaults<TData, TCustom>,
-  ): ToastDefaults<TData, TCustom> {
+  private createMethodOptions(options?: ToastMethodOptions<TCustom>) {
+    const resolvedOptions: ToastMethodOptions<TCustom> = {};
+
+    if (options) {
+      Object.assign(resolvedOptions, options);
+    }
+
+    return resolvedOptions;
+  }
+
+  private createLoadingMethodOptions(options?: LoadingToastOptions<TCustom>) {
+    const resolvedOptions = this.createMethodOptions();
+
+    if (options) {
+      Object.assign(resolvedOptions, options);
+    }
+
+    resolvedOptions.duration = 0;
+
+    return resolvedOptions;
+  }
+
+  private mergeDefaults(defaults: Partial<ToastOptions<TData, TCustom>>) {
     return {
       ...DEFAULT_STORE_CONFIG.defaults,
       ...defaults,
@@ -524,7 +525,7 @@ class Store<
   private createTypedOptions(
     type: ToastType,
     data: TData,
-    options: TypedToastOptions<TCustom>,
+    options: ToastMethodOptions<TCustom>,
   ) {
     return {
       ...options,
@@ -538,18 +539,20 @@ class Store<
     data: Partial<TData> | TData,
     duration: number,
   ) {
-    return {
-      type,
-      data,
-      duration,
-    };
+    const updates: ToastUpdate<TData, TCustom> = {};
+
+    updates.type = type;
+    updates.data = data;
+    updates.duration = duration;
+
+    return updates;
   }
 
   private resolveOptions(
     options: ToastOptions<TData, TCustom>,
     data: TData,
     type: ToastType,
-  ): ResolvedToastOptions<TData, TCustom> {
+  ) {
     return {
       ...options,
       data,
@@ -617,6 +620,7 @@ class Store<
     }
 
     const duration = toast.remaining;
+
     if (duration === undefined || duration === 0) {
       return;
     }
@@ -648,11 +652,13 @@ class Store<
     }
 
     const isPaused = patch.paused ?? toast.paused;
+
     if (isPaused) {
       return;
     }
 
     const status = patch.status ?? toast.status;
+
     if (status !== TOAST_STATUS.VISIBLE) {
       return;
     }
@@ -712,6 +718,13 @@ class Store<
   }
 }
 
+type ToastStore<
+  TData extends ToastData = ToastData,
+  TCustom extends ToastCustomOptions = {},
+> = {
+  [Key in keyof Store<TData, TCustom>]: Store<TData, TCustom>[Key];
+};
+
 function createToastStore<
   TData extends ToastData = ToastData,
   TCustom extends ToastCustomOptions = {},
@@ -720,3 +733,4 @@ function createToastStore<
 }
 
 export { createToastStore };
+export type { ToastStore };

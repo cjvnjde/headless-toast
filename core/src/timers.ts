@@ -1,4 +1,15 @@
-import type { TimerCallbacks, ProgressConfig, TickScheduler } from "./types";
+import type { TickScheduler } from "./types";
+
+type TimerCallbacks = {
+  onAutoclose(id: string): void;
+  onSafetyTimeout(id: string): void;
+  onProgressTick(id: string, progress: number): void;
+};
+
+type ProgressConfig = {
+  enabled: boolean;
+  startValue: number;
+};
 
 function createDefaultTickScheduler(): TickScheduler {
   if (
@@ -8,14 +19,21 @@ function createDefaultTickScheduler(): TickScheduler {
     return (callback) => {
       let id: number;
       let stopped = false;
+
       const tick = () => {
-        if (stopped) return;
+        if (stopped) {
+          return;
+        }
+
         callback();
+
         if (!stopped) {
           id = requestAnimationFrame(tick);
         }
       };
+
       id = requestAnimationFrame(tick);
+
       return () => {
         stopped = true;
         cancelAnimationFrame(id);
@@ -25,6 +43,7 @@ function createDefaultTickScheduler(): TickScheduler {
 
   return (callback) => {
     const id = setInterval(callback, 50);
+
     return () => clearInterval(id);
   };
 }
@@ -32,12 +51,11 @@ function createDefaultTickScheduler(): TickScheduler {
 class TimerManager {
   private callbacks: TimerCallbacks;
   private readonly tickScheduler: TickScheduler;
-  private timers: Map<string, ReturnType<typeof setTimeout>> = new Map();
-  private timerStarts: Map<string, number> = new Map();
-  private timerDurations: Map<string, number> = new Map();
-  private safetyTimeouts: Map<string, ReturnType<typeof setTimeout>> =
-    new Map();
-  private progressIntervals: Map<string, () => void> = new Map();
+  private timers = new Map<string, ReturnType<typeof setTimeout>>();
+  private timerStarts = new Map<string, number>();
+  private timerDurations = new Map<string, number>();
+  private safetyTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
+  private progressIntervals = new Map<string, () => void>();
 
   constructor(callbacks: TimerCallbacks, tickScheduler: TickScheduler) {
     this.callbacks = callbacks;
@@ -61,6 +79,7 @@ class TimerManager {
     const timer = setTimeout(() => {
       this.callbacks.onAutoclose(id);
     }, duration);
+
     this.timers.set(id, timer);
 
     if (progress?.enabled) {
@@ -86,7 +105,6 @@ class TimerManager {
 
     if (timer) {
       clearTimeout(timer);
-
       this.timers.delete(id);
     }
 
@@ -111,7 +129,6 @@ class TimerManager {
 
     if (timeout) {
       clearTimeout(timeout);
-
       this.safetyTimeouts.delete(id);
     }
   }
@@ -151,6 +168,7 @@ class TimerManager {
         startProgress + (elapsed / duration) * remainingProgress,
         1,
       );
+
       this.callbacks.onProgressTick(id, progress);
 
       if (progress >= 1) {
@@ -166,7 +184,6 @@ class TimerManager {
 
     if (cancel) {
       cancel();
-
       this.progressIntervals.delete(id);
     }
   }

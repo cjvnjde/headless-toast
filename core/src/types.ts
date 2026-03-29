@@ -42,7 +42,7 @@ type AnimationEasing = ValueOf<typeof ANIMATION_EASING>;
 
 type ToastData = Record<string, unknown>;
 
-type ToastReservedOptionKey =
+type ReservedToastOptionKey =
   | "id"
   | "type"
   | "duration"
@@ -54,18 +54,11 @@ type ToastReservedOptionKey =
   | "onAutoClose"
   | "onOpen";
 
-type ReservedCustomToastOptionKeys<TCustom extends ToastCustomOptions = {}> =
-  Extract<keyof TCustom, ToastReservedOptionKey>;
-
 type ToastDataField<TData extends ToastData = ToastData> = {} extends TData
   ? { data?: TData }
   : { data: TData };
 
 type ToastCustomOptions = object;
-
-type CustomToastFields<TCustom extends ToastCustomOptions = {}> = Partial<
-  Pick<TCustom, Exclude<keyof TCustom, ReservedCustomToastOptionKeys<TCustom>>>
->;
 
 type AnimationConfig = {
   name: string;
@@ -124,17 +117,6 @@ type StackConfig = {
   maxVisible?: number;
 };
 
-type TimerCallbacks = {
-  onAutoclose(id: string): void;
-  onSafetyTimeout(id: string): void;
-  onProgressTick(id: string, progress: number): void;
-};
-
-type ProgressConfig = {
-  enabled: boolean;
-  startValue: number;
-};
-
 type TickScheduler = (callback: () => void) => () => void;
 
 type SharedToastOptionFields = {
@@ -148,73 +130,41 @@ type SharedToastOptionFields = {
   onOpen?: () => void;
 };
 
-type BaseToastOptions<TData extends ToastData = ToastData> =
-  SharedToastOptionFields & {
-    type?: ToastType;
-  } & ToastDataField<TData>;
+type ToastMethodOptions<TCustom extends ToastCustomOptions = {}> =
+  SharedToastOptionFields & Partial<Omit<TCustom, ReservedToastOptionKey>>;
 
 type ToastOptions<
   TData extends ToastData = ToastData,
   TCustom extends ToastCustomOptions = {},
-> = BaseToastOptions<TData> & CustomToastFields<TCustom>;
+> = ToastMethodOptions<TCustom> & {
+  type?: ToastType;
+} & ToastDataField<TData>;
 
 type ResolvedToastOptions<
   TData extends ToastData = ToastData,
   TCustom extends ToastCustomOptions = {},
-> = SharedToastOptionFields &
-  CustomToastFields<TCustom> & {
-    data: TData;
-    type: ToastType;
-  };
-
-type BaseToastUpdate<TData extends ToastData = ToastData> =
-  SharedToastOptionFields & {
-    type?: ToastType;
-    data?: Partial<TData> | TData;
-  };
+> = Omit<ToastOptions<TData, TCustom>, "data" | "type"> & {
+  data: TData;
+  type: ToastType;
+};
 
 type ToastUpdate<
   TData extends ToastData = ToastData,
   TCustom extends ToastCustomOptions = {},
-> =
-  | BaseToastUpdate<TData>
-  | (BaseToastUpdate<TData> & CustomToastFields<TCustom>);
-
-type TypedToastOptions<TCustom extends ToastCustomOptions = {}> =
-  SharedToastOptionFields & CustomToastFields<TCustom>;
-
-type ToastMethodOptions<TCustom extends ToastCustomOptions = {}> =
-  TypedToastOptions<TCustom>;
+> = ToastMethodOptions<TCustom> & {
+  type?: ToastType;
+  data?: Partial<TData> | TData;
+};
 
 type LoadingToastOptions<TCustom extends ToastCustomOptions = {}> = Omit<
-  SharedToastOptionFields,
+  ToastMethodOptions<TCustom>,
   "duration"
-> &
-  CustomToastFields<TCustom>;
-
-type PromiseToastData<T, TData extends ToastData = ToastData> =
-  | TData
-  | ((input: T) => TData);
-
-type PromiseToastOptions<TCustom extends ToastCustomOptions = {}> =
-  TypedToastOptions<TCustom>;
+>;
 
 type ToastPromiseConfig<T, TData extends ToastData = ToastData> = {
   loading: TData;
-  success: PromiseToastData<T, TData>;
-  error: PromiseToastData<unknown, TData>;
-};
-
-type ToastDefaults<
-  TData extends ToastData = ToastData,
-  TCustom extends ToastCustomOptions = {},
-> = Partial<ToastOptions<TData, TCustom>>;
-
-type StoreTimingConfig = {
-  animationBufferMs?: number;
-  animationFallbackMs?: number;
-  promiseSuccessDuration?: number;
-  promiseErrorDuration?: number;
+  success: TData | ((input: T) => TData);
+  error: TData | ((input: unknown) => TData);
 };
 
 type ToastHandle<
@@ -226,11 +176,6 @@ type ToastHandle<
   dismiss(reason?: CloseReason): void;
   closed: Promise<CloseReason>;
 };
-
-type ToastReference<
-  TData extends ToastData = ToastData,
-  TCustom extends ToastCustomOptions = {},
-> = string | ToastHandle<TData, TCustom>;
 
 const TOAST_STATUS = {
   ENTERING: "entering",
@@ -268,75 +213,16 @@ type StoreConfig<
   TData extends ToastData = ToastData,
   TCustom extends ToastCustomOptions = {},
 > = {
-  defaults?: ToastDefaults<TData, TCustom>;
+  defaults?: Partial<ToastOptions<TData, TCustom>>;
   maxToasts?: number;
-  timing?: StoreTimingConfig;
+  timing?: {
+    animationBufferMs?: number;
+    animationFallbackMs?: number;
+    promiseSuccessDuration?: number;
+    promiseErrorDuration?: number;
+  };
   tickScheduler?: TickScheduler;
 };
-
-type Subscriber<
-  TData extends ToastData = ToastData,
-  TCustom extends ToastCustomOptions = {},
-> = (toasts: ToastState<TData, TCustom>[]) => void;
-
-interface ToastStore<
-  TData extends ToastData = ToastData,
-  TCustom extends ToastCustomOptions = {},
-> {
-  subscribe(listener: Subscriber<TData, TCustom>): () => void;
-  getToasts(): ToastState<TData, TCustom>[];
-
-  add(options: ToastOptions<TData, TCustom>): ToastHandle<TData, TCustom>;
-  success(
-    data: TData,
-    options?: ToastMethodOptions<TCustom>,
-  ): ToastHandle<TData, TCustom>;
-  error(
-    data: TData,
-    options?: ToastMethodOptions<TCustom>,
-  ): ToastHandle<TData, TCustom>;
-  warning(
-    data: TData,
-    options?: ToastMethodOptions<TCustom>,
-  ): ToastHandle<TData, TCustom>;
-  info(
-    data: TData,
-    options?: ToastMethodOptions<TCustom>,
-  ): ToastHandle<TData, TCustom>;
-  loading(
-    data: TData,
-    options?: LoadingToastOptions<TCustom>,
-  ): ToastHandle<TData, TCustom>;
-
-  dismiss(id: ToastReference<TData, TCustom>, reason?: CloseReason): void;
-  dismissAll(): void;
-  update(
-    id: ToastReference<TData, TCustom>,
-    updates: ToastUpdate<TData, TCustom>,
-  ): void;
-  pause(id: ToastReference<TData, TCustom>): void;
-  resume(id: ToastReference<TData, TCustom>): void;
-  pauseAll(): void;
-  resumeAll(): void;
-
-  promise<T>(
-    promise: Promise<T>,
-    opts: ToastPromiseConfig<T, TData>,
-    options?: PromiseToastOptions<TCustom>,
-  ): Promise<T>;
-
-  setAnimationDuration(
-    id: ToastReference<TData, TCustom>,
-    phase: ToastPhase,
-    durationMs: number,
-  ): void;
-  markEntered(id: ToastReference<TData, TCustom>): void;
-  markExited(id: ToastReference<TData, TCustom>): void;
-
-  waitForClose(id: ToastReference<TData, TCustom>): Promise<CloseReason>;
-
-  destroy(): void;
-}
 
 export {
   TOAST_PLACEMENT,
@@ -361,35 +247,20 @@ export type {
   ToastStatus,
   ToastPhase,
   ToastData,
-  ToastReservedOptionKey,
-  ReservedCustomToastOptionKeys,
   ToastCustomOptions,
-  CustomToastFields,
   AnimationConfig,
   DragState,
   DraggableConfig,
   GestureInput,
   StackConfig,
-  TimerCallbacks,
-  ProgressConfig,
   TickScheduler,
-  BaseToastOptions,
+  ToastMethodOptions,
   ToastOptions,
   ResolvedToastOptions,
-  BaseToastUpdate,
   ToastUpdate,
-  TypedToastOptions,
-  ToastMethodOptions,
   LoadingToastOptions,
-  PromiseToastData,
   ToastPromiseConfig,
-  PromiseToastOptions,
-  ToastDefaults,
-  StoreTimingConfig,
   ToastHandle,
-  ToastReference,
   ToastState,
   StoreConfig,
-  Subscriber,
-  ToastStore,
 };

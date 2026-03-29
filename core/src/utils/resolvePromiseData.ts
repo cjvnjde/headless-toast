@@ -1,9 +1,9 @@
-import type { PromiseToastData, ToastData } from "../types";
+import type { ToastData } from "../types";
 
 export function resolvePromiseData<T, TData extends ToastData>(
-  value: PromiseToastData<T, TData>,
+  value: TData | ((input: T) => TData),
   input: T,
-): TData {
+) {
   if (typeof value === "function") {
     return value(input);
   }

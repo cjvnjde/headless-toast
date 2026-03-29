@@ -2,6 +2,8 @@ export { createToastStore } from "./store.ts";
 export { createDefaultTickScheduler } from "./timers.ts";
 export { computeDragState } from "./drag.ts";
 
+export type { ToastStore } from "./store.ts";
+
 export type {
   ToastPlacement,
   CloseReason,
@@ -21,23 +23,14 @@ export type {
   StackConfig,
   StoreConfig,
   TickScheduler,
-  ToastDefaults,
-  StoreTimingConfig,
-  BaseToastOptions,
+  ToastMethodOptions,
   ToastOptions,
   ResolvedToastOptions,
   ToastUpdate,
-  TypedToastOptions,
-  ToastMethodOptions,
   LoadingToastOptions,
   ToastHandle,
-  ToastReference,
   ToastState,
-  Subscriber,
-  ToastStore,
-  PromiseToastData,
   ToastPromiseConfig,
-  PromiseToastOptions,
 } from "./types.ts";
 
 export {
