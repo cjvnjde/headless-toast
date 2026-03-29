@@ -4,16 +4,15 @@
 
 Framework-free toast state management.
 
-`@headless-toast/core` owns toast lifecycle and timing without touching the DOM or any UI framework. It is the engine that adapters subscribe to.
+`@headless-toast/core` owns toast lifecycle and timing without touching the DOM or any UI framework. It is the engine that adapters use to build UI components and integrations.
 
 ## What Core Handles
 
-- Toast lifecycle: `entering -> visible -> exiting -> removed`
-- Typed toast creation and updates
+- Toast lifecycle: `entering -> visible -> exiting`
+- Toast creation and updates
 - Autoclose timers, pause/resume, and progress values
 - Promise flows for loading -> success/error toasts
 - Close reasons and `waitForClose()`
-- Pure drag math through `computeDragState()`
 - Subscriber notifications for adapters and custom integrations
 
 ## What Core Does Not Handle
@@ -24,12 +23,20 @@ Framework-free toast state management.
 - Pointer events
 - Placement containers or portal behavior
 
-Those concerns belong in an adapter such as `@headless-toast/react`.
+Those concerns belong in adapters.
 
 ## Install
 
 ```bash
+npm install @headless-toast/core
+```
+
+```bash
 pnpm add @headless-toast/core
+```
+
+```bash
+bun add @headless-toast/core
 ```
 
 ## Quick Start
@@ -71,30 +78,6 @@ const handle = store.success(
 handle.update({ data: { body: "Closing soon." }, progress: true });
 ```
 
-## API Snapshot
-
-The store exposes:
-
-- `add()`
-- `success()`, `error()`, `warning()`, `info()`, `loading()`
-- `update()`, `dismiss()`, `dismissAll()`
-- `pause()`, `resume()`
-- `promise()`
-- `waitForClose()`
-- `setAnimationDuration()`, `markEntered()`, `markExited()` for adapter lifecycle wiring
-
-Each creation method returns a `ToastHandle`:
-
-```ts
-const handle = store.info({ title: "Heads up" });
-
-console.log(handle.id);
-
-handle.dismiss("programmatic");
-
-await handle.closed;
-```
-
 ## Promise Toasts
 
 ```ts
@@ -110,8 +93,6 @@ await store.promise(
 );
 ```
 
-By default, promise success toasts close after `3000ms` and error toasts after `5000ms`. You can override those durations in store timing config or per call.
-
 ## Adapter Contract
 
 Adapters render UI and feed lifecycle events back into core:
@@ -126,30 +107,3 @@ store.markExited(handle);
 ```
 
 Core also starts safety timeouts so the lifecycle can still progress if an adapter never reports completion.
-
-## Drag Math
-
-`computeDragState()` is exported as a pure helper for adapters:
-
-```ts
-import { computeDragState } from "@headless-toast/core";
-
-const drag = computeDragState(
-  { threshold: 100, direction: "x" },
-  { dx: 120, dy: 0, vx: 1.2, vy: 0 },
-);
-
-if (drag.dismissed) {
-  store.dismiss(handle, "swipe");
-}
-```
-
-## Development
-
-From `core/`:
-
-```bash
-pnpm exec vitest run
-pnpm exec tsc --noEmit
-pnpm exec vite build
-```
