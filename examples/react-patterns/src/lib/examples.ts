@@ -136,7 +136,8 @@ const examples = [
   {
     path: "/state/stacked-deck",
     title: "Stacked deck",
-    summary: "Render a hover-expandable deck of toast cards with useStore().",
+    summary:
+      "Render a hover-expandable deck with computeStackedDeckLayout() instead of hand-rolling the layout math.",
     category: "State",
     tags: ["custom layout", "stacked"],
   },

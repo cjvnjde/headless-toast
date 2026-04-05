@@ -23,6 +23,7 @@ export {
   DEFAULT_MAX_VISIBLE,
   groupByPlacement,
   computeStackLayout,
+  computeStackedDeckLayout,
 } from "./stack";
 
 export type {
@@ -47,7 +48,13 @@ export type {
   AnimationResult,
 } from "./types";
 
-export type { StackedToast } from "./stack";
+export type {
+  StackedToast,
+  StackedDeckOrder,
+  StackedDeckLayoutConfig,
+  StackedDeckToast,
+  StackedDeckLayout,
+} from "./stack";
 
 export type {
   ToastPlacement,

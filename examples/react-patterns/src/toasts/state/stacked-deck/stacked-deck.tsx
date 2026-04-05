@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import {
+  computeStackedDeckLayout,
   mapToastItems,
   createToast,
   useStore,
@@ -75,15 +76,13 @@ function DeckToaster({
 }) {
   const toasts = useStore(store);
   const [expanded, setExpanded] = useState(false);
-  const reversed = [...toasts].reverse();
-  const visibleCount = Math.min(reversed.length, MAX_VISIBLE);
-  const collapsedHeight =
-    reversed.length === 0
-      ? 0
-      : TOAST_HEIGHT + (visibleCount - 1) * COLLAPSED_GAP;
-  const expandedHeight =
-    reversed.length * TOAST_HEIGHT +
-    Math.max(0, reversed.length - 1) * EXPANDED_GAP;
+  const deck = computeStackedDeckLayout(toasts, {
+    expanded,
+    itemHeight: TOAST_HEIGHT,
+    collapsedGap: COLLAPSED_GAP,
+    expandedGap: EXPANDED_GAP,
+    maxVisible: MAX_VISIBLE,
+  });
 
   return (
     <ViewportLayer>
@@ -94,38 +93,24 @@ function DeckToaster({
       >
         <div
           className="relative transition-[height] duration-300"
-          style={{ height: expanded ? expandedHeight : collapsedHeight }}
+          style={{ height: deck.height }}
         >
-          {mapToastItems(store, reversed, (currentToast) => {
-            const index = reversed.indexOf(currentToast);
-            const hidden = !expanded && index >= MAX_VISIBLE;
-            const y = expanded
-              ? index * (TOAST_HEIGHT + EXPANDED_GAP)
-              : index * COLLAPSED_GAP;
-            const scale = expanded ? 1 : Math.max(1 - index * 0.03, 0.9);
-            const opacity = hidden
-              ? 0
-              : expanded
-                ? 1
-                : Math.max(1 - index * 0.18, 0.28);
-
-            return (
-              <div
-                className="absolute inset-x-0 top-0 h-24 transition duration-300"
-                style={{
-                  transform: `translateY(${y}px) scale(${scale})`,
-                  opacity,
-                  zIndex: reversed.length - index,
-                }}
-              >
-                <DeckToast />
-              </div>
-            );
-          })}
+          {mapToastItems(store, deck.toasts, (currentToast) => (
+            <div
+              className="absolute inset-x-0 top-0 h-24 transition duration-300"
+              style={{
+                transform: `translateY(${currentToast.offset}px) scale(${currentToast.scale})`,
+                opacity: currentToast.opacity,
+                zIndex: currentToast.zIndex,
+              }}
+            >
+              <DeckToast />
+            </div>
+          ))}
         </div>
-        {!expanded && reversed.length > 1 ? (
+        {!expanded && deck.totalCount > 1 ? (
           <p className="mt-3 text-center text-xs font-medium text-slate-600 dark:text-slate-300">
-            {reversed.length} notifications — hover to expand
+            {deck.totalCount} notifications — hover to expand
           </p>
         ) : null}
       </div>
@@ -143,7 +128,7 @@ function StackedDeckPreview() {
     toast[type](
       {
         title: `Toast #${countRef.current}`,
-        body: `This stack uses useStore() and a custom layout.`,
+        body: `This stack uses computeStackedDeckLayout() under the hood.`,
       },
       { duration: 0 },
     );
@@ -181,7 +166,7 @@ function StackedDeckPage() {
     <ExamplePage
       category="State"
       title="Stacked deck"
-      summary="When a product surface can accumulate many notifications, useStore() lets you collapse them into a hover-expandable deck instead of a tall linear list."
+      summary="When a product surface can accumulate many notifications, computeStackedDeckLayout() turns raw store state into a headless deck layout instead of making every app reimplement the stacking math."
       files={[{ filename: "stacked-deck.tsx", language: "tsx", code }]}
       preview={<StackedDeckPreview />}
     />

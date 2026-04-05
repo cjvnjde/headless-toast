@@ -5,6 +5,7 @@ import {
   DEFAULT_MAX_VISIBLE,
   groupByPlacement,
   computeStackLayout,
+  computeStackedDeckLayout,
 } from "../src/stack.ts";
 
 function makeToast(
@@ -149,5 +150,127 @@ describe("computeStackLayout", () => {
 
     expect(result[2].isCollapsed).toBe(false);
     expect(result[3].isCollapsed).toBe(true);
+  });
+});
+
+describe("computeStackedDeckLayout", () => {
+  it("orders deck toasts newest-first by default", () => {
+    const toasts = [
+      makeToast({ id: "t1" }),
+      makeToast({ id: "t2" }),
+      makeToast({ id: "t3" }),
+      makeToast({ id: "t4" }),
+    ];
+
+    const result = computeStackedDeckLayout(toasts, {
+      expanded: false,
+      itemHeight: 96,
+      collapsedGap: 16,
+      expandedGap: 12,
+      maxVisible: 3,
+    });
+
+    expect(result.toasts.map((toast) => toast.id)).toEqual([
+      "t4",
+      "t3",
+      "t2",
+      "t1",
+    ]);
+    expect(result.visibleToasts.map((toast) => toast.id)).toEqual([
+      "t4",
+      "t3",
+      "t2",
+    ]);
+    expect(result.hiddenCount).toBe(1);
+    expect(result.visibleCount).toBe(3);
+    expect(result.collapsedHeight).toBe(128);
+    expect(result.height).toBe(128);
+  });
+
+  it("supports oldest-first ordering", () => {
+    const toasts = [
+      makeToast({ id: "t1" }),
+      makeToast({ id: "t2" }),
+      makeToast({ id: "t3" }),
+    ];
+
+    const result = computeStackedDeckLayout(toasts, {
+      expanded: false,
+      itemHeight: 96,
+      collapsedGap: 16,
+      order: "oldest-first",
+    });
+
+    expect(result.toasts.map((toast) => toast.id)).toEqual(["t1", "t2", "t3"]);
+  });
+
+  it("computes collapsed offsets and deck styling values", () => {
+    const toasts = [
+      makeToast({ id: "t1" }),
+      makeToast({ id: "t2" }),
+      makeToast({ id: "t3" }),
+    ];
+
+    const result = computeStackedDeckLayout(toasts, {
+      expanded: false,
+      itemHeight: 100,
+      collapsedGap: 10,
+      expandedGap: 20,
+      order: "oldest-first",
+      maxVisible: 3,
+    });
+
+    expect(result.toasts.map((toast) => toast.offset)).toEqual([0, 10, 20]);
+    expect(result.toasts.map((toast) => toast.zIndex)).toEqual([3, 2, 1]);
+    expect(result.toasts[0].scale).toBe(1);
+    expect(result.toasts[1].scale).toBeCloseTo(0.97);
+    expect(result.toasts[2].scale).toBeCloseTo(0.94);
+    expect(result.toasts[0].opacity).toBe(1);
+    expect(result.toasts[1].opacity).toBeCloseTo(0.82);
+    expect(result.toasts[2].opacity).toBeCloseTo(0.64);
+  });
+
+  it("expands the full deck and restores full opacity and scale", () => {
+    const toasts = [
+      makeToast({ id: "t1" }),
+      makeToast({ id: "t2" }),
+      makeToast({ id: "t3" }),
+      makeToast({ id: "t4" }),
+    ];
+
+    const result = computeStackedDeckLayout(toasts, {
+      expanded: true,
+      itemHeight: 96,
+      collapsedGap: 16,
+      expandedGap: 12,
+      maxVisible: 3,
+      order: "oldest-first",
+    });
+
+    expect(result.visibleToasts).toHaveLength(4);
+    expect(result.hiddenCount).toBe(0);
+    expect(result.expandedHeight).toBe(420);
+    expect(result.height).toBe(420);
+    expect(result.toasts.map((toast) => toast.offset)).toEqual([
+      0, 108, 216, 324,
+    ]);
+    expect(result.toasts.every((toast) => toast.scale === 1)).toBe(true);
+    expect(result.toasts.every((toast) => toast.opacity === 1)).toBe(true);
+  });
+
+  it("uses DEFAULT_MAX_VISIBLE when maxVisible is omitted", () => {
+    const toasts = Array.from({ length: 5 }, (_, index) =>
+      makeToast({ id: `t${index}` }),
+    );
+
+    const result = computeStackedDeckLayout(toasts, {
+      expanded: false,
+      itemHeight: 96,
+      collapsedGap: 16,
+      order: "oldest-first",
+    });
+
+    expect(result.visibleToasts).toHaveLength(DEFAULT_MAX_VISIBLE);
+    expect(result.hiddenCount).toBe(2);
   });
 });
